@@ -14,9 +14,9 @@
 1. `01_profile/career-summary.md`
 2. `01_profile/core-strengths.md`
 3. `01_profile/career-direction.md`
-4. `05_portfolio/portfolio-overview.md`
-5. `05_portfolio/backend-ai-engineer.md`
-6. `04_projects/README.md`
+4. `03_portfolio/portfolio-overview.md`
+5. `03_portfolio/backend-ai-engineer.md`
+6. `02_projects/README.md`
 
 ## 폴더 구조
 ```text
@@ -26,9 +26,9 @@ engineering-career-portfolio/
 │  ├─ career-summary.md
 │  ├─ core-strengths.md
 │  └─ career-direction.md
-├─ 04_projects/
+├─ 02_projects/
 │  └─ README.md
-└─ 05_portfolio/
+└─ 03_portfolio/
    ├─ portfolio-overview.md
    └─ backend-ai-engineer.md
 ```
