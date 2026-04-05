@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+faiss-cpu
+openai
+numpy
+tiktoken
+python-dotenv
