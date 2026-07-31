@@ -4,6 +4,8 @@
 
 이 저장소는 면접관과 채용 담당자가 손기석의 기술 방향, 강점, 프로젝트 성격을 빠르게 이해할 수 있도록 구성합니다.
 
+> **AI·기술 검토 진입점:** [`AI_CONTEXT.md`](AI_CONTEXT.md)와 [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다. 이 저장소는 공개 기술 근거용이며, 개인 연봉·가족·현재 회사 문제나 최종 직장 선택의 기준 저장소가 아닙니다.
+
 ## 핵심 소개
 
 - Java/Spring 기반 백엔드 개발 경험
@@ -84,7 +86,8 @@
 3. `01_profile/career-direction.md`
 4. `03_portfolio/portfolio-overview.md`
 5. `03_portfolio/backend-ai-engineer.md`
-6. `02_projects/README.md`
+6. `03_portfolio/evidence-index.md`
+7. `02_projects/README.md`
 
 ## 폴더 구조
 
@@ -125,7 +128,7 @@ engineering-career-portfolio/
 예시:
 
 - `ai-rag-api/README.md` : 문서 기반 질의응답 API 프로젝트
-- `text2sql/README.md` : 자연어 질의 SQL 변환 프로젝트
+- `text2sql/README.md` : 자연어 질의 SQL 변환 프로젝트 — 계획, 현재 디렉터리 없음
 - `backend-platform-template/README.md` : 운영형 백엔드 템플릿
 - `security-audit-log/README.md` : 감사로그/권한통제 예제
 
@@ -139,6 +142,6 @@ engineering-career-portfolio/
 
 - `portfolio-overview.md` : 전체 포트폴리오 개요
 - `backend-ai-engineer.md` : 백엔드 + AI 응용 엔지니어 포지셔닝
-- `security-backend-platform.md` : 보안 + 백엔드 + 플랫폼 특화 포지셔닝
+- `security-backend-platform.md` : 보안 + 백엔드 + 플랫폼 특화 포지셔닝 — 계획, 현재 파일 없음
 
 프로필과 프로젝트를 묶어서 채용 관점으로 해석해주는 포지셔닝 폴더입니다.

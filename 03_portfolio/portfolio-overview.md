@@ -58,8 +58,9 @@ RAG, Text2SQL, 문서 기반 QA 등 LLM 기반 기능을 서비스에 접목하�
 1. `01_profile/career-summary.md`
 2. `01_profile/core-strengths.md`
 3. `01_profile/career-direction.md`
-4. `05_portfolio/backend-ai-engineer.md`
-5. `04_projects/README.md`
+4. `03_portfolio/backend-ai-engineer.md`
+5. `03_portfolio/evidence-index.md`
+6. `02_projects/README.md`
 
 ---
 

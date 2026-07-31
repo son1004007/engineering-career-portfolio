@@ -7,9 +7,24 @@ Its purpose is to show:
 2. what kinds of systems he designs and builds
 3. how he documents, implements, and validates work
 
+When an AI receives only this repository URL, it must read `AI_CONTEXT.md` and `03_portfolio/evidence-index.md` first. This repository is a public evidence source, not the authority for private job-choice constraints or offer decisions.
+
 ## Public Repository Rule
 Do not add private job-search notes, company comparisons, support decisions, or internal-only memos.
 Only add recruiter-facing portfolio content.
+
+Do not copy salary, family, health, current-employer problems, private work-log details, credentials, customer data, or internal URLs from linked private repositories.
+
+## Evidence Labels
+Keep profile claims and project status explicit:
+- `verified`: a recent run or test success is recorded
+- `implemented`: core code exists
+- `tested-file-present`: tests exist but recent success is not recorded
+- `partial`: required components are missing
+- `planned`: documentation or task-list item only
+- `self-described`: profile or career claim needing separate evidence
+
+Never present a planned or partial item as completed. Update `03_portfolio/evidence-index.md` whenever implementation or verification status changes.
 
 ## Folder Roles
 - `01_profile/`: profile, strengths, direction
