@@ -22,10 +22,10 @@
 - 운영 반영, 기능 개선, 장애 대응 경험
 
 ### 2. AI 응용서비스 경험
-- LLM 챗봇 PoC
-- Text2SQL 구조 구현
-- 문서 기반 AI 서비스 구조 검토
-- FastAPI 기반 AI 응용 API 설계/구현 경험
+- FastAPI 기반 Text2SQL/NL2SQL 서비스 구현
+- 다중 로컬 모델 benchmark와 validation set 기반 검증
+- Agentic AI Runtime 구성요소와 테스트 구현
+- 문서 기반 RAG 개인 샘플 및 LLM workflow 설계
 
 ### 3. 운영/배포/환경 구성 경험
 - Docker 기반 실행 환경 구성
@@ -59,8 +59,10 @@ RAG, Text2SQL, 문서 기반 QA 등 LLM 기반 기능을 서비스에 접목하�
 2. `01_profile/core-strengths.md`
 3. `01_profile/career-direction.md`
 4. `03_portfolio/backend-ai-engineer.md`
-5. `03_portfolio/evidence-index.md`
-6. `02_projects/README.md`
+5. `evidence/company-github/projects.md`
+6. `evidence/company-github/career-claims.csv`
+7. `03_portfolio/evidence-index.md`
+8. `02_projects/README.md`
 
 ---
 

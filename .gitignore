@@ -1,0 +1,6 @@
+tools/company-evidence.config.*.json
+!tools/company-evidence.config.example.json
+evidence/company-github/private/
+evidence/company-github/raw/
+__pycache__/
+*.py[cod]

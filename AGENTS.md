@@ -7,7 +7,7 @@ Its purpose is to show:
 2. what kinds of systems he designs and builds
 3. how he documents, implements, and validates work
 
-When an AI receives only this repository URL, it must read `AI_CONTEXT.md` and `03_portfolio/evidence-index.md` first. This repository is a public evidence source, not the authority for private job-choice constraints or offer decisions.
+When an AI receives only this repository URL, it must read `AI_CONTEXT.md`, `evidence/company-github/README.md`, and `03_portfolio/evidence-index.md` first. This repository is a public evidence source, not the authority for private job-choice constraints or offer decisions.
 
 ## Public Repository Rule
 Do not add private job-search notes, company comparisons, support decisions, or internal-only memos.
@@ -15,21 +15,37 @@ Only add recruiter-facing portfolio content.
 
 Do not copy salary, family, health, current-employer problems, private work-log details, credentials, customer data, or internal URLs from linked private repositories.
 
+For company GitHub evidence, publish only sanitized metadata and reviewed career claims. Do not publish repository names, customer identifiers, commit messages, file paths, diffs, internal emails, or source code. A Git commit identifies author/committer metadata; it does not by itself prove who performed the push event.
+
 ## Evidence Labels
 Keep profile claims and project status explicit:
 - `verified`: a recent run or test success is recorded
 - `implemented`: core code exists
 - `tested-file-present`: tests exist but recent success is not recorded
+- `tested-component`: test artifacts exist for the named component; this does not verify the complete system
 - `partial`: required components are missing
 - `planned`: documentation or task-list item only
 - `self-described`: profile or career claim needing separate evidence
+- `private-work-code-verified`: company-owned private code and user attribution were checked in an authorized environment; only a sanitized claim is public
 
 Never present a planned or partial item as completed. Update `03_portfolio/evidence-index.md` whenever implementation or verification status changes.
+
+## Company Evidence Maintenance
+
+- At month end, refresh `evidence/company-github/monthly/` from authenticated sources.
+- Update `career-claims.csv` only after human review of attribution, implementation status, and disclosure limits.
+- Keep authored, merged, tested, integrated, operated, and planned states separate.
+- Do not use commit count as a productivity or impact score.
+- Keep optional verification digests and source fingerprints private. Never commit a generated public snapshot with `verification_digests_included: true`.
+- If private access expires, preserve the last verification date and mark access as expired. Do not silently invent or delete the prior verified state.
+- Before leaving the employer, create a final `departure-snapshot-YYYY-MM-DD.md` while authorized access still exists.
 
 ## Folder Roles
 - `01_profile/`: profile, strengths, direction
 - `02_projects/`: project artifacts
 - `03_portfolio/`: positioning and portfolio summaries
+- `evidence/company-github/`: sanitized company contribution evidence and monthly snapshots
+- `tools/`: local evidence collection utilities; local configuration is never committed
 
 ## Required Project Deliverables
 Each project should include:

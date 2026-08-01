@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "schema_id": "company-github-account-summary-v1",
+  "snapshot_date": "2026-08-01",
+  "period": {
+    "from": "2026-01",
+    "through": "2026-07"
+  },
+  "attribution": "authenticated GitHub account-attributed author commits",
+  "count_semantics": "GitHub commit search result count across repositories; cross-repository SHA deduplication was not independently verified.",
+  "limitation": "This does not prove the push actor, effort, productivity, code ownership, or default-branch reachability.",
+  "coverage_note": "The 2026 account-login search is the canonical public aggregate. Earlier years can be incomplete when work-email commits were not linked to the account and must not be read as absence of work.",
+  "repository_count": 26,
+  "commit_count": 1241,
+  "monthly_commit_counts": {
+    "2026-01": 4,
+    "2026-02": 57,
+    "2026-03": 118,
+    "2026-04": 176,
+    "2026-05": 135,
+    "2026-06": 350,
+    "2026-07": 401
+  },
+  "sanitized_workstreams": [
+    {
+      "alias": "company-ai-llm-applications",
+      "period": "2026-03 to 2026-07",
+      "commit_count": 303,
+      "commit_type_counts": {
+        "feat": 76,
+        "fix": 21,
+        "test": 6,
+        "docs": 189,
+        "refactor": 6,
+        "chore": 4,
+        "other": 1
+      }
+    },
+    {
+      "alias": "company-data-service-modelops",
+      "period": "2026-01 to 2026-07",
+      "commit_count": 286,
+      "commit_type_counts": {
+        "feat": 46,
+        "fix": 79,
+        "docs": 73,
+        "refactor": 5,
+        "chore": 33,
+        "other": 50
+      }
+    },
+    {
+      "alias": "company-public-data-analysis",
+      "period": "2026-06 to 2026-07",
+      "commit_count": 199,
+      "commit_type_counts": {
+        "feat": 22,
+        "fix": 4,
+        "docs": 142,
+        "refactor": 4,
+        "chore": 18,
+        "other": 9
+      }
+    },
+    {
+      "alias": "company-education-platform",
+      "period": "2026-01 to 2026-07",
+      "commit_count": 169,
+      "commit_type_counts": {
+        "feat": 4,
+        "fix": 46,
+        "docs": 68,
+        "chore": 26,
+        "other": 25
+      }
+    },
+    {
+      "alias": "company-engineering-enablement",
+      "period": "2026-03 to 2026-07",
+      "commit_count": 186,
+      "commit_type_counts": {
+        "feat": 9,
+        "fix": 2,
+        "test": 1,
+        "docs": 144,
+        "refactor": 4,
+        "chore": 11,
+        "other": 15
+      }
+    },
+    {
+      "alias": "company-application-integration",
+      "period": "2026-02 to 2026-07",
+      "commit_count": 98,
+      "commit_type_counts": {
+        "feat": 14,
+        "fix": 18,
+        "docs": 17,
+        "refactor": 5,
+        "chore": 1,
+        "other": 43
+      }
+    }
+  ],
+  "sanitized_llm_project_counts": [
+    {
+      "project_id": "WORK-AI-01",
+      "period": "2026-03 to 2026-04",
+      "commit_count": 89
+    },
+    {
+      "project_id": "WORK-AI-04",
+      "period": "2026-04",
+      "commit_count": 47
+    },
+    {
+      "project_id": "WORK-AI-02",
+      "period": "2026-06 to 2026-07",
+      "commit_count": 167
+    }
+  ],
+  "safe_inference": "LLM application development was a recurring workstream from March through July. Commit counts do not establish the share of working time."
+}

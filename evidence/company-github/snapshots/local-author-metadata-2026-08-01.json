@@ -1,0 +1,321 @@
+{
+  "aggregation_note": "Repository counts can overlap when clones or forks share commits; do not sum them unless overlap has been ruled out.",
+  "evidence_basis": "Configured Git author metadata matched by regular expression; duplicate commit IDs removed within each configured repository.",
+  "generated_on_utc": "2026-08-01",
+  "limitation": "This aggregate does not prove the push actor, code ownership, employment, or work performed outside Git.",
+  "privacy": {
+    "author_emails_included": false,
+    "commit_ids_included": false,
+    "file_names_included": false,
+    "raw_commit_messages_included": false,
+    "remote_urls_included": false,
+    "repository_paths_included": false,
+    "verification_digests_included": false
+  },
+  "repositories": [
+    {
+      "alias": "WORK-AI-01-SOURCE-A",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2026-03",
+          "last": "2026-04"
+        },
+        "commit_count": 158,
+        "conventional_commit_type_counts": {
+          "chore": 9,
+          "docs": 66,
+          "feat": 49,
+          "fix": 27,
+          "other": 7
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2026-03",
+          "last": "2026-04"
+        },
+        "commit_count": 128,
+        "conventional_commit_type_counts": {
+          "chore": 9,
+          "docs": 47,
+          "feat": 42,
+          "fix": 23,
+          "other": 7
+        },
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-AI-03-SOURCE-A",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2026-05",
+          "last": "2026-05"
+        },
+        "commit_count": 16,
+        "conventional_commit_type_counts": {
+          "docs": 16
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": null,
+          "last": null
+        },
+        "commit_count": 0,
+        "conventional_commit_type_counts": {},
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-PLATFORM-01-SOURCE-A",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2024-12",
+          "last": "2026-07"
+        },
+        "commit_count": 1026,
+        "conventional_commit_type_counts": {
+          "chore": 44,
+          "ci": 7,
+          "doc": 142,
+          "docs": 54,
+          "etc": 9,
+          "feat": 242,
+          "fix": 411,
+          "other": 87,
+          "refactor": 13,
+          "style": 17
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2024-12",
+          "last": "2026-07"
+        },
+        "commit_count": 930,
+        "conventional_commit_type_counts": {
+          "chore": 40,
+          "ci": 3,
+          "doc": 142,
+          "docs": 28,
+          "etc": 9,
+          "feat": 240,
+          "fix": 355,
+          "other": 85,
+          "refactor": 11,
+          "style": 17
+        },
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-PLATFORM-01-SOURCE-B",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2024-05",
+          "last": "2026-07"
+        },
+        "commit_count": 116,
+        "conventional_commit_type_counts": {
+          "assets": 10,
+          "chore": 18,
+          "docs": 1,
+          "etc": 4,
+          "feat": 18,
+          "fix": 31,
+          "other": 27,
+          "refactor": 5,
+          "style": 2
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2024-05",
+          "last": "2026-07"
+        },
+        "commit_count": 80,
+        "conventional_commit_type_counts": {
+          "chore": 1,
+          "docs": 1,
+          "etc": 4,
+          "feat": 15,
+          "fix": 26,
+          "other": 27,
+          "refactor": 5,
+          "style": 1
+        },
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-OPS-01-SOURCE-A",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2026-06",
+          "last": "2026-07"
+        },
+        "commit_count": 7,
+        "conventional_commit_type_counts": {
+          "chore": 1,
+          "feat": 2,
+          "fix": 1,
+          "other": 3
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2026-06",
+          "last": "2026-07"
+        },
+        "commit_count": 7,
+        "conventional_commit_type_counts": {
+          "chore": 1,
+          "feat": 2,
+          "fix": 1,
+          "other": 3
+        },
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-OPS-01-SOURCE-B",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2026-03",
+          "last": "2026-07"
+        },
+        "commit_count": 68,
+        "conventional_commit_type_counts": {
+          "chore": 1,
+          "docs": 55,
+          "other": 12
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2026-03",
+          "last": "2026-07"
+        },
+        "commit_count": 68,
+        "conventional_commit_type_counts": {
+          "chore": 1,
+          "docs": 55,
+          "other": 12
+        },
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-OPS-01-SOURCE-C",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2026-05",
+          "last": "2026-06"
+        },
+        "commit_count": 32,
+        "conventional_commit_type_counts": {
+          "docs": 19,
+          "feat": 7,
+          "fix": 1,
+          "other": 1,
+          "refactor": 4
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2026-05",
+          "last": "2026-06"
+        },
+        "commit_count": 32,
+        "conventional_commit_type_counts": {
+          "docs": 19,
+          "feat": 7,
+          "fix": 1,
+          "other": 1,
+          "refactor": 4
+        },
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-DATA-01-SOURCE-A",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2026-07",
+          "last": "2026-07"
+        },
+        "commit_count": 12,
+        "conventional_commit_type_counts": {
+          "docs": 8,
+          "other": 4
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2026-07",
+          "last": "2026-07"
+        },
+        "commit_count": 12,
+        "conventional_commit_type_counts": {
+          "docs": 8,
+          "other": 4
+        },
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-DATA-01-SOURCE-B",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2026-05",
+          "last": "2026-05"
+        },
+        "commit_count": 17,
+        "conventional_commit_type_counts": {
+          "docs": 1,
+          "other": 16
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2026-05",
+          "last": "2026-05"
+        },
+        "commit_count": 17,
+        "conventional_commit_type_counts": {
+          "docs": 1,
+          "other": 16
+        },
+        "scope": "configured_default_ref"
+      }
+    },
+    {
+      "alias": "WORK-DATA-01-SOURCE-C",
+      "all_refs": {
+        "authored_period_month": {
+          "first": "2026-01",
+          "last": "2026-01"
+        },
+        "commit_count": 2,
+        "conventional_commit_type_counts": {
+          "other": 2
+        }
+      },
+      "default_ref": {
+        "authored_period_month": {
+          "first": "2026-01",
+          "last": "2026-01"
+        },
+        "commit_count": 2,
+        "conventional_commit_type_counts": {
+          "other": 2
+        },
+        "scope": "configured_default_ref"
+      }
+    }
+  ],
+  "schema_id": "company-git-local-author-aggregate-v1",
+  "schema_version": 1,
+  "source_currency": "The report reflects local refs at generation time. It does not prove that every local clone was synchronized with its remote."
+}

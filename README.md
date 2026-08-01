@@ -4,21 +4,21 @@
 
 이 저장소는 면접관과 채용 담당자가 손기석의 기술 방향, 강점, 프로젝트 성격을 빠르게 이해할 수 있도록 구성합니다.
 
-> **AI·기술 검토 진입점:** [`AI_CONTEXT.md`](AI_CONTEXT.md)와 [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다. 이 저장소는 공개 기술 근거용이며, 개인 연봉·가족·현재 회사 문제나 최종 직장 선택의 기준 저장소가 아닙니다.
+> **AI 및 기술 검토 진입점:** [`AI_CONTEXT.md`](AI_CONTEXT.md), [`evidence/company-github/README.md`](evidence/company-github/README.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다. 이 저장소는 공개 기술 근거용이며, 개인 연봉, 가족, 현재 회사 문제나 최종 직장 선택의 기준 저장소가 아닙니다.
 
 ## 핵심 소개
 
-- Java/Spring 기반 백엔드 개발 경험
-- Python/FastAPI 기반 API 및 데이터 처리 경험
-- 데이터 플랫폼 및 AI 서비스 백엔드 연계 경험
+- Java/Spring 엔터프라이즈 서비스 경험을 기반으로 한 AI/LLM 응용서비스 백엔드 구현
+- Python/FastAPI 기반 Text2SQL/NL2SQL API와 다중 모델 benchmark 경험
+- Agentic AI Runtime의 작업 격리와 artifact/provenance 추적 구성요소 구현
 - Linux, Docker, Nginx, Tomcat, Jenkins 기반 운영 반영 경험
-- 정보보안 경력 기반의 DevSecOps, Application Security, 보안 자동화 차별화 요소 보유
+- 정보보호 컨설팅과 보안 관련 기술지원 경험을 기반으로 한 보안 및 통제 관점
 
 ## 현재 포지셔닝
 
-손기석은 **Spring/Python 기반 데이터 플랫폼 백엔드 개발자**를 지향합니다.
+손기석의 주력 포지셔닝은 **AI/LLM 응용서비스 백엔드 엔지니어**입니다.
 
-단순 웹 기능 개발자가 아니라, 데이터 처리, API, 운영환경, 배포, 보안 관점을 함께 이해하는 플랫폼 백엔드 엔지니어로 포지셔닝합니다.
+Java/Spring은 기존 엔터프라이즈 서비스, DB/API와 운영 역량의 기반으로 두고, 최신 전문성은 Python/FastAPI, Text2SQL/NL2SQL, RAG, Agentic AI Runtime의 구현과 검증으로 설명합니다. 순수 모델 연구자가 아니라 AI 기능을 실제 서비스와 데이터 흐름에 연결하는 엔지니어로 포지셔닝합니다.
 
 ## 순수 백엔드가 아닌 데이터/AI 플랫폼 백엔드를 우선하는 이유
 
@@ -34,7 +34,7 @@
 - 데이터 분석 결과의 웹 서비스화
 - Text2SQL/RAG/LLM PoC
 - Linux/Docker/Nginx/Tomcat/Jenkins 운영 반영
-- 보안 경력 6년
+- 정보보호 컨설팅과 보안 관련 기술지원 경험
 - CISSP/정보보안기사/CPPG/SQLD
 
 따라서 현재 방향은 다음처럼 정의합니다.
@@ -49,8 +49,11 @@
 
 1차 목표:
 
+- AI/LLM 응용서비스 백엔드 엔지니어
+- LLM 서비스 통합 엔지니어
+- AI 플랫폼 및 Runtime 백엔드 엔지니어
+- AI/Data 제품의 Java/Python 백엔드 엔지니어
 - 데이터 플랫폼 백엔드 개발자
-- AI 플랫폼 백엔드 개발자
 - Backend Platform Engineer
 - Data Platform Engineer
 - DevSecOps Engineer
@@ -86,8 +89,10 @@
 3. `01_profile/career-direction.md`
 4. `03_portfolio/portfolio-overview.md`
 5. `03_portfolio/backend-ai-engineer.md`
-6. `03_portfolio/evidence-index.md`
-7. `02_projects/README.md`
+6. `evidence/company-github/projects.md`
+7. `evidence/company-github/career-claims.csv`
+8. `03_portfolio/evidence-index.md`
+9. `02_projects/README.md`
 
 ## 폴더 구조
 
@@ -100,9 +105,16 @@ engineering-career-portfolio/
 │  └─ career-direction.md
 ├─ 02_projects/
 │  └─ README.md
-└─ 03_portfolio/
-   ├─ portfolio-overview.md
-   └─ backend-ai-engineer.md
+├─ 03_portfolio/
+│  ├─ portfolio-overview.md
+│  ├─ backend-ai-engineer.md
+│  └─ evidence-index.md
+├─ evidence/company-github/
+│  ├─ README.md
+│  ├─ career-claims.csv
+│  ├─ projects.md
+│  └─ monthly/
+└─ tools/
 ```
 
 ## 폴더를 3개로 나눈 이유
@@ -145,3 +157,7 @@ engineering-career-portfolio/
 - `security-backend-platform.md` : 보안 + 백엔드 + 플랫폼 특화 포지셔닝 — 계획, 현재 파일 없음
 
 프로필과 프로젝트를 묶어서 채용 관점으로 해석해주는 포지셔닝 폴더입니다.
+
+### evidence/company-github
+
+회사 비공개 GitHub에서 확인한 본인 작성 커밋과 구현 범위를 공개 가능한 수준으로 비식별화한 경력 증거입니다. 회사 코드, 고객명, 저장소 주소와 원본 커밋 메시지는 포함하지 않습니다.

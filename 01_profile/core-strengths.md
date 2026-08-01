@@ -7,7 +7,9 @@
 
 ## 2. Python/FastAPI 기반 AI 응용서비스 구현 경험
 - Python, FastAPI 기반 API 서버 구현 경험
-- LLM 챗봇 PoC, Text2SQL, 문서 기반 AI 서비스 구조 검토 경험
+- Text2SQL/NL2SQL 생성, SQL 검증과 실행, 모델 adapter, 결과 기록 흐름 구현
+- 다중 로컬 모델 benchmark와 validation set 기반 실패 유형 검증
+- Agentic AI Runtime의 workspace, artifact, provenance 저장 및 추적 구성요소 구현과 테스트
 - AI 기능을 서비스 흐름 안에 연결하는 실무 경험 보유
 
 ## 3. DB/SQL 및 데이터 흐름 설계 역량
