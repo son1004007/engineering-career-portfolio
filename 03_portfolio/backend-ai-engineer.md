@@ -1,7 +1,7 @@
 # Backend + AI Application Engineer
 
 ## 포지셔닝
-손기석은 **백엔드 개발을 기반으로 AI 응용서비스를 구현할 수 있는 엔지니어**입니다.
+손기석은 **엔터프라이즈 백엔드 경험을 기반으로 AI/LLM 응용서비스를 구현하고 검증하는 엔지니어**입니다.
 
 핵심은 단순히 AI 모델을 아는 것이 아니라,
 **사용자가 실제로 쓸 수 있는 서비스 흐름 안에 AI 기능을 연결하고 운영 가능한 구조로 정리하는 것**에 있습니다.
@@ -29,10 +29,10 @@
 - DB 연계 및 데이터 흐름 구현
 
 ### 2. AI 응용서비스 구조 설계
-- LLM 챗봇 PoC
-- Text2SQL 구조 구현
-- 문서 기반 AI 서비스 구조 검토
-- AI 기능을 실제 서비스 플로우에 연결하는 구조 이해
+- FastAPI 기반 Text2SQL/NL2SQL API, 모델 adapter, SQL 검증과 실행 흐름 구현
+- 현업 질문과 validation set을 이용한 다중 로컬 모델 benchmark
+- Agentic AI Runtime의 작업 격리, artifact와 provenance 추적 구성요소 구현
+- 문서 기반 RAG 개인 샘플과 LLM 분석 workflow 설계
 
 ### 3. 운영 가능한 구조 정리
 - Linux, Docker, Jenkins, Git 기반 실행 환경 경험
@@ -53,12 +53,17 @@
 - RAG, Text2SQL, Agent 기반 서비스 구현
 - FastAPI + Spring 혼합형 서비스 구조
 
-### 2. 제품형 백엔드 강화 포지션
+### 2. LLM 서비스 통합 및 Runtime 백엔드
+- Text2SQL/NL2SQL와 enterprise data 연계
+- model provider 교체 구조와 실행 결과 검증
+- job, workspace, artifact, provenance 기반 AI Runtime
+
+### 3. 제품형 백엔드 강화 포지션
 - 데이터 기반 서비스 백엔드 개발
 - 운영형 플랫폼/API 개발
 - 서비스 구조 고도화 및 기능 개선
 
-### 3. 보안/통제 기능이 포함된 백엔드 포지션
+### 4. 보안/통제 기능이 포함된 백엔드 포지션
 - 감사로그, 권한, 통제 기능이 필요한 서비스
 - 보안/컴플라이언스 도메인과 연결된 백엔드 개발
 
@@ -74,4 +79,6 @@
 ---
 
 ## 한 줄 소개
-손기석은 **Java/Spring 기반 백엔드 경험 위에 Python/FastAPI와 LLM 응용서비스 구현 경험을 더하고, 운영·보안 관점까지 함께 볼 수 있는 실무형 엔지니어**입니다.
+손기석은 **Java/Spring 서비스 경험을 기반으로 Python/FastAPI, Text2SQL/NL2SQL, RAG, Agentic AI Runtime을 구현하고 검증하는 AI/LLM 응용서비스 백엔드 엔지니어**입니다.
+
+모델 연구, fine-tuning, 대규모 LLM serving 또는 전체 Agentic AI 플랫폼 리드 경험으로 과장하지 않습니다. 강점은 기존 시스템과 데이터, LLM, 검증, 운영 기반을 연결하는 데 있습니다.

@@ -1,5 +1,7 @@
 # Security Audit Log
 
+> Evidence status (`2026-07-31`): `partial`. API route는 있으나 service, 앱 진입점, 저장 모델, 테스트가 아직 없어 완료된 프로젝트로 사용하지 않습니다.
+
 ## Overview
 `security-audit-log`는 사용자 행위와 시스템 이벤트를 감사 가능한 형태로 기록하기 위한 예제 프로젝트입니다.
 

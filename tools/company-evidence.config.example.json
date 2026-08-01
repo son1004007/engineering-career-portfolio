@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "include_verification_digests": false,
+  "repositories": [
+    {
+      "path": "C:/path/to/local/company-repository",
+      "alias": "WORK-EXAMPLE-01",
+      "default_ref": "main",
+      "author_patterns": [
+        "^Your Git Author Name$",
+        "^your[.]git[.]email@example[.]com$"
+      ]
+    }
+  ]
+}

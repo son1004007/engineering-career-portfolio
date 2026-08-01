@@ -11,6 +11,13 @@ This file defines the current work queue for the portfolio.
 
 ## Current Tasks
 
+### 0. company GitHub career evidence maintenance
+- at month end, collect authenticated author-attributed commit metadata
+- review implementation, test, integration, and operation status separately
+- update `evidence/company-github/career-claims.csv` and monthly snapshot
+- run the publication scan and evidence tests before push
+- before leaving the employer, create a final departure snapshot
+
 ### 1. ai-rag-api completion
 - add unit tests
 - validate retrieval correctness

@@ -1,0 +1,13 @@
+# AI entrypoints
+
+Primary context: AI_CONTEXT.md
+Evidence rules: AGENTS.md
+Public project status: 03_portfolio/evidence-index.md
+Sanitized company work evidence: evidence/company-github/README.md
+Verified career claims: evidence/company-github/career-claims.csv
+Project narratives: evidence/company-github/projects.md
+Monthly snapshots: evidence/company-github/monthly/
+
+Do not infer private repository names, customers, source code, production scale, or
+deployment status beyond the sanitized claims. Commit authorship is not proof of
+the identity that pushed an event to GitHub.
