@@ -25,9 +25,9 @@
 | `W03` | 첫 Java/Spring 사례 공개 | 인증 통합 게시물, 독립 샘플, 테스트 | 정상·실패·경계 테스트 성공과 공개 검수 | `verified` |
 | `W04` | 추가 업무 사례 정리 | Java/Spring·데이터·AI 사례 초안 | 각 글의 근거·한계·재현 계획 명시 | `verified` |
 | `W05` | OpsMate Local 구현 | 설계, 수직 기능, 테스트 | RBAC·상태·멱등성·fail-closed 테스트 성공 | `verified` |
-| `W06` | GitHub Pages 블로그 구현 | 홈, 탐색, 레이아웃, 배포 workflow | 모바일·링크·접근성·빌드 검수 | `in-progress` |
-| `W07` | 통합 검수 | 테스트·링크·민감정보·렌더링 결과 | 공통 검수표의 필수 항목 모두 통과 | `pending` |
-| `W08` | GitHub 공개 | commit, push, PR, Pages URL | 원격 배포 성공과 공개 URL 응답 확인 | `pending` |
+| `W06` | GitHub Pages 블로그 구현 | 홈, 탐색, 레이아웃, 배포 workflow | 반응형 규칙·링크·접근성·빌드 검수 | `verified` |
+| `W07` | 통합 검수 | 테스트·링크·민감정보·렌더링 결과 | 공통 검수표의 필수 항목과 미검증 한계 기록 | `verified` |
+| `W08` | GitHub 공개 | commit, push, PR, Pages URL | 원격 배포 성공과 공개 URL 응답 확인 | `published` |
 
 ## 의존성
 
@@ -79,9 +79,32 @@ W00 -> W01 -> W02
 - `mvnw.cmd -q clean verify`: 19개 성공, 실패·오류·건너뜀 0개 (`2026-08-03`)
 - 공개 상태: `implemented`, `tested-component`; 실제 오픈웨이트 모델 서버 E2E와 운영 배포는 미검증
 
+### W06
+
+- Jekyll 레이아웃, 홈, 공통 탐색, 상태 배지, 사례·문서 레이아웃과 반응형 CSS 구현
+- GitHub Pages workflow의 Jekyll 검증, build와 deploy 성공: [Actions run 30782896966](https://github.com/son1004007/engineering-career-portfolio/actions/runs/30782896966)
+- 기본 실제 뷰포트 `1280x720`에서 홈과 공개 문서의 CSS 적용, heading, 탐색과 가로 넘침 없음 확인
+- `52rem`, `32rem` 반응형 규칙, 키보드 focus, skip link, reduced-motion 규칙을 정적으로 검토
+- 검수 한계: 앱 내 실제 모바일 뷰포트 전환이 지원되지 않아 물리 모바일 기기의 최종 시각 검수는 별도 UX 점검 항목으로 남김
+
+### W07
+
+- 원격 CI: Spring Security 인증 브리지 24개, OpsMate Local 19개, 저장소 공개 검수 12개 테스트 성공
+- Jekyll PR build, Markdown 상대 링크, Pages pretty URL, 공개 텍스트 credential·로컬 경로 검사 성공
+- 공개 홈과 `WORKS`, evidence index, 전략, 체크리스트, AI context, OpsMate, 인증 사례, 회사 근거 경로를 직접 열어 404 없음 확인
+- 전략의 `track-a-flagship` 앵커와 `llms.txt`의 공개 URL을 확인하고 오래된 `.html` 문서 링크가 없음을 확인
+- 모델 서버가 없는 상태는 성공으로 간주하지 않음. 실제 오픈웨이트 모델 E2E와 운영 부하 검증은 계속 미검증으로 표시
+
+### W08
+
+- 구현·배포 PR [#3](https://github.com/son1004007/engineering-career-portfolio/pull/3), 공개 링크 보정 PR [#4](https://github.com/son1004007/engineering-career-portfolio/pull/4), Pages URL 보정 PR [#5](https://github.com/son1004007/engineering-career-portfolio/pull/5) 병합
+- 공개 URL: [son1004007.github.io/engineering-career-portfolio](https://son1004007.github.io/engineering-career-portfolio/)
+- GitHub Pages `workflow` build 방식과 원격 deploy 성공, 홈·사례·프로젝트·근거 문서 응답 확인
+- 공개 판정일: `2026-08-03`
+
 ## 다음 실행 순서
 
-1. `W06`의 GitHub Pages 빌드와 실화면을 원격 환경에서 확인합니다.
-2. `W07`에서 이미 성공한 프로젝트·저장소 테스트와 공개 안전성 검사에 원격 렌더링 결과를 합쳐 최종 판정합니다.
-3. `W08`에서 검수된 변경만 PR로 병합하고 공개 URL의 홈·사례·프로젝트 링크를 확인합니다.
-4. 공개 후에는 실제 허가된 오픈웨이트 모델 서버 E2E와 다음 Java/Spring 독립 재현 사례를 별도 Work로 진행합니다.
+1. 허가된 오픈웨이트 모델 서버를 OpsMate Local에 연결하고 실제 E2E 성공·실패 결과를 기록합니다.
+2. 동시 요청 single-flight, 요청률 제한과 모델 timeout 경계를 구현하고 검증합니다.
+3. `03_portfolio/case-study-index.md`의 다음 Java/Spring 사례를 독립 재구현하고 검수합니다.
+4. `evidence/company-github/monthly/`를 월말에 갱신하고 공개 링크와 Pages workflow 상태를 정기 확인합니다.

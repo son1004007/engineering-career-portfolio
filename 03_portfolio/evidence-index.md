@@ -18,6 +18,15 @@
 | `self-described` | 프로필·경력 문서의 자기기술. 다른 근거로 확인 필요 |
 | `private-work-code-verified` | 권한 있는 환경에서 회사 비공개 코드와 본인 귀속 커밋을 확인. 공개 문서에는 비식별 claim만 존재 |
 
+## 공개 사이트 검증
+
+- 공개 URL: [GitHub Pages 포트폴리오](https://son1004007.github.io/engineering-career-portfolio/)
+- 검증일: `2026-08-03`
+- 원격 결과: [Pages Actions run 30782896966](https://github.com/son1004007/engineering-career-portfolio/actions/runs/30782896966)의 Jekyll build, Java 2개 프로젝트, 공개 저장소 검사와 deploy 성공
+- 테스트: Spring Security 인증 브리지 24개, OpsMate Local 19개, 저장소 공개 검수 12개 성공
+- 실화면: 홈, Work ledger, 근거 인덱스, 전략과 앵커, 체크리스트, AI context, 대표 프로젝트·사례 경로의 응답과 가로 넘침 없음 확인
+- 한계: 기본 데스크톱 뷰포트 실화면과 반응형 CSS 규칙은 확인했으나 물리 모바일 기기 시각 검수는 별도 항목이며, 실제 오픈웨이트 모델 서버 E2E도 미검증
+
 ## 프로젝트 상태
 
 | 프로젝트 | 코드 | 테스트 | 문서 | 현재 상태 | 확인 사항 |
