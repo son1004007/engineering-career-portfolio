@@ -37,4 +37,4 @@ SSO와 DB 계정 인증을 Spring Security 흐름으로 통합한 사례는 회�
 3. 그 코드의 최근 테스트 성공이 기록됐는가
 4. 설명이 확인된 범위를 넘어가지 않는가
 
-전체 후보와 상태는 [사례 인덱스]({{ '/03_portfolio/case-study-index.html' | relative_url }}), 공개 전 확인 항목은 [검수 체크리스트]({{ '/03_portfolio/review-checklist.html' | relative_url }})에서 관리합니다.
+전체 후보와 상태는 [사례 인덱스]({{ '/03_portfolio/case-study-index/' | relative_url }}), 공개 전 확인 항목은 [검수 체크리스트]({{ '/03_portfolio/review-checklist/' | relative_url }})에서 관리합니다.
