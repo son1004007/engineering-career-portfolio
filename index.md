@@ -12,7 +12,7 @@ permalink: /
       <p class="hero__lead">Java/Spring 엔터프라이즈 백엔드 경험을 중심에 두고, 오픈웨이트 LLM과 AI Agent를 기존 트랜잭션에 통제 가능하게 통합합니다.</p>
       <div class="button-row">
         <a class="button" href="{{ '/blog/' | relative_url }}">실무 사례 보기</a>
-        <a class="button button--secondary" href="{{ '/03_portfolio/evidence-index.html' | relative_url }}">검증 근거 확인</a>
+        <a class="button button--secondary" href="{{ '/03_portfolio/evidence-index/' | relative_url }}">검증 근거 확인</a>
       </div>
     </div>
 
@@ -70,7 +70,7 @@ permalink: /
 
     <div class="button-row">
       <a class="button button--secondary" href="{{ '/blog/' | relative_url }}">사례 기록 전체 보기</a>
-      <a class="text-link" href="{{ '/03_portfolio/case-study-index.html' | relative_url }}">후보와 검수 상태 확인 <span aria-hidden="true">→</span></a>
+      <a class="text-link" href="{{ '/03_portfolio/case-study-index/' | relative_url }}">후보와 검수 상태 확인 <span aria-hidden="true">→</span></a>
     </div>
   </div>
 </section>
@@ -91,7 +91,7 @@ permalink: /
         <h3>AI가 제안하고,<br>업무 시스템이 결정합니다.</h3>
         <p>첫 수직 범위는 구매 요청, 정책 검색, 초안, 사람 승인과 발주 생성입니다. 19개 테스트가 성공한 <code>tested-component</code> 상태이며 실제 로컬 모델 서버 E2E와 운영 배포는 아직 검증하지 않았습니다.</p>
         <div class="button-row">
-          <a class="button" href="{{ '/03_portfolio/portfolio-strategy.html#track-a-flagship' | relative_url }}">확정된 설계 원칙 보기</a>
+          <a class="button" href="{{ '/03_portfolio/portfolio-strategy/#track-a-flagship' | relative_url }}">확정된 설계 원칙 보기</a>
           <a class="text-link" href="{{ '/02_projects/opsmate-local/' | relative_url }}">코드와 검증 결과 <span aria-hidden="true">→</span></a>
         </div>
       </div>
@@ -123,17 +123,17 @@ permalink: /
     <div class="link-grid">
       <article class="link-card">
         <span class="link-card__label">Plan & work</span>
-        <h3><a href="{{ '/WORKS.html' | relative_url }}">단계별 작업 현황</a></h3>
+        <h3><a href="{{ '/WORKS/' | relative_url }}">단계별 작업 현황</a></h3>
         <p>각 산출물의 목표, 선행 조건과 완료 기준을 확인합니다.</p>
       </article>
       <article class="link-card">
         <span class="link-card__label">Review</span>
-        <h3><a href="{{ '/03_portfolio/review-checklist.html' | relative_url }}">공개 전 검수표</a></h3>
+        <h3><a href="{{ '/03_portfolio/review-checklist/' | relative_url }}">공개 전 검수표</a></h3>
         <p>귀속, 비식별화, 코드·설명 정합성과 테스트 결과를 확인합니다.</p>
       </article>
       <article class="link-card">
         <span class="link-card__label">Evidence</span>
-        <h3><a href="{{ '/03_portfolio/evidence-index.html' | relative_url }}">근거·상태 인덱스</a></h3>
+        <h3><a href="{{ '/03_portfolio/evidence-index/' | relative_url }}">근거·상태 인덱스</a></h3>
         <p>무엇이 계획이고 구현이며 최근 검증됐는지 구분해 확인합니다.</p>
       </article>
     </div>

@@ -1,15 +1,15 @@
 # AI entrypoints
 
-Primary context: https://son1004007.github.io/engineering-career-portfolio/AI_CONTEXT.html
-Evidence rules: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/review-checklist.html
-Work plan and current execution state: https://son1004007.github.io/engineering-career-portfolio/WORKS.html
-Approved portfolio strategy: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/portfolio-strategy.html
-Case-study candidates and review state: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/case-study-index.html
-Public project status: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/evidence-index.html
+Primary context: https://son1004007.github.io/engineering-career-portfolio/AI_CONTEXT/
+Evidence rules: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/review-checklist/
+Work plan and current execution state: https://son1004007.github.io/engineering-career-portfolio/WORKS/
+Approved portfolio strategy: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/portfolio-strategy/
+Case-study candidates and review state: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/case-study-index/
+Public project status: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/evidence-index/
 Sanitized company work evidence: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/
 Verified career claims: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/career-claims.csv
-Project narratives: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/projects.html
-Latest monthly snapshot: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/monthly/2026-08.html
+Project narratives: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/projects/
+Latest monthly snapshot: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/monthly/2026-08/
 
 The flagship candidate is OpsMate Local (`implemented`, `tested-component`), with
 real open-weight-model E2E still unverified. Existing-work case studies prove

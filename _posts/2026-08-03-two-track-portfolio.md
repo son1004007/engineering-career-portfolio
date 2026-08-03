@@ -36,4 +36,4 @@ read_time: "4분"
 
 이 구조는 ML 모델 연구자를 지향한다는 뜻이 아닙니다. Java/Spring 백엔드와 플랫폼 역량을 중심으로, 오픈웨이트 LLM을 업무 트랜잭션에 통합할 수 있는 엔지니어가 목표입니다.
 
-현재 상태와 다음 작업은 [포트폴리오 전략]({{ '/03_portfolio/portfolio-strategy.html' | relative_url }})과 [단계별 작업 현황]({{ '/WORKS.html' | relative_url }})에서 확인할 수 있습니다.
+현재 상태와 다음 작업은 [포트폴리오 전략]({{ '/03_portfolio/portfolio-strategy/' | relative_url }})과 [단계별 작업 현황]({{ '/WORKS/' | relative_url }})에서 확인할 수 있습니다.

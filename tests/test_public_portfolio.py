@@ -130,10 +130,29 @@ class PublicPortfolioTest(unittest.TestCase):
             {"pending", "in-progress", "blocked", "verified", "published"},
         )
 
-    def test_jekyll_readme_links_use_directory_urls(self) -> None:
-        for document in (PROJECT_ROOT / "index.md", PROJECT_ROOT / "llms.txt"):
+    def test_jekyll_internal_document_links_use_pretty_urls(self) -> None:
+        documents = [
+            PROJECT_ROOT / "index.md",
+            PROJECT_ROOT / "llms.txt",
+            *sorted((PROJECT_ROOT / "_includes").glob("*.html")),
+            *sorted((PROJECT_ROOT / "_layouts").glob("*.html")),
+            *sorted((PROJECT_ROOT / "_posts").glob("*.md")),
+        ]
+        for document in documents:
+            content = document.read_text(encoding="utf-8")
             with self.subTest(document=document.name):
-                self.assertNotIn("README.html", document.read_text(encoding="utf-8"))
+                self.assertIsNone(
+                    re.search(
+                        r"\{\{\s*'/[^']*\.html(?:#[^']*)?'\s*\|\s*relative_url",
+                        content,
+                    )
+                )
+                self.assertIsNone(
+                    re.search(
+                        r"https://son1004007\.github\.io/engineering-career-portfolio/\S*\.html(?:\s|$)",
+                        content,
+                    )
+                )
 
 
 if __name__ == "__main__":
