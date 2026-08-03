@@ -1,0 +1,71 @@
+name: Verify Portfolio
+
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  site-build:
+    name: Jekyll site build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build with GitHub Pages Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+  public-portfolio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Verify evidence, links, states, and public text
+        run: python -B -m unittest discover -s tests -p "test_*.py" -v
+
+  java-projects:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Spring Security auth bridge
+            project: 02_projects/case-study-samples/spring-security-auth-bridge
+          - name: OpsMate Local
+            project: 02_projects/opsmate-local
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: ${{ matrix.project }}/pom.xml
+
+      - name: Verify with Maven Wrapper
+        run: |
+          chmod +x mvnw
+          ./mvnw -q clean verify

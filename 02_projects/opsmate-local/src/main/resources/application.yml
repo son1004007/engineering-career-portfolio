@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: opsmate-local
+  datasource:
+    url: jdbc:h2:mem:opsmate;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  h2:
+    console:
+      enabled: false
+
+server:
+  error:
+    include-message: never
+
+opsmate:
+  security:
+    requester-password: ${OPSMATE_REQUESTER_PASSWORD:}
+    approver-password: ${OPSMATE_APPROVER_PASSWORD:}
+    buyer-password: ${OPSMATE_BUYER_PASSWORD:}
+    auditor-password: ${OPSMATE_AUDITOR_PASSWORD:}
+  llm:
+    enabled: ${OPSMATE_LLM_ENABLED:false}
+    base-url: ${OPSMATE_LLM_BASE_URL:http://127.0.0.1:11434}
+    allowed-hosts: ${OPSMATE_LLM_ALLOWED_HOSTS:127.0.0.1,localhost}
+    model: ${OPSMATE_LLM_MODEL:}
+    connect-timeout: 2s
+    read-timeout: 30s

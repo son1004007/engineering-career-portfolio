@@ -1,6 +1,6 @@
 # Portfolio Evidence Index
 
-- 최종 점검일: `2026-08-01`
+- 최종 점검일: `2026-08-03`
 - 목적: 프로필 주장, 구현 코드, 테스트, 계획을 구분해 과장 없는 기술 검토를 가능하게 함
 
 ## 상태 정의
@@ -11,6 +11,8 @@
 | `implemented` | 핵심 코드가 저장소에 존재 |
 | `tested-file-present` | 테스트 파일은 있으나 최근 성공 실행이 확인되지 않음 |
 | `tested-component` | 명시된 구성요소의 테스트 산출물은 확인했으나 전체 시스템 검증은 아님 |
+| `source-reviewed` | 권한 있는 비공개 원본에서 본인 귀속과 구현 범위를 확인했으나 공개 재현 검증은 아직 없음 |
+| `sample-verified` | 회사 코드와 독립된 공개 샘플의 최근 테스트 성공을 기록했으나 실제 회사 시스템 검증은 아님 |
 | `partial` | 일부 코드·문서만 있고 실행에 필요한 구성요소가 빠짐 |
 | `planned` | 문서나 작업 목록에만 존재 |
 | `self-described` | 프로필·경력 문서의 자기기술. 다른 근거로 확인 필요 |
@@ -20,6 +22,9 @@
 
 | 프로젝트 | 코드 | 테스트 | 문서 | 현재 상태 | 확인 사항 |
 |---|---:|---:|---:|---|---|
+| [OpsMate Local](../02_projects/opsmate-local/README.md) | Java/Spring 수직 기능 있음 | 19개 성공 | README·ARCHITECTURE·SETUP | `implemented`, `tested-component` | 객체 단위 권한·상태·멱등성·gateway 오류·fail-closed 검증. 실제 모델 E2E와 운영 배포는 미검증 |
+| [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 회사 원본이 아닌 합성 사용자·issuer·audience 바인딩 SSO 샘플. 운영 시스템 검증을 뜻하지 않음 |
+| [Java/Spring 사례 후보](case-study-index.md) | 회사 원본에서 확인 | 공개 샘플 1건만 있음 | 후보 인덱스 있음 | `sample-verified` 1건, `source-reviewed` 4건, 나머지 `candidate` 또는 `hold` | 원본 코드를 공개할 수 없으며 각 독립 재현 코드와 테스트가 생기기 전 `published` 표현 금지 |
 | [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에 `pytest`가 없어 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
 | [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 인증·모니터링·PostgreSQL·Redis 구현도 현재 파일 목록에서 확인되지 않음 |
 | [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | route가 존재하지 않는 `app.service.audit_service`를 import. 앱 진입점, 저장 모델, service, tests 보완 필요 |
@@ -28,7 +33,7 @@
 
 ## 회사 GitHub 실무 근거
 
-원본은 회사 소유 비공개 저장소이며 공개 저장소에는 코드와 내부 식별자를 복사하지 않습니다. 상세 공개 범위와 claim은 [`../evidence/company-github/`](../evidence/company-github/)에서 확인합니다.
+원본은 회사 소유 비공개 저장소이며 공개 저장소에는 코드와 내부 식별자를 복사하지 않습니다. 상세 공개 범위와 claim은 [`../evidence/company-github/README.md`](../evidence/company-github/README.md)에서 확인합니다.
 
 | project ID | 확인된 범위 | 상태 | 제한 |
 |---|---|---|---|
@@ -57,15 +62,17 @@
 
 이 저장소는 다음을 보여주기에 적합합니다.
 
-- 목표하는 엔지니어 정체성과 기술 조합
-- 작은 FastAPI/RAG 구현과 테스트 설계 방식
-- 백엔드 구조, 운영, 보안·감사 관점을 함께 보려는 방향
+- Java/Spring Security 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
+- AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두는 설계와 구성요소 구현
+- 목표하는 엔지니어 정체성과 Java/Python/AI 응용 기술 조합
+- 비공개 업무 근거를 비식별 claim과 공개 재현 상태로 나누는 검수 방식
 - 문서화와 구조화 능력
 
 다음에는 아직 충분하지 않습니다.
 
 - 프로덕션 수준 백엔드·플랫폼 숙련도 증명
 - 대규모 트래픽·분산 시스템·클라우드 네이티브 운영 증명
+- 실제 오픈웨이트 모델 서버를 포함한 OpsMate Local E2E와 GPU 부하 경계 증명
 - 프로젝트별 정량 성과와 본인 기여 범위 증명
 - 모든 README에 적힌 기능의 실제 구현 증명
 

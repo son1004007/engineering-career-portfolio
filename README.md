@@ -4,7 +4,7 @@
 
 이 저장소는 면접관과 채용 담당자가 손기석의 기술 방향, 강점, 프로젝트 성격을 빠르게 이해할 수 있도록 구성합니다.
 
-> **AI 및 기술 검토 진입점:** [`AI_CONTEXT.md`](AI_CONTEXT.md), [`evidence/company-github/README.md`](evidence/company-github/README.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다. 이 저장소는 공개 기술 근거용이며, 개인 연봉, 가족, 현재 회사 문제나 최종 직장 선택의 기준 저장소가 아닙니다.
+> **AI 및 기술 검토 진입점:** [`AI_CONTEXT.md`](AI_CONTEXT.md), [`WORKS.md`](WORKS.md), [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md), [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다. 이 저장소는 공개 기술 근거용이며, 개인 연봉, 가족, 현재 회사 문제나 최종 직장 선택의 기준 저장소가 아닙니다.
 
 ## 핵심 소개
 
@@ -16,17 +16,18 @@
 
 ## 현재 포지셔닝
 
-손기석의 주력 포지셔닝은 **AI/LLM 응용서비스 백엔드 엔지니어**입니다.
+손기석의 주력 포지셔닝은 **Java/Spring 엔터프라이즈 백엔드·플랫폼 엔지니어**입니다.
 
-Java/Spring은 기존 엔터프라이즈 서비스, DB/API와 운영 역량의 기반으로 두고, 최신 전문성은 Python/FastAPI, Text2SQL/NL2SQL, RAG, Agentic AI Runtime의 구현과 검증으로 설명합니다. 순수 모델 연구자가 아니라 AI 기능을 실제 서비스와 데이터 흐름에 연결하는 엔지니어로 포지셔닝합니다.
+Java/Spring, DB/API, 인증, 배포와 운영 경험을 중심에 두고 Python/FastAPI, Text2SQL/NL2SQL, RAG와 Agentic Runtime 경험을 확장 역량으로 설명합니다. 순수 모델 연구자가 아니라 기존 업무시스템과 데이터에 AI 기능을 안전하게 연결하는 백엔드 엔지니어로 포지셔닝합니다.
 
-## 순수 백엔드가 아닌 데이터/AI 플랫폼 백엔드를 우선하는 이유
+## 포트폴리오를 두 트랙으로 구성하는 이유
 
-순수 백엔드가 맞지 않아서 제외하는 것이 아닙니다.
+신규 프로젝트 하나와 기존 업무 사례집은 서로 다른 질문에 답합니다.
 
-순수 백엔드로 포지셔닝하면 Java/Spring 개발 경력, 공공 SI 경험, 운영 반영 경험 중심으로 보일 수 있습니다. 이 경우 서비스 회사 백엔드 5년 이상, 대용량 트래픽, MSA, Kafka, Redis, Kubernetes, 코딩테스트 강점이 있는 후보들과 직접 비교됩니다.
+- 신규 `OpsMate Local`은 AI Agent, 고정 정책 검색 typed tool 오케스트레이션, 사람 승인과 모델 장애 통제를 구현하는 현재 역량을 보여줍니다.
+- 기존 업무 사례 게시물은 Java/Spring, SQL, 인증, 배포와 운영에서 실제로 어떤 문제를 해결했는지 보여줍니다.
 
-반면 데이터 플랫폼 또는 AI 플랫폼 백엔드로 포지셔닝하면 다음 강점을 함께 설명할 수 있습니다.
+두 트랙을 함께 사용하면 다음 강점을 과장 없이 설명할 수 있습니다.
 
 - Java/Spring Boot 백엔드 개발
 - Python/FastAPI 기반 API 개발
@@ -40,15 +41,18 @@ Java/Spring은 기존 엔터프라이즈 서비스, DB/API와 운영 역량의 �
 따라서 현재 방향은 다음처럼 정의합니다.
 
 ```text
-순수 백엔드를 못해서 피하는 것이 아니다.
-순수 백엔드로만 팔면 강점이 줄어든다.
-보안 이해가 있는 데이터/AI 플랫폼 백엔드로 포지셔닝해야 제값을 받을 가능성이 높다.
+기존 업무 사례로 Java/Spring 실무 깊이를 증명한다.
+OpsMate Local로 AI Agent 통합 역량을 증명한다.
+모델 연구자가 아니라 기업 업무 트랜잭션에 AI를 안전하게 연결하는 백엔드 엔지니어로 설명한다.
 ```
 
 ## 목표 직무
 
 1차 목표:
 
+- Java/Spring 엔터프라이즈 백엔드 개발자
+- 사내 업무시스템 및 플랫폼 백엔드 개발자
+- ERP·정산·코어·백오피스 연계 백엔드 개발자
 - AI/LLM 응용서비스 백엔드 엔지니어
 - LLM 서비스 통합 엔지니어
 - AI 플랫폼 및 Runtime 백엔드 엔지니어
@@ -69,36 +73,33 @@ Java/Spring은 기존 엔터프라이즈 서비스, DB/API와 운영 역량의 �
 - IT Audit
 - 감리
 
-## 방향 변경 기준
+## 직무 선택 기준
 
-2026-06 기준으로 PMO, 컨설팅, 감사 우선 전환보다 플랫폼 백엔드 이직을 우선합니다.
-
-핵심 기준은 의존성입니다.
-
-- PMO는 팀원, 고객, 일정, 정치에 대한 의존성이 높습니다.
-- 컨설팅은 인터뷰 대상자와 고객 협조에 대한 의존성이 높습니다.
-- 솔루션 엔지니어는 특정 제품과 어플라이언스에 대한 의존성이 높습니다.
-- 개발은 코드, 구조, 로그, 배포, 운영을 통해 직접 산출물을 만들 수 있습니다.
-
-따라서 현재 목표는 고객 대응과 조율 비중을 줄이고, 기술 산출물 소유 비중이 높은 플랫폼 백엔드 직무로 이동하는 것입니다.
+현재는 설계, 코드, 테스트, 배포와 운영 개선을 직접 소유할 수 있는 백엔드·플랫폼 직무를 우선합니다. 프로젝트 관리와 컨설팅 경험은 요구사항·통제·운영 관점을 보완하는 강점으로 사용하되, 포트폴리오의 중심은 검증 가능한 기술 산출물에 둡니다.
 
 ## 이 저장소를 보는 추천 순서
 
-1. `01_profile/career-summary.md`
-2. `01_profile/core-strengths.md`
-3. `01_profile/career-direction.md`
-4. `03_portfolio/portfolio-overview.md`
-5. `03_portfolio/backend-ai-engineer.md`
-6. `evidence/company-github/projects.md`
-7. `evidence/company-github/career-claims.csv`
-8. `03_portfolio/evidence-index.md`
-9. `02_projects/README.md`
+1. `AI_CONTEXT.md`
+2. `WORKS.md`
+3. `03_portfolio/portfolio-strategy.md`
+4. `03_portfolio/case-study-index.md`
+5. `03_portfolio/review-checklist.md`
+6. `01_profile/career-summary.md`
+7. `01_profile/core-strengths.md`
+8. `01_profile/career-direction.md`
+9. `03_portfolio/portfolio-overview.md`
+10. `evidence/company-github/projects.md`
+11. `evidence/company-github/career-claims.csv`
+12. `03_portfolio/evidence-index.md`
+13. `02_projects/README.md`
 
 ## 폴더 구조
 
 ```text
 engineering-career-portfolio/
 ├─ README.md
+├─ AI_CONTEXT.md
+├─ WORKS.md
 ├─ 01_profile/
 │  ├─ career-summary.md
 │  ├─ core-strengths.md
@@ -107,6 +108,10 @@ engineering-career-portfolio/
 │  └─ README.md
 ├─ 03_portfolio/
 │  ├─ portfolio-overview.md
+│  ├─ portfolio-strategy.md
+│  ├─ case-study-index.md
+│  ├─ review-checklist.md
+│  ├─ case-studies/
 │  ├─ backend-ai-engineer.md
 │  └─ evidence-index.md
 ├─ evidence/company-github/
@@ -139,6 +144,8 @@ engineering-career-portfolio/
 
 예시:
 
+- `opsmate-local/` : 온프레미스 구매 승인·발주 Agent — `implemented`, `tested-component`
+- `case-study-samples/` : 회사 코드와 독립된 사례 재현 샘플 — 인증 브리지 `sample-verified`
 - `ai-rag-api/README.md` : 문서 기반 질의응답 API 프로젝트
 - `text2sql/README.md` : 자연어 질의 SQL 변환 프로젝트 — 계획, 현재 디렉터리 없음
 - `backend-platform-template/README.md` : 운영형 백엔드 템플릿
@@ -153,6 +160,10 @@ engineering-career-portfolio/
 예시:
 
 - `portfolio-overview.md` : 전체 포트폴리오 개요
+- `portfolio-strategy.md` : 대표 프로젝트와 기존 업무 사례집의 역할 분리
+- `case-study-index.md` : 게시물 후보, 원본 검토와 공개 재현 상태
+- `review-checklist.md` : 근거·코드·테스트·공개 안전성 공통 검수표
+- `case-studies/` : 비식별 업무 사례와 독립 재현 코드 연결
 - `backend-ai-engineer.md` : 백엔드 + AI 응용 엔지니어 포지셔닝
 - `security-backend-platform.md` : 보안 + 백엔드 + 플랫폼 특화 포지셔닝 — 계획, 현재 파일 없음
 

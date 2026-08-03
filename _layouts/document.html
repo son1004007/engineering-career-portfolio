@@ -1,0 +1,20 @@
+---
+layout: default
+---
+<article class="document shell shell--narrow">
+  <nav class="breadcrumbs" aria-label="현재 위치">
+    <a href="{{ '/' | relative_url }}">홈</a>
+    <span aria-hidden="true">/</span>
+    <a href="{{ '/03_portfolio/evidence-index.html' | relative_url }}">문서·근거</a>
+  </nav>
+
+  {% if page.status %}
+  <div class="document__status">
+    {% include status-badge.html status=page.status %}
+  </div>
+  {% endif %}
+
+  <div class="prose">
+    {{ content }}
+  </div>
+</article>

@@ -13,6 +13,15 @@
 
 실무형 엔지니어를 지향합니다.
 
+## 포트폴리오 구성
+
+이 포트폴리오는 두 종류의 증거를 함께 사용합니다.
+
+- 신규 대표 프로젝트 `OpsMate Local`: AI Agent를 구매 승인·발주 업무에 안전하게 연결하는 역량
+- 기존 업무 사례 게시물: Java/Spring, SQL, 인증, 배포와 운영에서 실제 문제를 해결한 깊이
+
+상세 결정은 [`portfolio-strategy.md`](portfolio-strategy.md), 후보와 검토 상태는 [`case-study-index.md`](case-study-index.md)에서 확인합니다.
+
 ---
 
 ## 핵심 강점
@@ -55,16 +64,18 @@ RAG, Text2SQL, 문서 기반 QA 등 LLM 기반 기능을 서비스에 접목하�
 ---
 
 ## 이 저장소에서 보면 좋은 문서
-1. `01_profile/career-summary.md`
-2. `01_profile/core-strengths.md`
-3. `01_profile/career-direction.md`
-4. `03_portfolio/backend-ai-engineer.md`
-5. `evidence/company-github/projects.md`
-6. `evidence/company-github/career-claims.csv`
-7. `03_portfolio/evidence-index.md`
-8. `02_projects/README.md`
+1. `03_portfolio/portfolio-strategy.md`
+2. `03_portfolio/case-study-index.md`
+3. `01_profile/career-summary.md`
+4. `01_profile/core-strengths.md`
+5. `01_profile/career-direction.md`
+6. `03_portfolio/backend-ai-engineer.md`
+7. `evidence/company-github/projects.md`
+8. `evidence/company-github/career-claims.csv`
+9. `03_portfolio/evidence-index.md`
+10. `02_projects/README.md`
 
 ---
 
 ## 한 줄 정리
-손기석은 **백엔드 개발을 중심으로 AI 응용을 확장하고, 데이터/플랫폼 역량을 기반으로 쌓으며, 보안 도메인을 차별화 포인트로 가져가는 엔지니어**입니다.
+손기석은 **Java/Spring 엔터프라이즈 백엔드를 중심으로 AI Agent 응용을 확장하고, 데이터·운영·보안 관점을 함께 가져가는 엔지니어**입니다.

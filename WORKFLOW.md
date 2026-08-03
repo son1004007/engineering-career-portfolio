@@ -42,6 +42,29 @@ All three must exist:
 - implementation
 - validation
 
+## Case Study Publication Flow
+
+1. Source review
+   - verify personal attribution and exact implementation scope in the authorized source
+   - keep team outcomes separate from individual work
+
+2. Disclosure review
+   - define what must remain private
+   - never copy company code, SQL, data, paths, infrastructure or identifiers
+
+3. Independent reconstruction
+   - write public requirements and tests first
+   - use a generalized domain and synthetic data
+   - implement only the smallest code needed to demonstrate the decision
+
+4. Verification
+   - test normal, failure and boundary scenarios
+   - record the command, environment and recent result
+
+5. Publication
+   - write the recruiter-facing article after the sample is verified
+   - update `case-study-index.md` and `evidence-index.md` together
+
 ## Company GitHub Evidence Flow
 
 1. Capture

@@ -20,7 +20,7 @@
 - 고객 데이터, 프롬프트, 로그 원문
 - 개인 이메일과 회사 이메일
 
-공개 snapshot은 비식별 project alias와 집계값만 남깁니다. 선택형 verification digest와 source fingerprint는 비공개 검증용이며, 활성화한 결과를 이 공개 저장소에 커밋하지 않습니다. 권한이 있는 AI는 비공개 [`career-fit-analysis`](https://github.com/son1004007/career-fit-analysis), `work-log`, 회사 GitHub 원본을 다시 확인해야 합니다.
+공개 snapshot은 비식별 project alias와 집계값만 남깁니다. 선택형 verification digest와 source fingerprint는 비공개 검증용이며, 활성화한 결과를 이 공개 저장소에 커밋하지 않습니다. 권한 있는 검토자는 필요한 claim을 회사 GitHub 원본, 코드·테스트와 업무 기록에서 다시 확인해야 합니다.
 
 ## 증거 등급
 
@@ -37,7 +37,7 @@
 
 1. [`career-claims.csv`](career-claims.csv)
 2. [`projects.md`](projects.md)
-3. 최신 [`monthly/`](monthly/) snapshot
+3. 최신 월별 snapshot: [`monthly/2026-08.md`](monthly/2026-08.md)
 4. 비식별 로컬 집계 [`snapshots/local-author-metadata-2026-08-01.json`](snapshots/local-author-metadata-2026-08-01.json)
 5. 인증된 계정 집계 [`snapshots/authenticated-account-summary-2026-08-01.json`](snapshots/authenticated-account-summary-2026-08-01.json)
 6. [`../../03_portfolio/evidence-index.md`](../../03_portfolio/evidence-index.md)

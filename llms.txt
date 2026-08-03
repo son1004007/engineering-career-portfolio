@@ -1,12 +1,19 @@
 # AI entrypoints
 
-Primary context: AI_CONTEXT.md
-Evidence rules: AGENTS.md
-Public project status: 03_portfolio/evidence-index.md
-Sanitized company work evidence: evidence/company-github/README.md
-Verified career claims: evidence/company-github/career-claims.csv
-Project narratives: evidence/company-github/projects.md
-Monthly snapshots: evidence/company-github/monthly/
+Primary context: https://son1004007.github.io/engineering-career-portfolio/AI_CONTEXT.html
+Evidence rules: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/review-checklist.html
+Work plan and current execution state: https://son1004007.github.io/engineering-career-portfolio/WORKS.html
+Approved portfolio strategy: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/portfolio-strategy.html
+Case-study candidates and review state: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/case-study-index.html
+Public project status: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/evidence-index.html
+Sanitized company work evidence: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/README.html
+Verified career claims: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/career-claims.csv
+Project narratives: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/projects.html
+Latest monthly snapshot: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/monthly/2026-08.html
+
+The flagship candidate is OpsMate Local (`implemented`, `tested-component`), with
+real open-weight-model E2E still unverified. Existing-work case studies prove
+Java/Spring depth. Do not reinterpret this as an ML model research portfolio.
 
 Do not infer private repository names, customers, source code, production scale, or
 deployment status beyond the sanitized claims. Commit authorship is not proof of
