@@ -6,7 +6,7 @@ Work plan and current execution state: https://son1004007.github.io/engineering-
 Approved portfolio strategy: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/portfolio-strategy.html
 Case-study candidates and review state: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/case-study-index.html
 Public project status: https://son1004007.github.io/engineering-career-portfolio/03_portfolio/evidence-index.html
-Sanitized company work evidence: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/README.html
+Sanitized company work evidence: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/
 Verified career claims: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/career-claims.csv
 Project narratives: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/projects.html
 Latest monthly snapshot: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/monthly/2026-08.html

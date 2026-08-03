@@ -92,7 +92,7 @@ permalink: /
         <p>첫 수직 범위는 구매 요청, 정책 검색, 초안, 사람 승인과 발주 생성입니다. 19개 테스트가 성공한 <code>tested-component</code> 상태이며 실제 로컬 모델 서버 E2E와 운영 배포는 아직 검증하지 않았습니다.</p>
         <div class="button-row">
           <a class="button" href="{{ '/03_portfolio/portfolio-strategy.html#track-a-flagship' | relative_url }}">확정된 설계 원칙 보기</a>
-          <a class="text-link" href="{{ '/02_projects/opsmate-local/README.html' | relative_url }}">코드와 검증 결과 <span aria-hidden="true">→</span></a>
+          <a class="text-link" href="{{ '/02_projects/opsmate-local/' | relative_url }}">코드와 검증 결과 <span aria-hidden="true">→</span></a>
         </div>
       </div>
       <div class="project-panel__flow">
