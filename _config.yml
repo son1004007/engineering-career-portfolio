@@ -1,0 +1,88 @@
+title: "손기석 | Backend & AI Agent Engineer"
+description: "Java/Spring 엔터프라이즈 백엔드 경험을 중심으로 AI Agent를 안전하게 연결하는 엔지니어 포트폴리오"
+url: "https://son1004007.github.io"
+baseurl: "/engineering-career-portfolio"
+repository: "son1004007/engineering-career-portfolio"
+lang: "ko-KR"
+timezone: "Asia/Seoul"
+
+author:
+  name: "손기석"
+  github: "son1004007"
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+permalink: /blog/:year/:month/:day/:title/
+future: false
+
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: "AI_CONTEXT.md"
+    values:
+      layout: "document"
+  - scope:
+      path: "README.md"
+    values:
+      layout: "document"
+  - scope:
+      path: "TASKS.md"
+    values:
+      layout: "document"
+  - scope:
+      path: "WORKFLOW.md"
+    values:
+      layout: "document"
+  - scope:
+      path: "WORKS.md"
+    values:
+      layout: "document"
+  - scope:
+      path: "01_profile"
+      type: "pages"
+    values:
+      layout: "document"
+  - scope:
+      path: "02_projects"
+      type: "pages"
+    values:
+      layout: "document"
+  - scope:
+      path: "03_portfolio"
+      type: "pages"
+    values:
+      layout: "document"
+  - scope:
+      path: "03_portfolio/case-studies"
+      type: "pages"
+    values:
+      layout: "case-study"
+  - scope:
+      path: "evidence"
+      type: "pages"
+    values:
+      layout: "document"
+
+exclude:
+  - .git
+  - .github
+  - .venv
+  - AGENTS.md
+  - Gemfile
+  - Gemfile.lock
+  - tests
+  - tools
+  - "**/__pycache__"
+  - "**/*.pyc"

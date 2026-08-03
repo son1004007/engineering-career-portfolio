@@ -1,0 +1,10 @@
+<article class="case-card">
+  <div class="case-card__topline">
+    <span class="case-card__id">{{ include.id }}</span>
+    {% include status-badge.html status=include.status %}
+  </div>
+  <h3><a href="{{ include.href | relative_url }}">{{ include.title }}</a></h3>
+  <p>{{ include.description }}</p>
+  {% if include.focus %}<p class="case-card__focus"><strong>핵심:</strong> {{ include.focus }}</p>{% endif %}
+  <a class="text-link" href="{{ include.href | relative_url }}" aria-label="{{ include.title }} 자세히 보기">근거와 현재 범위 보기 <span aria-hidden="true">→</span></a>
+</article>

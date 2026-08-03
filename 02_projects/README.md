@@ -36,23 +36,26 @@
 
 ---
 
-## 우선 만들 프로젝트
-### 1. ai-rag-api
-- 문서 기반 질의응답 또는 RAG API
-- FastAPI 기반 구조
-- LLM 응용서비스 포트폴리오 핵심
+## 대표 프로젝트와 공개 샘플
+### 1. opsmate-local
+- 구매 요청, 고정 정책 검색, 승인과 발주 생성의 수직 흐름
+- Java/Spring 기반 업무 트랜잭션과 로컬 오픈웨이트 LLM 통합
+- 모델 장애 시 쓰기 경로를 차단하는 온프레미스 Agent 대표 프로젝트
+- 현재 `implemented`, `tested-component`: 19개 테스트 성공
+- 실제 오픈웨이트 모델 서버 E2E와 운영 배포는 미검증
+- [코드와 실행 절차](opsmate-local/README.md)
 
-### 2. text2sql
-- 자연어 질의 → SQL 생성 및 응답 흐름
-- 정형데이터 기반 AI 응용 예제
+### 2. case-study-samples
+- 기존 회사 코드를 복사하지 않은 독립 재현 샘플
+- Spring Security 인증, MyBatis·SQL 정합성/성능, WAR 배포 이식성 순으로 검토
+- 합성 데이터와 테스트 필수
+- Spring Security 인증 브리지: `sample-verified`, 24개 테스트 성공
+- [인증 브리지 코드와 실행 절차](case-study-samples/spring-security-auth-bridge/README.md)
 
-### 3. backend-platform-template
-- 운영형 백엔드 템플릿
-- 환경변수, 로그, 예외처리, Docker 구조 포함
-
-### 4. security-audit-log
-- 감사로그/권한통제/보안 이벤트 처리 예제
-- 보안 차별화 포인트용 프로젝트
+### 3. 기존 지원 프로젝트
+- `ai-rag-api`: 기존 RAG 구현 샘플, 대표 프로젝트 아님
+- `backend-platform-template`: 현재 `partial`
+- `security-audit-log`: 현재 `partial`
 
 ---
 
