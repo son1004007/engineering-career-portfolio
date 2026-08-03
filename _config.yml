@@ -1,5 +1,5 @@
-title: "손기석 | Backend & AI Agent Engineer"
-description: "Java/Spring 엔터프라이즈 백엔드 경험을 중심으로 AI Agent를 안전하게 연결하는 엔지니어 포트폴리오"
+title: "손기석 | Java/Spring Backend Engineer"
+description: "Java/Spring 업무 시스템 개발 경험과 AI 기능 연동 프로젝트를 소개하는 엔지니어 포트폴리오"
 url: "https://son1004007.github.io"
 baseurl: "/engineering-career-portfolio"
 repository: "son1004007/engineering-career-portfolio"
@@ -33,27 +33,33 @@ defaults:
       path: "AI_CONTEXT.md"
     values:
       layout: "document"
+      robots: "noindex,follow"
   - scope:
       path: "README.md"
     values:
       layout: "document"
+      robots: "noindex,follow"
   - scope:
       path: "TASKS.md"
     values:
       layout: "document"
+      robots: "noindex,follow"
   - scope:
       path: "WORKFLOW.md"
     values:
       layout: "document"
+      robots: "noindex,follow"
   - scope:
       path: "WORKS.md"
     values:
       layout: "document"
+      robots: "noindex,follow"
   - scope:
       path: "01_profile"
       type: "pages"
     values:
       layout: "document"
+      robots: "noindex,follow"
   - scope:
       path: "02_projects"
       type: "pages"
@@ -64,16 +70,19 @@ defaults:
       type: "pages"
     values:
       layout: "document"
+      robots: "noindex,follow"
   - scope:
       path: "03_portfolio/case-studies"
       type: "pages"
     values:
       layout: "case-study"
+      robots: "index,follow"
   - scope:
       path: "evidence"
       type: "pages"
     values:
       layout: "document"
+      robots: "noindex,follow"
 
 exclude:
   - .git

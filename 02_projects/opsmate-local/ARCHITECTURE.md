@@ -5,7 +5,7 @@
 OpsMate Local은 모델의 유연한 추론과 업무시스템의 결정적 통제를 분리합니다.
 
 1. 모델 출력은 제안이며 트랜잭션 명령이 아니다.
-2. 모델은 DB, 저장소, 네트워크 도구를 직접 받지 않는다.
+2. 모델은 정책 조회 포트, DB, 저장소 또는 네트워크 도구의 실행 권한을 받지 않는다.
 3. 모든 쓰기는 인증된 사용자, 고정 API, 도메인 상태 전이와 트랜잭션을 통과한다.
 4. 모델 장애·잘못된 JSON·근거 불일치에서는 아무 쓰기도 하지 않는다.
 5. 발주는 애플리케이션 검사와 DB 고유 제약으로 요청당 최대 한 건이 되도록 설계한다.
@@ -19,29 +19,29 @@ flowchart LR
     SEC --> APP["Application Services"]
     APP --> DOMAIN["Domain State Machine"]
     APP --> DB[("H2 / JPA")]
-    APP --> AGENT["Draft Agent"]
-    AGENT --> TOOL["policy.search typed tool"]
-    TOOL --> CATALOG["고정 합성 정책 카탈로그"]
-    AGENT --> GW["LocalOpenWeightLlmGateway"]
+    APP --> ORCH["PurchaseDraftAgent / server orchestrator"]
+    ORCH --> POLICY["Server-side policy query port"]
+    POLICY --> CATALOG["고정 합성 정책 카탈로그"]
+    ORCH --> GW["LocalOpenWeightLlmGateway"]
     GW -->|"고정 host + /api/chat"| OLLAMA["Open-weight model server"]
     DB --> AUDIT["Application-managed audit events"]
 
-    OLLAMA -. "구조화된 제안만 반환" .-> AGENT
+    OLLAMA -. "구조화된 제안만 반환" .-> ORCH
 ```
 
-LLM이 접하는 입력은 사용자의 자연어, 서버가 검색한 정책 근거와 출력 스키마뿐입니다. JPA repository, `RestClient`, 승인 서비스와 발주 서비스는 tool 목록에 포함되지 않습니다.
+`PurchaseDraftAgent`는 서버에서 `PolicyEvidenceTool`을 먼저 호출하고, 사용자의 자연어와 조회된 정책 근거, 출력 스키마만 모델에 전달합니다. 모델은 정책 조회 포트를 선택하거나 호출하지 않으며 JPA repository, `RestClient`, 승인 서비스와 발주 서비스에도 접근할 수 없습니다.
 
-## 고정 typed tool
+## 서버 주도 정책 조회 포트
 
-Agent가 사용할 수 있는 도구는 `PolicyEvidenceTool.search(PolicySearchQuery)` 하나입니다.
+`PolicyEvidenceTool.search(PolicySearchQuery)`는 모델 도구가 아니라 `PurchaseDraftAgent`가 서버 코드에서 호출하는 타입 고정 포트입니다.
 
-- 도구 이름: `policy.search`
+- 포트 식별자: `policy.search`
 - 입력: 자연어 질의
 - 출력: `PolicyEvidence` 목록
 - 데이터 원천: 코드에 포함된 합성 정책 카탈로그
-- 금지: URL, SQL, 파일 경로 또는 클래스명을 입력으로 받는 범용 도구
+- URL, SQL, 파일 경로 또는 클래스명을 실행 인자로 받는 별도 API가 없음
 
-정책을 찾지 못하면 모델을 호출하지 않고 실패합니다. 모델이 반환한 `policyIds`는 실제 검색 결과의 부분집합인지 다시 검증합니다.
+요청 문자열은 검색용 텍스트로만 취급하며 URL을 호출하거나 SQL·파일 경로를 실행하지 않습니다. 이 구조는 LLM tool-calling이 아닙니다. 서버가 정책을 찾지 못하면 모델을 호출하지 않고 실패합니다. 모델이 반환한 `policyIds`는 실제 조회 결과의 부분집합인지 서버에서 다시 검증합니다.
 
 ## 로컬 모델 gateway
 
@@ -153,7 +153,7 @@ Agent가 사용할 수 있는 도구는 `PolicyEvidenceTool.search(PolicySearchQ
 
 | 위협 | 통제 |
 |---|---|
-| prompt injection으로 DB 또는 URL 호출 유도 | 모델에 범용 DB/HTTP tool을 제공하지 않음 |
+| prompt injection으로 DB 또는 URL 호출 유도 | 모델에 도구 실행 권한을 주지 않고 서버가 조회한 정책 근거만 전달 |
 | 모델이 승인했다고 주장 | 승인 상태는 사람의 인증된 명령만 변경 |
 | 잘못된 JSON이나 정책 ID 조작 | 구조화 역직렬화와 서버 측 allowlist 검증 |
 | 모델 서버 장애 | 저장 전 실패, `503`, fallback 없음 |

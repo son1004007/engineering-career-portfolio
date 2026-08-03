@@ -5,7 +5,11 @@ layout: default
   <nav class="breadcrumbs" aria-label="현재 위치">
     <a href="{{ '/' | relative_url }}">홈</a>
     <span aria-hidden="true">/</span>
-    <a href="{{ '/03_portfolio/evidence-index/' | relative_url }}">문서·근거</a>
+    {% if page.path contains '02_projects/' %}
+    <a href="{{ '/#flagship' | relative_url }}">프로젝트</a>
+    {% else %}
+    <a href="{{ '/03_portfolio/evidence-index/' | relative_url }}">저장소 문서</a>
+    {% endif %}
   </nav>
 
   {% if page.status %}
