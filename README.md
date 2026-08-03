@@ -4,6 +4,8 @@
 
 이 저장소는 면접관과 채용 담당자가 손기석의 기술 방향, 강점, 프로젝트 성격을 빠르게 이해할 수 있도록 구성합니다.
 
+**공개 포트폴리오:** [GitHub Pages에서 보기](https://son1004007.github.io/engineering-career-portfolio/)
+
 > **AI 및 기술 검토 진입점:** [`AI_CONTEXT.md`](AI_CONTEXT.md), [`WORKS.md`](WORKS.md), [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md), [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다. 이 저장소는 공개 기술 근거용이며, 개인 연봉, 가족, 현재 회사 문제나 최종 직장 선택의 기준 저장소가 아닙니다.
 
 ## 핵심 소개
