@@ -15,7 +15,7 @@
 ## Stage 3. OpsMate Local design
 - status: `verified`
 - design the purchase approval and ordering vertical slice
-- define fixed policy search, typed tools, RBAC, audit and fail-closed behavior
+- define a server-controlled policy query port, pass only retrieved evidence to the model, and keep RBAC, audit and fail-closed behavior outside the model
 
 ## Stage 4. OpsMate Local implementation
 - status: `tested-component` — 19 tests; real model E2E not yet verified

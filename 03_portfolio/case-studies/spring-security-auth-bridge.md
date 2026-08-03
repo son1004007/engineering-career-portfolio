@@ -1,17 +1,13 @@
 ---
-title: 서로 다른 인증 경로를 하나의 Spring Security 권한 모델로 수렴시키기
+title: DB 로그인과 레거시 SSO를 하나의 Spring Security 권한 체계로 통합한 과정
 description: DB 로그인과 가상 SSO를 로컬 RBAC·세션·CSRF 정책으로 통합한 독립 재현 사례
 permalink: /cases/spring-security-auth-bridge/
 status: sample-verified
 ---
 
-# 서로 다른 인증 경로를 하나의 Spring Security 권한 모델로 수렴시키기
+# DB 로그인과 레거시 SSO를 하나의 Spring Security 권한 체계로 통합한 과정
 
-- 사례 ID: `CS-JAVA-01`
-- 공개 샘플: [`spring-security-auth-bridge`](../../02_projects/case-study-samples/spring-security-auth-bridge/README.md)
-- 원본 근거 상태: `source-reviewed`, `private-work-code-verified`, `E2`
-- 공개 샘플 상태: `sample-verified`
-- 공개 범위: 회사 코드와 무관한 합성 사용자·일반화된 SSO protocol·독립 테스트만 포함
+공개 샘플과 실행 방법은 [`spring-security-auth-bridge`](../../02_projects/case-study-samples/spring-security-auth-bridge/README.md)에서 확인할 수 있습니다.
 
 ## 문제
 
@@ -29,20 +25,12 @@ status: sample-verified
 - 외부 assertion이 애플리케이션 관리자 역할을 직접 부여하면 안 됨
 - 기존 브라우저 기반 화면 때문에 서버 세션을 유지해야 함
 - 로그인·로그아웃과 상태 변경 요청의 CSRF 실패를 구분해야 함
-- 회사 소스, 사용자 구조, 내부 URL, 설정, 실제 역할명과 운영 데이터는 공개할 수 없음
 
-## 개인 역할의 경계
+## 담당한 부분
 
-권한 있는 환경에서 인증 통합 관련 비공개 코드와 본인 귀속을 확인했습니다. 공개 가능한 주장은 Java/Spring Security 인증 흐름, DB 사용자 조회, 역할 기반 접근과 배포·운영에 필요한 설정을 다룬 경험이 있다는 범위입니다.
+비공개 업무 코드에서 본인이 담당한 Java/Spring Security 인증 흐름, DB 사용자 조회, 역할 기반 접근 제어와 배포·운영 설정을 확인했습니다. 공개 샘플에서는 두 인증 경로를 하나의 로컬 사용자·권한 모델로 수렴시키고 세션과 CSRF 수명주기를 함께 검증하도록 독립 구현했습니다.
 
-다음은 이 게시물에서 개인 성과로 주장하지 않습니다.
-
-- 조직 전체 인증 아키텍처의 단독 설계
-- SSO 제공자 또는 전사 계정 체계의 구축
-- 팀원이 구현한 화면과 운영 업무
-- 공개 검증되지 않은 사용량, 장애 감소율 또는 성능 수치
-
-아래 코드는 해당 경험의 원본이나 변형본이 아니라, 공개 가능한 요구사항부터 다시 설계한 독립 샘플입니다.
+조직 전체 인증 아키텍처나 SSO 제공자 구축, 공개 검증되지 않은 운영 성과는 이 사례의 범위에 포함하지 않았습니다.
 
 ## 검토한 대안
 
@@ -80,7 +68,7 @@ signed SSO assertion -> SSO verifier -----+
 
 세부 구성과 교체 가능한 경계는 샘플의 [`ARCHITECTURE.md`](../../02_projects/case-study-samples/spring-security-auth-bridge/ARCHITECTURE.md)에 정리했습니다.
 
-## 구현에서 확인할 코드
+## 핵심 구현
 
 - DB 인증: `AuthenticationManager`와 `DaoAuthenticationProvider`
 - 사용자 경계: `VirtualUserRepository`와 in-memory adapter
@@ -92,7 +80,7 @@ signed SSO assertion -> SSO verifier -----+
 
 코드는 합성 계정 네 개와 합성 API만 사용합니다. 실제 업무 도메인, DB schema와 사내 역할명은 포함하지 않습니다.
 
-## 검증
+## 테스트
 
 테스트는 정상, 실패와 경계 조건을 분리합니다.
 
@@ -105,33 +93,23 @@ signed SSO assertion -> SSO verifier -----+
 
 `2026-08-03`에 Java 21, Spring Boot 3.5.16과 Maven Wrapper 3.9.9로 `24`개 테스트를 실행해 실패·오류·건너뜀 `0`을 확인했습니다. 실행 명령은 `.\mvnw.cmd -q clean verify`이며 환경은 샘플의 [`VERIFICATION.md`](../../02_projects/case-study-samples/spring-security-auth-bridge/VERIFICATION.md)에 기록했습니다.
 
-## 결과와 해석
+## 확인한 결과
 
-이 독립 샘플이 증명하려는 것은 단순한 로그인 endpoint 구현이 아닙니다.
+이 독립 샘플에서는 단순한 로그인 endpoint를 넘어 다음 설계와 동작을 확인할 수 있습니다.
 
 - 서로 다른 identity proof를 하나의 사용자·권한 모델로 수렴시키는 경계 설계
 - 인증 실패, 인가 실패와 CSRF 실패를 구분한 API 계약
 - 세션 고정, replay와 외부 역할 주입을 테스트 가능한 요구사항으로 바꾸는 방식
 - 외부 인증 adapter가 실패해도 약한 기본값으로 우회하지 않는 정책
 
-실제 회사 시스템의 운영 효과와 수치는 비공개 근거만으로 공개 검증할 수 없으므로 결과에 포함하지 않았습니다.
-
 ## 한계와 다음 단계
 
-- HMAC assertion은 교육용 최소 protocol입니다. relying party별 고유 secret을 전제로 하며, 운영에서는 검증된 OIDC/SAML 라이브러리를 사용해야 합니다.
-- active key 하나만 지원하므로 key 교체 중 이전·신규 key 중첩 검증과 명시적 폐기 기한은 구현하지 않았습니다.
-- in-memory 사용자와 nonce 저장소는 단일 프로세스만 지원합니다.
-- 로그인 rate limit과 계정 lockout은 구현하지 않았습니다.
-- 인증 성공·실패, 권한 거부와 로그아웃 감사 이벤트는 구현하지 않았습니다.
-- 실제 전환에서는 계정 연결 해제, IdP 장애, 세션 clustering, 구조화 감사 이벤트와 관리자 운영 절차가 추가로 필요합니다.
-- 이 샘플은 성능이나 대규모 동시 접속을 검증하지 않았습니다.
+- **인증 연동:** HMAC assertion은 교육용 최소 protocol이며 active key 하나만 지원합니다. 운영 환경에서는 검증된 OIDC/SAML 라이브러리와 key 교체 절차가 필요합니다.
+- **운영 구조:** 사용자와 nonce 저장소가 in-memory 방식이라 단일 프로세스만 지원합니다. rate limit, 계정 잠금, 구조화된 감사 이벤트와 세션 clustering도 구현 범위에 포함하지 않았습니다.
+- **검증 범위:** 계정 연결 해제와 IdP 장애 복구, 성능, 대규모 동시 접속과 실제 운영 전환은 검증하지 않았습니다.
 
 다음 확장 우선순위는 OIDC adapter 교체, Redis 기반 replay 방지와 Testcontainers 기반 사용자 저장소 검증입니다.
 
-## 공개 안전성 검토
+## 현재 공개 범위
 
-- 회사명, 고객명, 비공개 저장소명과 내부 경로: 포함하지 않음
-- 회사 소스, diff, SQL, 설정과 데이터: 복사하지 않음
-- 사용자, 역할, subject와 API 응답: 모두 합성 값
-- 운영 성과와 팀 결과: 개인 결과로 주장하지 않음
-- 샘플 한계와 검증 상태: 명시함
+회사명, 고객명, 내부 경로와 원본 코드·설정·데이터는 포함하지 않았습니다. 공개 코드는 합성 사용자와 일반화한 인증 요구사항으로 별도 구현했으며, 24개 테스트 결과는 이 독립 샘플의 동작만 확인합니다. 실제 회사 시스템의 규모와 운영 성과를 검증한 결과로 해석하지 않습니다.

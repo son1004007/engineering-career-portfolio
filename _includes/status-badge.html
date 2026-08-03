@@ -1,16 +1,16 @@
 {% assign badge_status = include.status | default: page.status %}
 {% case badge_status %}
   {% when 'planned' %}
-    {% assign badge_label = '계획' %}
+    {% assign badge_label = '준비 중' %}
     {% assign badge_symbol = '○' %}
   {% when 'source-reviewed' %}
-    {% assign badge_label = '원본 검토 완료' %}
+    {% assign badge_label = '실무 경험 정리' %}
     {% assign badge_symbol = '◇' %}
   {% when 'sample-verified' %}
-    {% assign badge_label = '공개 샘플 검증' %}
+    {% assign badge_label = '독립 구현·테스트 완료' %}
     {% assign badge_symbol = '✓' %}
   {% when 'tested-component' %}
-    {% assign badge_label = '구성요소 테스트 완료' %}
+    {% assign badge_label = '핵심 흐름 테스트 완료' %}
     {% assign badge_symbol = '△' %}
   {% else %}
     {% assign badge_label = badge_status %}
@@ -18,5 +18,5 @@
 {% endcase %}
 <span class="status-badge status-badge--{{ badge_status | slugify }}">
   <span class="status-badge__symbol" aria-hidden="true">{{ badge_symbol }}</span>
-  <span><code>{{ badge_status }}</code> · {{ badge_label }}</span>
+  <span>{{ badge_label }}</span>
 </span>

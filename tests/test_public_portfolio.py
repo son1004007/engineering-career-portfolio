@@ -50,7 +50,83 @@ def public_text_files() -> list[Path]:
     ]
 
 
+def jekyll_page_defaults() -> dict[tuple[str, str | None], dict[str, str]]:
+    content = (PROJECT_ROOT / "_config.yml").read_text(encoding="utf-8")
+    defaults: dict[tuple[str, str | None], dict[str, str]] = {}
+    pattern = re.compile(
+        r'^  - scope:\n'
+        r'      path: "([^"]*)"\n'
+        r'(?:      type: "([^"]+)"\n)?'
+        r'    values:\n'
+        r'((?:      [a-z_]+: [^\n]+\n?)+)',
+        re.MULTILINE,
+    )
+
+    for path, page_type, raw_values in pattern.findall(content):
+        values = {
+            key: value.strip().strip('"')
+            for key, value in re.findall(
+                r'^      ([a-z_]+): (.+)$', raw_values, re.MULTILINE
+            )
+        }
+        defaults[(path, page_type or None)] = values
+
+    return defaults
+
+
 class PublicPortfolioTest(unittest.TestCase):
+    def test_recruiter_pages_hide_internal_management_labels(self) -> None:
+        home = (PROJECT_ROOT / "index.md").read_text(encoding="utf-8")
+        blog = (PROJECT_ROOT / "blog.md").read_text(encoding="utf-8")
+        badge = (PROJECT_ROOT / "_includes" / "status-badge.html").read_text(
+            encoding="utf-8"
+        )
+        case_card = (PROJECT_ROOT / "_includes" / "case-card.html").read_text(
+            encoding="utf-8"
+        )
+
+        for label in [
+            "Current positioning",
+            "Evidence map",
+            "주장을 검증하는 경로",
+            "근거와 현재 범위 보기",
+        ]:
+            with self.subTest(label=label):
+                self.assertNotIn(label, home + blog)
+
+        self.assertNotIn("<code>{{ badge_status }}</code>", badge)
+        self.assertNotIn("case-card__id", case_card)
+        self.assertNotIn("status-legend", blog)
+
+    def test_internal_documents_are_noindex_without_hiding_public_pages(self) -> None:
+        defaults = jekyll_page_defaults()
+
+        for path, page_type in [
+            ("AI_CONTEXT.md", None),
+            ("README.md", None),
+            ("TASKS.md", None),
+            ("WORKFLOW.md", None),
+            ("WORKS.md", None),
+            ("01_profile", "pages"),
+            ("03_portfolio", "pages"),
+            ("evidence", "pages"),
+        ]:
+            with self.subTest(path=path):
+                self.assertEqual(
+                    defaults[(path, page_type)].get("robots"), "noindex,follow"
+                )
+
+        self.assertEqual(
+            defaults[("03_portfolio/case-studies", "pages")].get("robots"),
+            "index,follow",
+        )
+        for scope in [("", "pages"), ("", "posts"), ("02_projects", "pages")]:
+            with self.subTest(public_scope=scope):
+                self.assertEqual(
+                    defaults[scope].get("robots", "index,follow"),
+                    "index,follow",
+                )
+
     def test_all_relative_markdown_links_resolve(self) -> None:
         pattern = re.compile(r"\[[^]]*\]\(([^)]+)\)")
 

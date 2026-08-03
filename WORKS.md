@@ -75,7 +75,7 @@ W00 -> W01 -> W02
 ### W05
 
 - Spring Boot `3.5.16`, Java `21`, Maven Wrapper `3.9.11`
-- 구매 초안·제출·승인·반려·발주·감사 수직 기능과 고정 `policy.search` typed tool 구현
+- 구매 초안·제출·승인·반려·발주·감사 수직 기능과 서버 주도 `policy.search` 조회 포트 구현; 조회 결과만 모델에 전달하고 모델에는 도구 실행 권한을 부여하지 않음
 - `mvnw.cmd -q clean verify`: 19개 성공, 실패·오류·건너뜀 0개 (`2026-08-03`)
 - 공개 상태: `implemented`, `tested-component`; 실제 오픈웨이트 모델 서버 E2E와 운영 배포는 미검증
 

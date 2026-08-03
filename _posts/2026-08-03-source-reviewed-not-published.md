@@ -3,6 +3,7 @@ title: "source-reviewed는 published가 아니다"
 excerpt: "회사 원본에서 내 구현 범위를 확인한 것과 공개 샘플이 검증된 것은 다릅니다. 사례 게시물의 증거 단계를 분리한 이유를 설명합니다."
 status: source-reviewed
 read_time: "3분"
+published: false
 ---
 
 실무 포트폴리오에서는 무엇을 만들었다는 설명만큼, 어디까지 확인됐는지를 보여주는 일이 중요합니다. 이 저장소는 사례의 상태를 다음과 같이 분리합니다.
