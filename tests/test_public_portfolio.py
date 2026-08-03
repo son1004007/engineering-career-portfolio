@@ -130,6 +130,11 @@ class PublicPortfolioTest(unittest.TestCase):
             {"pending", "in-progress", "blocked", "verified", "published"},
         )
 
+    def test_jekyll_readme_links_use_directory_urls(self) -> None:
+        for document in (PROJECT_ROOT / "index.md", PROJECT_ROOT / "llms.txt"):
+            with self.subTest(document=document.name):
+                self.assertNotIn("README.html", document.read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()
