@@ -10,8 +10,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class PurchaseRequestReadPolicy {
 
-    public void requireReadable(PurchaseRequest request, Authentication authentication) {
-        if (!canRead(request, authentication)) {
+    /**
+     * workspace 격리를 역할 정책보다 먼저 적용한 뒤 객체 단위 읽기 권한을 확인한다.
+     *
+     * <p>비감사 역할은 존재하지 않는 UUID와 읽을 수 없는 UUID를 모두 같은 거부로
+     * 처리해 객체 존재 여부를 이용한 열거를 어렵게 한다.
+     */
+    public void requireReadable(PurchaseRequest request, ActorContext context) {
+        if (!request.getWorkspaceId().equals(context.workspaceId())
+                || !canRead(request, context.authentication())) {
             throw forbidden();
         }
     }

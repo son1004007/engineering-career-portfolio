@@ -22,11 +22,15 @@ The active execution ledger, dependencies and verification evidence are maintain
 - run the publication scan and evidence tests before push
 - before leaving the employer, create a final departure snapshot
 
-### 1. OpsMate Local model E2E
-- use only an authorized local or company open-weight model endpoint; no paid API fallback
-- verify real structured-output success, timeout, malformed output and model-unavailable behavior
-- add rate limiting or single-flight control before GPU load testing
-- record the model, server boundary, command and recent result without publishing access details
+### 1. OpsMate Local final verification and controlled deployment
+- finish the latest `clean verify`, container/config checks and documentation consistency review
+- use only an authorized private open-weight model endpoint; no paid API fallback
+- verify real structured-output success, p95, timeout, malformed output and model-unavailable behavior
+- verify the implemented single-flight, workspace/global quota, queue/follower and concurrency limits against the real model boundary
+- apply and retain evidence for app-host egress allowlisting and public edge/WAF rate limiting
+- verify the public URL, external smoke and DB/model non-exposure
+- rehearse app/model normal close, environment-independent emergency close and same-image-digest reopen
+- leave both hosts closed after validation and record only generalized results without access details
 
 ### 2. next Java/Spring case study publication
 - select the next `source-reviewed` case from `03_portfolio/case-study-index.md`

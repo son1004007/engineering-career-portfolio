@@ -1,6 +1,6 @@
 # Portfolio Work Ledger
 
-- 기준일: `2026-08-03`
+- 기준일: `2026-08-04`
 - 목적: 포트폴리오 작성부터 GitHub Pages 공개까지 작업, 의존성과 검증 근거를 한곳에서 추적
 - 원칙: 문서·코드·테스트·공개 안전성 검토가 함께 끝나기 전에는 완료로 표시하지 않음
 - 공통 검수표: [`03_portfolio/review-checklist.md`](03_portfolio/review-checklist.md)
@@ -28,6 +28,7 @@
 | `W06` | GitHub Pages 블로그 구현 | 홈, 탐색, 레이아웃, 배포 workflow | 반응형 규칙·링크·접근성·빌드 검수 | `verified` |
 | `W07` | 통합 검수 | 테스트·링크·민감정보·렌더링 결과 | 공통 검수표의 필수 항목과 미검증 한계 기록 | `verified` |
 | `W08` | GitHub 공개 | commit, push, PR, Pages URL | 원격 배포 성공과 공개 URL 응답 확인 | `published` |
+| `W09` | OpsMate 공개 데모와 재현 가능한 운영 | 공개 session UI, model/DB 보호, Docker/Caddy, open·close·reopen, 코드 설명 기준 | 최신 clean verify, 실제 모델·외부 smoke·외부 정책과 양 호스트 rehearsal | `in-progress` |
 
 ## 의존성
 
@@ -37,6 +38,7 @@ W00 -> W01 -> W02
              |-> W04 --|-> W07 -> W08
              |-> W05 --|
              `-> W06 --'
+W08 -> W09
 ```
 
 ## Work별 검증 기록
@@ -102,9 +104,24 @@ W00 -> W01 -> W02
 - GitHub Pages `workflow` build 방식과 원격 deploy 성공, 홈·사례·프로젝트·근거 문서 응답 확인
 - 공개 판정일: `2026-08-03`
 
+### W09
+
+- 구현일: `2026-08-04`
+- 공개 웹: Thymeleaf/HttpSession, 실제 CSRF cookie, 서버 `DemoPrincipal`, `/api/**` 거부와 방문자별 workspace 격리·TTL·정리
+- 자원 보호: 동일 요청 single-flight, workspace·전체 quota, 제한 queue·follower와 전체 모델 동시 실행 기본값 `1`
+- 데이터 경계: PostgreSQL/Flyway, DB admin·one-shot migration·runtime 역할 분리, runtime DDL·Flyway history 접근 거부 검증 경로
+- 배포 경계: full-digest app/base/service image, `restart: no`, 분리 network, read-only·최소 권한 container, bounded log와 Caddy access log 미활성
+- 운영 자산: 앱·모델 호스트별 open, normal close, 환경 파일 독립 emergency close, closed verifier와 same-digest reopen 계약
+- 설명 기준: [`03_portfolio/code-explanation-standard.md`](03_portfolio/code-explanation-standard.md)와 핵심 업무 경계의 한국어 Javadoc·주석
+- `mvnw.cmd -q clean verify`: 54개 성공, 실패·오류·건너뜀 0개 (`2026-08-04`)
+- 미검증 gate: 승인된 실제 모델 E2E, public URL·외부 smoke, host egress allowlist, edge/WAF rate limit, 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal
+- 공개 상태: `implemented`, `tested-component`; 위 gate가 끝날 때까지 전체 서비스 `verified` 또는 운영 완료로 표시하지 않음
+
 ## 다음 실행 순서
 
-1. 허가된 오픈웨이트 모델 서버를 OpsMate Local에 연결하고 실제 E2E 성공·실패 결과를 기록합니다.
-2. 동시 요청 single-flight, 요청률 제한과 모델 timeout 경계를 구현하고 검증합니다.
-3. `03_portfolio/case-study-index.md`의 다음 Java/Spring 사례를 독립 재구현하고 검수합니다.
-4. `evidence/company-github/monthly/`를 월말에 갱신하고 공개 링크와 Pages workflow 상태를 정기 확인합니다.
+1. OpsMate Local 최신 변경분의 전체 `clean verify`, container/config와 문서 검수를 완료합니다.
+2. 승인된 사설 GPU 모델 호스트에서 실제 구조 출력·p95·실패 경계를 검증합니다.
+3. host egress allowlist와 edge/WAF rate limit을 적용한 뒤 public URL 외부 smoke를 수행합니다.
+4. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen을 rehearsal하고 최종 상태를 `CLOSED`로 둡니다.
+5. `03_portfolio/case-study-index.md`의 다음 Java/Spring 사례를 독립 재구현하고 검수합니다.
+6. `evidence/company-github/monthly/`를 월말에 갱신하고 공개 링크와 Pages workflow 상태를 정기 확인합니다.

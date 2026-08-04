@@ -12,10 +12,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 
+/**
+ * 로컬 오픈웨이트 모델 endpoint의 안전한 기본값과 허용 범위를 구성한다.
+ *
+ * <p>gateway는 명시적으로 활성화할 때만 생성된다. base URL은 scheme·host·port만
+ * 허용하고 host allowlist를 통과해야 하며, 비활성 상태에서는 항상 fail-closed
+ * gateway를 사용한다.
+ */
 @Configuration
 public class LlmGatewayConfiguration {
 
@@ -26,17 +34,41 @@ public class LlmGatewayConfiguration {
         if (!StringUtils.hasText(properties.getModel())) {
             throw new IllegalStateException("OPSMATE_LLM_MODEL is required when the LLM gateway is enabled");
         }
+        if (properties.getMaxOutputTokens() < 1
+                || properties.getMaxOutputTokens() > 4096
+                || properties.getMaxResponseBytes() < 1024
+                || properties.getMaxResponseBytes() > 1_048_576
+                || properties.getConnectTimeout() == null
+                || properties.getConnectTimeout().isZero()
+                || properties.getConnectTimeout().isNegative()
+                || properties.getReadTimeout() == null
+                || properties.getReadTimeout().isZero()
+                || properties.getReadTimeout().isNegative()) {
+            throw new IllegalStateException("LLM time and output limits are outside the safe range");
+        }
 
         HttpClient httpClient = HttpClient.newBuilder()
                 .connectTimeout(properties.getConnectTimeout())
                 .build();
         JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
         requestFactory.setReadTimeout(properties.getReadTimeout());
-        RestClient restClient = RestClient.builder()
+        RestClient.Builder restClientBuilder = RestClient.builder()
                 .baseUrl(baseUri.toString())
-                .requestFactory(requestFactory)
-                .build();
-        return new OllamaLocalLlmGateway(restClient, objectMapper, properties.getModel());
+                .requestFactory(requestFactory);
+        if (StringUtils.hasText(properties.getAuthToken())) {
+            // Ollama를 공인망에 직접 노출하지 않더라도 private tunnel 내부 proxy에서
+            // 애플리케이션 한 곳만 허용하도록 별도 bearer 인증을 적용한다.
+            restClientBuilder.defaultHeader(
+                    HttpHeaders.AUTHORIZATION,
+                    "Bearer " + properties.getAuthToken());
+        }
+        RestClient restClient = restClientBuilder.build();
+        return new OllamaLocalLlmGateway(
+                restClient,
+                objectMapper,
+                properties.getModel(),
+                properties.getMaxOutputTokens(),
+                properties.getMaxResponseBytes());
     }
 
     @Bean
@@ -45,6 +77,7 @@ public class LlmGatewayConfiguration {
         return new FailClosedLocalLlmGateway();
     }
 
+    /** 요청별 URL 주입과 비허용 내부·외부 host 접근을 시작 단계에서 차단한다. */
     URI validateBaseUri(LlmProperties properties) {
         URI uri;
         try {

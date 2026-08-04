@@ -41,8 +41,9 @@
 - 구매 요청, 고정 정책 검색, 승인과 발주 생성의 수직 흐름
 - Java/Spring 기반 업무 트랜잭션과 로컬 오픈웨이트 LLM 통합
 - 모델 장애 시 쓰기 경로를 차단하는 온프레미스 Agent 대표 프로젝트
-- 현재 `implemented`, `tested-component`: 19개 테스트 성공
-- 실제 오픈웨이트 모델 서버 E2E와 운영 배포는 미검증
+- 공개 Thymeleaf UI, workspace 격리·TTL, model guard, PostgreSQL 역할 분리와 Docker/Caddy open/close 자산 구현
+- 현재 `implemented`, `tested-component`; `2026-08-04` 전체 `clean verify` 54개 성공, 실패·오류·건너뜀 0개
+- 승인된 실제 모델 E2E, 공개 URL·외부 smoke·외부 네트워크 정책과 양 호스트 rehearsal은 미검증
 - [코드와 실행 절차](opsmate-local/README.md)
 
 ### 2. case-study-samples

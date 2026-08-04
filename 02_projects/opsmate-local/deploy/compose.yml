@@ -1,0 +1,166 @@
+name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}
+
+x-logging: &bounded-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:16.8-alpine@sha256:3b057e1c2c6dfee60a30950096f3fab33be141dbb0fdd7af3d477083de94166c
+    # 공개 demo는 수동 open gate를 통과할 때만 시작한다. daemon 재시작 자동 복구는 금지한다.
+    restart: "no"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:?POSTGRES_ADMIN_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?POSTGRES_ADMIN_PASSWORD is required}
+      OPSMATE_DB_MIGRATION_USER: ${OPSMATE_DB_MIGRATION_USER:?OPSMATE_DB_MIGRATION_USER is required}
+      OPSMATE_DB_MIGRATION_PASSWORD: ${OPSMATE_DB_MIGRATION_PASSWORD:?OPSMATE_DB_MIGRATION_PASSWORD is required}
+      OPSMATE_DB_APP_USER: ${OPSMATE_DB_APP_USER:?OPSMATE_DB_APP_USER is required}
+      OPSMATE_DB_APP_PASSWORD: ${OPSMATE_DB_APP_PASSWORD:?OPSMATE_DB_APP_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init-roles.sh:/docker-entrypoint-initdb.d/10-init-opsmate-roles.sh:ro
+    networks:
+      - app_to_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    logging: *bounded-logging
+
+  migrate:
+    image: ${OPSMATE_APP_IMAGE:?OPSMATE_APP_IMAGE digest is required}
+    command: ["--opsmate-migrate-only"]
+    restart: "no"
+    environment:
+      OPSMATE_DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?POSTGRES_DB is required}
+      OPSMATE_FLYWAY_USERNAME: ${OPSMATE_DB_MIGRATION_USER:?OPSMATE_DB_MIGRATION_USER is required}
+      OPSMATE_FLYWAY_PASSWORD: ${OPSMATE_DB_MIGRATION_PASSWORD:?OPSMATE_DB_MIGRATION_PASSWORD is required}
+      OPSMATE_FLYWAY_APP_ROLE: ${OPSMATE_DB_APP_USER:?OPSMATE_DB_APP_USER is required}
+    networks:
+      - app_to_db
+    depends_on:
+      db:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging: *bounded-logging
+
+  app:
+    image: ${OPSMATE_APP_IMAGE:?OPSMATE_APP_IMAGE digest is required}
+    restart: "no"
+    init: true
+    environment:
+      SPRING_PROFILES_ACTIVE: demo
+      OPSMATE_DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?POSTGRES_DB is required}
+      OPSMATE_DB_USERNAME: ${OPSMATE_DB_APP_USER:?OPSMATE_DB_APP_USER is required}
+      OPSMATE_DB_PASSWORD: ${OPSMATE_DB_APP_PASSWORD:?OPSMATE_DB_APP_PASSWORD is required}
+      OPSMATE_BASIC_AUTH_ENABLED: "false"
+      OPSMATE_DEMO_ENABLED: "true"
+      OPSMATE_DEMO_START_ENABLED: ${OPSMATE_DEMO_START_ENABLED:-false}
+      OPSMATE_DEMO_WORKSPACE_TTL: ${OPSMATE_DEMO_WORKSPACE_TTL:-30m}
+      OPSMATE_DEMO_CLEANUP_INTERVAL: ${OPSMATE_DEMO_CLEANUP_INTERVAL:-10m}
+      OPSMATE_DEMO_MAX_ACTIVE_WORKSPACES: ${OPSMATE_DEMO_MAX_ACTIVE_WORKSPACES:-100}
+      OPSMATE_DEMO_ADMISSION_WINDOW: ${OPSMATE_DEMO_ADMISSION_WINDOW:-1h}
+      OPSMATE_DEMO_MAX_STARTS_GLOBAL: ${OPSMATE_DEMO_MAX_STARTS_GLOBAL:-200}
+      OPSMATE_LLM_ENABLED: "true"
+      OPSMATE_LLM_BASE_URL: ${OPSMATE_LLM_BASE_URL:?OPSMATE_LLM_BASE_URL is required}
+      OPSMATE_LLM_ALLOWED_HOSTS: ${OPSMATE_LLM_ALLOWED_HOSTS:?OPSMATE_LLM_ALLOWED_HOSTS is required}
+      OPSMATE_LLM_MODEL: ${OPSMATE_LLM_MODEL:?OPSMATE_LLM_MODEL is required}
+      OPSMATE_LLM_AUTH_TOKEN: ${OPSMATE_LLM_AUTH_TOKEN:?OPSMATE_LLM_AUTH_TOKEN is required}
+      OPSMATE_LLM_MAX_OUTPUT_TOKENS: ${OPSMATE_LLM_MAX_OUTPUT_TOKENS:-512}
+      OPSMATE_LLM_MAX_RESPONSE_BYTES: ${OPSMATE_LLM_MAX_RESPONSE_BYTES:-65536}
+      OPSMATE_MODEL_MAX_CONCURRENT: "1"
+      OPSMATE_MODEL_QUEUE_WAIT: ${OPSMATE_MODEL_QUEUE_WAIT:-2s}
+      OPSMATE_MODEL_RATE_WINDOW: ${OPSMATE_MODEL_RATE_WINDOW:-1h}
+      OPSMATE_MODEL_MAX_REQUESTS_PER_WORKSPACE: ${OPSMATE_MODEL_MAX_REQUESTS_PER_WORKSPACE:-10}
+      OPSMATE_MODEL_MAX_REQUESTS_GLOBAL: ${OPSMATE_MODEL_MAX_REQUESTS_GLOBAL:-100}
+      OPSMATE_MODEL_MAX_FOLLOWERS_PER_FLIGHT: ${OPSMATE_MODEL_MAX_FOLLOWERS_PER_FLIGHT:-5}
+      OPSMATE_MODEL_FLIGHT_WAIT: ${OPSMATE_MODEL_FLIGHT_WAIT:-35s}
+    expose:
+      - "8080"
+    networks:
+      - app_to_db
+      - edge_to_app
+      # 원격 사설 모델에 도달하기 위한 outbound bridge다. 목적지 제한은 이 선언이 아니라
+      # 배포 호스트 firewall/egress policy로 적용하고 open gate에서 별도 확인한다.
+      - model_egress
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --show-error --fail http://127.0.0.1:8080/actuator/health/readiness >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 20s
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging: *bounded-logging
+
+  caddy:
+    image: caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c
+    restart: "no"
+    environment:
+      DEMO_DOMAIN: ${DEMO_DOMAIN:?DEMO_DOMAIN is required}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - edge
+      - edge_to_app
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    logging: *bounded-logging
+
+networks:
+  edge:
+  edge_to_app:
+    internal: true
+  app_to_db:
+    internal: true
+  model_egress:
+
+volumes:
+  postgres_data:
+    name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-postgres-data
+  caddy_data:
+    name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-caddy-data
+  caddy_config:
+    name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-caddy-config

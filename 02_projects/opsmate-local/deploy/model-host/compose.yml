@@ -1,0 +1,79 @@
+name: ${COMPOSE_PROJECT_NAME:-opsmate-model-host}
+
+x-logging: &bounded-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  ollama:
+    image: ${OLLAMA_IMAGE:?OLLAMA_IMAGE is required}
+    # 승인된 open script를 거치지 않은 daemon/host 재시작 자동 복구는 금지한다.
+    restart: "no"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-10m}
+      NVIDIA_VISIBLE_DEVICES: ${OPSMATE_GPU_DEVICE_ID:?OPSMATE_GPU_DEVICE_ID is required}
+    expose:
+      - "11434"
+    volumes:
+      - model_data:/root/.ollama
+    networks:
+      - model_backend
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids:
+                - ${OPSMATE_GPU_DEVICE_ID:?OPSMATE_GPU_DEVICE_ID is required}
+              capabilities:
+                - gpu
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+    logging: *bounded-logging
+
+  proxy:
+    image: ${CADDY_IMAGE:?CADDY_IMAGE is required}
+    restart: "no"
+    environment:
+      MODEL_PROXY_TOKEN: ${MODEL_PROXY_TOKEN:?MODEL_PROXY_TOKEN is required}
+    ports:
+      - "${MODEL_BIND_ADDRESS:?MODEL_BIND_ADDRESS is required}:11434:8080"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - model_backend
+    depends_on:
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+    read_only: true
+    tmpfs:
+      - /data:size=16m,mode=0700
+      - /config:size=16m,mode=0700
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging: *bounded-logging
+
+networks:
+  model_backend:
+
+volumes:
+  model_data:
+    name: ${COMPOSE_PROJECT_NAME:-opsmate-model-host}-model-data

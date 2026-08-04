@@ -1,0 +1,14 @@
+.git
+.gitignore
+.idea
+.vscode
+*.iml
+*.log
+target
+data
+deploy/.env
+deploy/.env.*
+deploy/model-host/.env
+deploy/model-host/.env.*
+!deploy/.env.example
+!deploy/model-host/.env.example

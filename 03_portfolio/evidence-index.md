@@ -1,6 +1,6 @@
 # Portfolio Evidence Index
 
-- 최종 점검일: `2026-08-03`
+- 최종 점검일: `2026-08-04`
 - 목적: 프로필 주장, 구현 코드, 테스트, 계획을 구분해 과장 없는 기술 검토를 가능하게 함
 
 ## 상태 정의
@@ -23,15 +23,15 @@
 - 공개 URL: [GitHub Pages 포트폴리오](https://son1004007.github.io/engineering-career-portfolio/)
 - 검증일: `2026-08-03`
 - 원격 결과: [Pages Actions run 30782896966](https://github.com/son1004007/engineering-career-portfolio/actions/runs/30782896966)의 Jekyll build, Java 2개 프로젝트, 공개 저장소 검사와 deploy 성공
-- 테스트: Spring Security 인증 브리지 24개, OpsMate Local 19개, 저장소 공개 검수 12개 성공
+- 테스트: 당시 Spring Security 인증 브리지 24개, OpsMate Local 19개, 저장소 공개 검수 12개 성공
 - 실화면: 홈, Work ledger, 근거 인덱스, 전략과 앵커, 체크리스트, AI context, 대표 프로젝트·사례 경로의 응답과 가로 넘침 없음 확인
-- 한계: 기본 데스크톱 뷰포트 실화면과 반응형 CSS 규칙은 확인했으나 물리 모바일 기기 시각 검수는 별도 항목이며, 실제 오픈웨이트 모델 서버 E2E도 미검증
+- 한계: 이 항목은 `2026-08-03` 공개본의 역사적 검증입니다. 이후 OpsMate 변경분은 로컬 `clean verify` 54개를 통과했지만 아직 Pages에 게시되지 않았고, 물리 모바일 검수와 실제 모델 E2E도 미검증입니다.
 
 ## 프로젝트 상태
 
 | 프로젝트 | 코드 | 테스트 | 문서 | 현재 상태 | 확인 사항 |
 |---|---:|---:|---:|---|---|
-| [OpsMate Local](../02_projects/opsmate-local/README.md) | Java/Spring 수직 기능 있음 | 19개 성공 | README·ARCHITECTURE·SETUP | `implemented`, `tested-component` | 객체 단위 권한·상태·멱등성·gateway 오류·fail-closed 검증. 실제 모델 E2E와 운영 배포는 미검증 |
+| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL·배포 자산 있음 | 2026-08-04 `clean verify` 54개 성공, 실패·오류·건너뜀 0개 | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK | `implemented`, `tested-component` | 실제 모델 E2E, 공개 URL·외부 smoke, host egress/edge rate limit과 양 호스트 close/reopen rehearsal은 미검증 |
 | [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 회사 원본이 아닌 합성 사용자·issuer·audience 바인딩 SSO 샘플. 운영 시스템 검증을 뜻하지 않음 |
 | [Java/Spring 사례 후보](case-study-index.md) | 회사 원본에서 확인 | 공개 샘플 1건만 있음 | 후보 인덱스 있음 | `sample-verified` 1건, `source-reviewed` 4건, 나머지 `candidate` 또는 `hold` | 원본 코드를 공개할 수 없으며 각 독립 재현 코드와 테스트가 생기기 전 `published` 표현 금지 |
 | [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에 `pytest`가 없어 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
@@ -72,7 +72,7 @@
 이 저장소는 다음을 보여주기에 적합합니다.
 
 - Java/Spring Security 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
-- AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두는 설계와 구성요소 구현
+- AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두고 workspace·GPU 호출량·DB 권한·서비스 수명주기까지 통제하는 설계와 구현
 - 목표하는 엔지니어 정체성과 Java/Python/AI 응용 기술 조합
 - 비공개 업무 근거를 비식별 claim과 공개 재현 상태로 나누는 검수 방식
 - 문서화와 구조화 능력
@@ -82,6 +82,7 @@
 - 프로덕션 수준 백엔드·플랫폼 숙련도 증명
 - 대규모 트래픽·분산 시스템·클라우드 네이티브 운영 증명
 - 실제 오픈웨이트 모델 서버를 포함한 OpsMate Local E2E와 GPU 부하 경계 증명
+- public URL, 외부 네트워크 정책과 앱·모델 양쪽 호스트 close/reopen 증명
 - 프로젝트별 정량 성과와 본인 기여 범위 증명
 - 모든 README에 적힌 기능의 실제 구현 증명
 

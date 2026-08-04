@@ -3,7 +3,10 @@ package io.github.son1004007.opsmate;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import io.github.son1004007.opsmate.agent.DraftPrompt;
 import io.github.son1004007.opsmate.agent.DraftProposal;
@@ -36,6 +39,9 @@ public class OpsMateTestConfiguration {
 
         private final AtomicBoolean unavailable = new AtomicBoolean();
         private final AtomicReference<DraftProposal> proposal = new AtomicReference<>();
+        private final AtomicInteger callCount = new AtomicInteger();
+        private final AtomicReference<CountDownLatch> entered = new AtomicReference<>();
+        private final AtomicReference<CountDownLatch> release = new AtomicReference<>();
 
         StubLocalLlmGateway() {
             reset();
@@ -43,6 +49,20 @@ public class OpsMateTestConfiguration {
 
         @Override
         public DraftProposal propose(DraftPrompt prompt) {
+            callCount.incrementAndGet();
+            CountDownLatch enteredLatch = entered.get();
+            CountDownLatch releaseLatch = release.get();
+            if (enteredLatch != null && releaseLatch != null) {
+                enteredLatch.countDown();
+                try {
+                    if (!releaseLatch.await(3, TimeUnit.SECONDS)) {
+                        throw new AssertionError("Synthetic model gate timed out");
+                    }
+                } catch (InterruptedException exception) {
+                    Thread.currentThread().interrupt();
+                    throw new AssertionError(exception);
+                }
+            }
             if (unavailable.get()) {
                 throw new OpsMateException(ErrorCode.MODEL_UNAVAILABLE, "Synthetic model outage");
             }
@@ -57,8 +77,20 @@ public class OpsMateTestConfiguration {
             proposal.set(next);
         }
 
+        void blockWith(CountDownLatch enteredLatch, CountDownLatch releaseLatch) {
+            entered.set(enteredLatch);
+            release.set(releaseLatch);
+        }
+
+        int callCount() {
+            return callCount.get();
+        }
+
         void reset() {
             unavailable.set(false);
+            callCount.set(0);
+            entered.set(null);
+            release.set(null);
             proposal.set(new DraftProposal(
                     "개발용 노트북 구매",
                     "개발 환경 개선",

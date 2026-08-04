@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: ${OPSMATE_DB_URL}
+    username: ${OPSMATE_DB_USERNAME}
+    password: ${OPSMATE_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    # A one-shot migration container finishes before the long-running app starts.
+    enabled: false
+  thymeleaf:
+    cache: true
+
+server:
+  forward-headers-strategy: native
+  max-http-request-header-size: 16KB
+  tomcat:
+    max-http-form-post-size: 16KB
+    max-swallow-size: 16KB
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        http-only: true
+        secure: true
+        same-site: lax
+
+opsmate:
+  security:
+    basic-enabled: false
+  demo:
+    enabled: true
+    start-enabled: ${OPSMATE_DEMO_START_ENABLED:false}

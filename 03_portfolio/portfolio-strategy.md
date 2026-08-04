@@ -24,7 +24,7 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 - 상태: `implemented`, `tested-component`
 - 형식: 실행 가능한 독립 서비스
 - 역할: AI Agent 응용과 안전한 업무 실행 설계 증명
-- 기술 중심: Java 21, Spring Boot 3.5, JPA/H2 검증 구성, 로컬 오픈웨이트 LLM gateway, 서버 주도 정책 조회 포트
+- 기술 중심: Java 21, Spring Boot 3.5, Thymeleaf/HttpSession, JPA/H2·PostgreSQL/Flyway, 오픈웨이트 LLM gateway, 서버 주도 정책 조회 포트, Docker/Caddy
 
 첫 번째 수직 범위는 전체 ERP가 아니라 다음 흐름으로 제한합니다.
 
@@ -44,11 +44,15 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 - LLM은 정책 조회 포트를 포함한 도구를 직접 실행하지 않으며 DB, 임의 URL 또는 승인 상태에 접근하지 않음
 - 모델 출력은 고정 JSON Schema와 서버 측 업무 규칙으로 검증
 - 승인되지 않은 발주와 중복 발주 차단
-- 모델 미연결, 타임아웃 또는 잘못된 출력 시 쓰기 경로 `fail-closed`
+- 모델 미연결, 타임아웃 또는 잘못된 출력 시 모델 의존 초안 생성을 저장 전 `fail-closed`
 - 외부 유료 API로 자동 우회하지 않음
+- 공개 방문자별 workspace 격리·TTL과 API/CSRF/session 보안 경계
+- 동일 모델 요청 single-flight, workspace·전체 quota, queue/follower와 동시 실행 제한
+- one-shot migration과 장기 실행 runtime DB 역할 분리
+- immutable image digest 기반 open, normal/emergency close와 reopen 절차
 - 감사로그, 테스트와 재현 가능한 실행 절차 제공
 
-수직 기능과 테스트는 구현됐지만 실제 모델 서버 E2E, PostgreSQL 운영 구성, 운영 메트릭과 배포는 검증하지 않았습니다. 따라서 프로젝트 전체를 `verified` 또는 운영 완료로 표현하지 않습니다.
+수직 기능, 공개 웹, PostgreSQL migration·역할 분리, model guard와 배포·중단 자산은 구현됐고 `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했습니다. 승인된 실제 모델 E2E, 공개 URL·외부 smoke, host egress allowlist·edge/WAF rate limit과 앱·모델 양쪽 호스트 close/reopen rehearsal은 검증하지 않았습니다. 따라서 프로젝트 전체를 `verified` 또는 운영 완료로 표현하지 않습니다.
 
 ## Track B. 기존 업무 사례집
 
@@ -109,7 +113,9 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 
 ## 다음 실행 순서
 
-1. GitHub Pages에서 공개 링크와 모바일 렌더링 확인
-2. OpsMate Local을 실제 허가된 오픈웨이트 모델 서버와 연결해 E2E 검증
-3. rate limit 또는 single-flight를 추가한 뒤 GPU 부하 경계를 별도 검증
-4. [`case-study-index.md`](case-study-index.md)의 다음 Java/Spring 후보를 독립 샘플로 재현
+1. OpsMate Local 최신 변경분의 전체 `clean verify`, container와 문서 검수를 완료
+2. 승인된 사설 GPU 모델 호스트에서 실제 모델 구조 출력·p95·실패 E2E 검증
+3. public host의 egress allowlist와 edge/WAF rate limit을 적용하고 외부 URL smoke 수행
+4. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal 수행
+5. GitHub Pages 문구·링크·모바일 렌더링을 다시 확인
+6. [`case-study-index.md`](case-study-index.md)의 다음 Java/Spring 후보를 독립 샘플로 재현

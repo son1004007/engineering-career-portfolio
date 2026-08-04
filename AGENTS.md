@@ -67,6 +67,16 @@ Each project should include:
 - source code directory such as `app/` or `src/`
 - `tests/`
 
+## Code Explanation Standard
+
+For Java/Spring code, follow [`03_portfolio/code-explanation-standard.md`](03_portfolio/code-explanation-standard.md).
+
+- Explain business rules, trust boundaries, failure behavior, side effects, concurrency assumptions, and change impact in Korean Javadoc or comments.
+- Prefer type-level and method-level Javadoc for durable contracts. Use inline comments only when the reason or constraint is not evident from the code.
+- Do not narrate obvious statements, comment every line, or add Javadoc to simple getters and generated accessors.
+- Update or remove an explanation whenever the related behavior changes, and keep it consistent with tests and public documentation.
+- Never include customer identifiers, private repository paths, internal URLs, credentials, or copied company code in explanations or examples.
+
 ## Work Sequence
 Follow this order for each project:
 1. write design document

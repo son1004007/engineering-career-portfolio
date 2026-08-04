@@ -18,7 +18,7 @@
 - define a server-controlled policy query port, pass only retrieved evidence to the model, and keep RBAC, audit and fail-closed behavior outside the model
 
 ## Stage 4. OpsMate Local implementation
-- status: `tested-component` — 19 tests; real model E2E not yet verified
+- status: `tested-component` — historical 2026-08-03 baseline 19 tests; 2026-08-04 latest clean verify 54/54 passed
 - implement and test the smallest end-to-end workflow
 - verify local-model failure, authorization, idempotency and rollback
 
@@ -28,6 +28,13 @@
 - repair or archive older partial samples based on hiring value
 
 ## Stage 6. OpsMate Local model integration
-- status: `pending`
+- status: `in-progress`
 - connect an authorized open-weight model endpoint without a paid API fallback
-- verify structured output, failure behavior, rate control and GPU load separately
+- implemented the bounded Ollama gateway, single-flight, workspace/global quota, queue/follower and concurrency controls
+- verify real structured output, p95, failure behavior and GPU load on the approved private model host
+
+## Stage 7. OpsMate Local public demo operations
+- status: `implemented`, external rehearsal `pending`
+- implemented Thymeleaf session UI, workspace isolation/TTL, PostgreSQL one-shot migration and runtime-role separation
+- implemented digest-pinned Docker/Caddy deployment plus app/model normal close, emergency close and reopen assets
+- verify public URL, host egress allowlist, edge/WAF rate limit, external smoke and both-host close/reopen rehearsal

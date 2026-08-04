@@ -4,3 +4,7 @@ evidence/company-github/private/
 evidence/company-github/raw/
 __pycache__/
 *.py[cod]
+02_projects/opsmate-local/deploy/.env*
+!02_projects/opsmate-local/deploy/.env.example
+02_projects/opsmate-local/deploy/model-host/.env*
+!02_projects/opsmate-local/deploy/model-host/.env.example

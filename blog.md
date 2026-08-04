@@ -25,7 +25,7 @@ permalink: /blog/
         <div class="case-card__topline">{% include status-badge.html status="tested-component" %}</div>
         <h3><a href="{{ '/02_projects/opsmate-local/' | relative_url }}">OpsMate Local</a></h3>
         <p>구매 요청, 정책 조회, 승인·반려와 발주 흐름에 AI 초안 생성을 연결한 Spring Boot 프로젝트</p>
-        <p class="case-card__focus"><strong>핵심:</strong> 권한, 상태 전이, 멱등성, 모델 오류 처리 · 19개 테스트</p>
+        <p class="case-card__focus"><strong>핵심:</strong> 권한·상태 전이, workspace 격리, 모델 호출 제한, PostgreSQL 역할 분리와 운영 중단 절차 · 54개 테스트</p>
         <a class="text-link" href="{{ '/02_projects/opsmate-local/' | relative_url }}">프로젝트 보기 <span aria-hidden="true">→</span></a>
       </article>
     </div>

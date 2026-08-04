@@ -13,6 +13,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,13 +46,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-@SpringBootTest
+@SpringBootTest(properties = "opsmate.model-guard.max-followers-per-flight=25")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(OpsMateTestConfiguration.class)
 class OpsMateIntegrationTest {
 
     private static final String LAPTOP_REQUEST = "개발용 노트북 1대를 2500000원에 구매하고 싶습니다.";
+    private static final UUID LOCAL_WORKSPACE_ID =
+            UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     @Autowired
     MockMvc mvc;
@@ -103,7 +112,7 @@ class OpsMateIntegrationTest {
         assertThat(orderRepository.count()).isEqualTo(1);
         assertThat(requestRepository.findById(requestId).orElseThrow().getStatus())
                 .isEqualTo(PurchaseRequestStatus.ORDERED);
-        assertThat(auditRepository.findAllByOrderByOccurredAtAsc())
+        assertThat(auditRepository.findTop100ByWorkspaceIdOrderByOccurredAtAsc(LOCAL_WORKSPACE_ID))
                 .extracting("action")
                 .containsExactly("DRAFT_CREATED", "SUBMITTED", "APPROVED", "ORDER_CREATED");
 
@@ -326,6 +335,52 @@ class OpsMateIntegrationTest {
         assertThat(requestRepository.count()).isEqualTo(1);
     }
 
+    @Test
+    void twentyConcurrentFirstRequestsUseOneModelCallAndPersistOneDraft() throws Exception {
+        int workers = 20;
+        CountDownLatch ready = new CountDownLatch(workers);
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch modelEntered = new CountDownLatch(1);
+        CountDownLatch releaseModel = new CountDownLatch(1);
+        llmGateway.blockWith(modelEntered, releaseModel);
+        ExecutorService executor = Executors.newFixedThreadPool(workers);
+        try {
+            List<CompletableFuture<String>> calls = new ArrayList<>();
+            for (int index = 0; index < workers; index++) {
+                calls.add(CompletableFuture.supplyAsync(() -> {
+                    ready.countDown();
+                    await(start);
+                    try {
+                        MvcResult result = mvc.perform(post("/api/purchase-requests/drafts")
+                                        .with(user("requester").roles("REQUESTER"))
+                                        .header("Idempotency-Key", "draft-concurrent-001")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(json(Map.of("requestText", LAPTOP_REQUEST))))
+                                .andExpect(status().isCreated())
+                                .andReturn();
+                        return responseId(result).toString();
+                    } catch (Exception exception) {
+                        throw new CompletionException(exception);
+                    }
+                }, executor));
+            }
+
+            assertThat(ready.await(2, TimeUnit.SECONDS)).isTrue();
+            start.countDown();
+            assertThat(modelEntered.await(2, TimeUnit.SECONDS)).isTrue();
+            Thread.sleep(100);
+            releaseModel.countDown();
+
+            assertThat(calls.stream().map(CompletableFuture::join).distinct()).hasSize(1);
+            assertThat(llmGateway.callCount()).isEqualTo(1);
+            assertThat(requestRepository.count()).isEqualTo(1);
+            assertThat(auditRepository.countByAction("DRAFT_CREATED")).isEqualTo(1);
+        } finally {
+            releaseModel.countDown();
+            executor.shutdownNow();
+        }
+    }
+
     private UUID createApprovedRequest(String draftKey) throws Exception {
         UUID requestId = createDraft(draftKey, LAPTOP_REQUEST);
         mvc.perform(post("/api/purchase-requests/{id}/submit", requestId)
@@ -370,6 +425,17 @@ class OpsMateIntegrationTest {
 
     private String json(Object value) throws Exception {
         return objectMapper.writeValueAsString(value);
+    }
+
+    private void await(CountDownLatch latch) {
+        try {
+            if (!latch.await(3, TimeUnit.SECONDS)) {
+                throw new AssertionError("Timed out while coordinating concurrent requests");
+            }
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new AssertionError(exception);
+        }
     }
 
 }

@@ -69,6 +69,9 @@ public class ApiExceptionHandler {
             case INVALID_MODEL_OUTPUT -> HttpStatus.BAD_GATEWAY;
             case POLICY_NOT_FOUND, VALIDATION_ERROR -> HttpStatus.UNPROCESSABLE_ENTITY;
             case ORDER_FINALIZATION_FAILED -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case SESSION_EXPIRED -> HttpStatus.UNAUTHORIZED;
+            case DEMO_CLOSED, DEMO_CAPACITY_REACHED -> HttpStatus.SERVICE_UNAVAILABLE;
+            case RATE_LIMITED, MODEL_BUSY -> HttpStatus.TOO_MANY_REQUESTS;
         };
     }
 }
