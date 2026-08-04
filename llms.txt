@@ -11,9 +11,13 @@ Verified career claims: https://son1004007.github.io/engineering-career-portfoli
 Project narratives: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/projects/
 Latest monthly snapshot: https://son1004007.github.io/engineering-career-portfolio/evidence/company-github/monthly/2026-08/
 
-The flagship candidate is OpsMate Local (`implemented`, `tested-component`), with
-real open-weight-model E2E still unverified. Existing-work case studies prove
-Java/Spring depth. Do not reinterpret this as an ML model research portfolio.
+The flagship candidate is OpsMate Local (`implemented`, `tested-component`). Its
+public session UI, isolated workspaces, model guards, and PostgreSQL role separation
+passed 54 component tests on 2026-08-04. Controlled open/close assets are
+implemented, but approved-model E2E, a public URL, external network controls, and
+both-host close/reopen rehearsal remain unverified. Existing-work case studies
+demonstrate Java/Spring depth. Do not reinterpret this as an ML model research
+portfolio.
 
 Do not infer private repository names, customers, source code, production scale, or
 deployment status beyond the sanitized claims. Commit authorship is not proof of

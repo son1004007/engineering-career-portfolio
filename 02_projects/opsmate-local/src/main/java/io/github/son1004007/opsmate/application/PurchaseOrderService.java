@@ -10,6 +10,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+/**
+ * 승인된 요청을 멱등한 합성 발주로 전환하는 application service.
+ *
+ * <p>사전 조회는 빠른 응답을 위한 경로이고, 동시 요청의 최종 중복 판정은
+ * workspace를 포함한 DB 고유 제약이 수행한다. 같은 멱등키의 입력 fingerprint가
+ * 다르면 기존 발주를 반환하지 않는다.
+ */
 @Service
 public class PurchaseOrderService {
 
@@ -28,22 +35,25 @@ public class PurchaseOrderService {
 
     @PreAuthorize("hasRole('BUYER')")
     public PurchaseOrder createOrder(UUID purchaseRequestId, String idempotencyKey) {
-        String actor = actorProvider.currentActor();
+        ActorContext context = actorProvider.currentContext();
         String key = validateIdempotencyKey(idempotencyKey);
         String fingerprint = Fingerprints.sha256(purchaseRequestId.toString());
 
-        PurchaseOrder existingForKey = repository.findByCreatedByAndIdempotencyKey(actor, key).orElse(null);
+        PurchaseOrder existingForKey = repository.findByWorkspaceIdAndCreatedByAndIdempotencyKey(
+                context.workspaceId(), context.actor(), key).orElse(null);
         if (existingForKey != null) {
             return requireSameFingerprint(existingForKey, fingerprint);
         }
-        if (repository.findByPurchaseRequestId(purchaseRequestId).isPresent()) {
+        if (repository.findByWorkspaceIdAndPurchaseRequestId(context.workspaceId(), purchaseRequestId).isPresent()) {
             throw duplicateOrder();
         }
 
         try {
-            return transactions.persistOrder(purchaseRequestId, actor, key, fingerprint);
+            return transactions.persistOrder(
+                    context.workspaceId(), purchaseRequestId, context.actor(), key, fingerprint);
         } catch (DataIntegrityViolationException exception) {
-            PurchaseOrder raced = repository.findByCreatedByAndIdempotencyKey(actor, key).orElse(null);
+            PurchaseOrder raced = repository.findByWorkspaceIdAndCreatedByAndIdempotencyKey(
+                    context.workspaceId(), context.actor(), key).orElse(null);
             if (raced != null) {
                 return requireSameFingerprint(raced, fingerprint);
             }

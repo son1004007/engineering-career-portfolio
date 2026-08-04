@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="오픈웨이트 LLM과 Spring 업무 통제를 결합한 구매 승인 데모">
+    <title>OpsMate Local</title>
+    <link rel="stylesheet" th:href="@{/assets/opsmate.css}">
+</head>
+<body>
+<main class="shell landing">
+    <section class="hero">
+        <p class="eyebrow">Java · Spring Boot · Open-weight LLM</p>
+        <h1>AI가 초안을 만들고,<br>업무 시스템이 결정합니다.</h1>
+        <p class="lead">
+            자연어 구매 요청을 정책 근거가 있는 초안으로 바꾸고, 사람의 승인 이후에만
+            합성 발주를 생성하는 실행형 포트폴리오입니다.
+        </p>
+        <div class="flash error" th:if="${expired}">이전 데모가 만료되어 합성 데이터를 정리했습니다. 새로 시작해 주세요.</div>
+        <div class="flash error" th:if="${busy}">현재 데모 수용량 또는 시간당 사용 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.</div>
+        <div class="flash error" th:if="${closed}">새 데모 시작이 닫혀 있습니다. 다음 검증 기간에 다시 열 수 있습니다.</div>
+        <div class="status-row">
+            <span class="status" th:classappend="${demoOpen} ? ' ready' : ' closed'"
+                  th:text="${demoOpen} ? '데모 사용 가능' : '현재 데모 닫힘'">현재 데모 닫힘</span>
+            <span class="status" th:classappend="${modelEnabled} ? ' ready' : ' closed'"
+                  th:text="${modelEnabled} ? '오픈웨이트 모델 연동 구성' : '모델 사용 불가'">모델 사용 불가</span>
+        </div>
+        <form th:action="@{/demo/sessions}" method="post">
+            <button class="primary" type="submit" th:disabled="${!demoOpen}">격리된 데모 시작</button>
+        </form>
+        <p class="closed-copy" th:if="${!demoOpen}">
+            검증 기간에만 서비스를 열며, 필요할 때 같은 빌드와 점검 절차로 다시 시작합니다.
+        </p>
+    </section>
+
+    <section class="grid three">
+        <article class="card">
+            <span class="step">01</span>
+            <h2>모델은 제안만</h2>
+            <p>정책 근거와 JSON schema 안에서 구매 초안을 제안합니다. 승인·DB·발주 권한은 없습니다.</p>
+        </article>
+        <article class="card">
+            <span class="step">02</span>
+            <h2>Spring이 최종 통제</h2>
+            <p>역할, 상태 전이, 멱등성, 중복 방지와 트랜잭션을 서버와 데이터베이스가 검사합니다.</p>
+        </article>
+        <article class="card">
+            <span class="step">03</span>
+            <h2>실패하면 중단</h2>
+            <p>모델 장애나 잘못된 출력에서는 아무 업무 데이터도 저장하지 않고 다른 API로 우회하지 않습니다.</p>
+        </article>
+    </section>
+
+    <section class="notice">
+        <h2>공개 데모 범위</h2>
+        <p>
+            입력과 결과는 약 30분 뒤 삭제되는 합성 데이터입니다. 실제 개인정보, 회사 정보,
+            내부 정책, 계정이나 비밀값을 입력하지 마세요. 역할 전환은 체험 기능이며 실제 조직 IAM이 아닙니다.
+        </p>
+    </section>
+</main>
+</body>
+</html>

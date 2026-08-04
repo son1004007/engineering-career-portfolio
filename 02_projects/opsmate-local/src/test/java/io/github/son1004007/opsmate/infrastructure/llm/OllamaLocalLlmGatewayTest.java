@@ -44,7 +44,7 @@ class OllamaLocalLlmGatewayTest {
         objectMapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         RestClient.Builder builder = RestClient.builder().baseUrl(BASE_URL);
         server = MockRestServiceServer.bindTo(builder).build();
-        gateway = new OllamaLocalLlmGateway(builder.build(), objectMapper, "local-test-model");
+        gateway = new OllamaLocalLlmGateway(builder.build(), objectMapper, "local-test-model", 512, 4096);
     }
 
     @AfterEach
@@ -102,12 +102,20 @@ class OllamaLocalLlmGatewayTest {
         assertError(ErrorCode.INVALID_MODEL_OUTPUT, () -> gateway.propose(prompt()));
     }
 
+    @Test
+    void oversizedProxyResponseIsRejectedAtTheStreamingByteBoundary() throws Exception {
+        expectJsonResponse("x".repeat(5000));
+
+        assertError(ErrorCode.INVALID_MODEL_OUTPUT, () -> gateway.propose(prompt()));
+    }
+
     private void expectJsonResponse(String content) throws Exception {
         String response = objectMapper.writeValueAsString(Map.of("message", Map.of("content", content)));
         server.expect(once(), requestTo(BASE_URL + "/api/chat"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.model").value("local-test-model"))
                 .andExpect(jsonPath("$.stream").value(false))
+                .andExpect(jsonPath("$.options.num_predict").value(512))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
     }
 

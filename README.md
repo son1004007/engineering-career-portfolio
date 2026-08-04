@@ -2,7 +2,7 @@
 
 [공개 포트폴리오 보기](https://son1004007.github.io/engineering-career-portfolio/)
 
-Java/Spring으로 업무 시스템을 개발해 왔습니다. Python/FastAPI 기반 Text2SQL/NL2SQL API와 로컬 모델 비교를 경험했고, 현재는 Spring Boot에서 LLM 초안을 권한·승인 흐름 안에 연결하는 `OpsMate Local`을 구현하고 있습니다. 인증, 데이터, 트랜잭션과 운영을 포함한 백엔드 구현에 집중합니다.
+Java/Spring으로 업무 시스템을 개발해 왔습니다. Python/FastAPI 기반 Text2SQL/NL2SQL API와 로컬 모델 비교를 경험했고, 현재는 Spring Boot에서 LLM 초안을 권한·승인 흐름 안에 연결하는 `OpsMate Local`을 구현하고 있습니다. 인증, 데이터, 트랜잭션, 공개 데모 격리와 닫았다 다시 여는 운영 절차까지 포함한 백엔드 구현에 집중합니다.
 
 ## 대표 작업
 
@@ -10,10 +10,12 @@ Java/Spring으로 업무 시스템을 개발해 왔습니다. Python/FastAPI 기
 
 구매 요청부터 승인·발주까지의 흐름에 AI 초안 생성을 결합한 Spring Boot 프로젝트입니다. 정책 조회, 권한, 상태 전이, 중복 방지와 발주는 서버가 통제합니다.
 
-- Java 21, Spring Boot, Spring Security, Spring Data JPA
-- 구매 요청·승인·반려·발주·감사 이벤트 구현
-- 권한 위반, 모델 오류, 중복 요청과 트랜잭션 롤백을 포함한 자동화 테스트 19개 통과
-- 실제 오픈웨이트 모델 E2E와 운영 배포는 아직 검증 전
+- Java 21, Spring Boot, Thymeleaf, Spring Security, JPA, PostgreSQL/Flyway
+- 구매 요청·승인·반려·발주·감사와 방문자별 session workspace 구현
+- model single-flight·quota·동시 실행 제한과 모델 오류 `fail-closed`
+- Docker/Caddy, one-shot migration, 최소 권한 runtime DB와 open/close/reopen 자산 구현
+- `2026-08-04` 전체 `clean verify` 54개 성공, 실패·오류·건너뜀 0개
+- 승인된 실제 모델 E2E, 공개 URL·외부 smoke와 양 호스트 close/reopen rehearsal은 아직 미검증
 
 [프로젝트 설명과 코드](02_projects/opsmate-local/README.md)
 
@@ -67,4 +69,4 @@ python -B -m unittest discover -s tests -p "test_*.py" -v
 
 ## 공개 범위
 
-이 저장소에는 회사 코드, 고객 데이터, 내부 URL과 실제 업무 규칙을 포함하지 않습니다. 실무 사례는 본인이 담당한 문제를 일반화해 설명하고, 공개 코드는 합성 데이터로 별도 구현합니다. 실제 모델 E2E나 운영 성능처럼 확인하지 않은 항목은 프로젝트 문서에 따로 명시합니다.
+이 저장소에는 회사 코드, 고객 데이터, 내부 URL, 접속 정보와 실제 업무 규칙을 포함하지 않습니다. 실무 사례는 본인이 담당한 문제를 일반화해 설명하고, 공개 코드는 합성 데이터로 별도 구현합니다. 실제 모델 E2E, 외부 배포나 운영 rehearsal처럼 확인하지 않은 항목은 프로젝트 문서에 따로 명시합니다.

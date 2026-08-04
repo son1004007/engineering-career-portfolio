@@ -12,14 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuditQueryService {
 
     private final AuditEventRepository repository;
+    private final ActorProvider actorProvider;
 
-    public AuditQueryService(AuditEventRepository repository) {
+    public AuditQueryService(AuditEventRepository repository, ActorProvider actorProvider) {
         this.repository = repository;
+        this.actorProvider = actorProvider;
     }
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('AUDITOR')")
     public List<AuditEvent> findAll() {
-        return repository.findAllByOrderByOccurredAtAsc();
+        return repository.findTop100ByWorkspaceIdOrderByOccurredAtAsc(actorProvider.currentWorkspaceId());
     }
 }

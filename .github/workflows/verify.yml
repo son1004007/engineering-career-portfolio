@@ -69,3 +69,66 @@ jobs:
         run: |
           chmod +x mvnw
           ./mvnw -q clean verify
+
+  opsmate-container:
+    name: OpsMate container and runbook assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: 02_projects/opsmate-local
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate shell syntax
+        run: |
+          sh -n deploy/open-demo.sh deploy/close-demo.sh deploy/emergency-close.sh deploy/smoke-test.sh deploy/verify-closed.sh
+          sh -n deploy/postgres/init-roles.sh
+          sh -n deploy/model-host/open-model.sh deploy/model-host/close-model.sh deploy/model-host/emergency-close.sh deploy/model-host/verify-private.sh
+
+      - name: Validate Compose configuration
+        env:
+          OLLAMA_IMAGE: ollama/ollama@sha256:0000000000000000000000000000000000000000000000000000000000000000
+        run: |
+          docker compose --env-file deploy/.env.example --file deploy/compose.yml config --quiet
+          docker compose --env-file deploy/model-host/.env.example --file deploy/model-host/compose.yml config --quiet
+
+      - name: Validate Caddy configuration
+        run: |
+          docker run --rm \
+            -e DEMO_DOMAIN=demo.example.com \
+            -e ACME_EMAIL=operator@example.com \
+            -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c \
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+          docker run --rm \
+            -e MODEL_PROXY_TOKEN=synthetic-token-with-at-least-32-characters \
+            -v "$PWD/deploy/model-host/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c \
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
+      - name: Build non-root application image
+        run: |
+          docker build --check .
+          docker build --tag opsmate-local:ci .
+          test "$(docker image inspect --format '{{.Config.User}}' opsmate-local:ci)" = "opsmate:opsmate"
+
+      - name: Rehearse the one-shot migration container
+        env:
+          OPSMATE_APP_IMAGE: opsmate-local:ci
+        run: |
+          docker compose --project-name opsmate-ci-rehearsal \
+            --env-file deploy/.env.example \
+            --file deploy/compose.yml \
+            up --no-build --abort-on-container-exit --exit-code-from migrate migrate
+
+      - name: Remove one-shot rehearsal resources
+        if: always()
+        env:
+          OPSMATE_APP_IMAGE: opsmate-local:ci
+        run: |
+          docker compose --project-name opsmate-ci-rehearsal \
+            --env-file deploy/.env.example \
+            --file deploy/compose.yml \
+            down --volumes --remove-orphans

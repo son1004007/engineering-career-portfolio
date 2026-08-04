@@ -66,7 +66,7 @@ permalink: /
           <li>승인된 요청만 발주</li>
           <li>감사 이벤트 기록</li>
         </ol>
-        <p class="status-note"><strong>현재 범위:</strong> 핵심 업무 흐름과 Ollama 연동 계층을 19개 자동화 테스트로 확인했습니다. 실제 로컬 모델 E2E와 운영 성능은 아직 검증하지 않았습니다.</p>
+        <p class="status-note"><strong>현재 범위:</strong> 공개 session UI, workspace 격리, PostgreSQL 역할 분리와 model guard는 54개 컴포넌트 테스트로 확인했습니다. 닫기·다시 열기 자산은 구현했지만 승인된 실제 모델 E2E와 외부 배포 rehearsal은 아직 미검증입니다.</p>
       </div>
     </article>
   </div>

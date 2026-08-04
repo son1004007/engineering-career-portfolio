@@ -14,17 +14,33 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 
+/**
+ * 구매 초안부터 발주 완료까지의 허용 상태 전이를 소유하는 aggregate.
+ *
+ * <p>LLM 출력은 이 객체를 직접 변경하지 못한다. 인증된 application service가
+ * workspace, 역할과 입력을 확인한 뒤 이 메서드를 호출하며, 도메인 객체가 마지막으로
+ * 현재 상태와 자기 승인 금지 규칙을 검사한다.
+ */
 @Entity
 @Table(
         name = "purchase_requests",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_purchase_request_actor_idempotency",
-                columnNames = {"requested_by", "idempotency_key"}))
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_purchase_request_actor_idempotency",
+                        columnNames = {"workspace_id", "requested_by", "idempotency_key"}),
+                @UniqueConstraint(
+                        name = "uk_purchase_request_workspace_id",
+                        columnNames = {"workspace_id", "id"})
+        },
+        indexes = @Index(
+                name = "idx_purchase_request_workspace_status_updated",
+                columnList = "workspace_id,status,updated_at"))
 public class PurchaseRequest {
 
     @Id
@@ -32,6 +48,9 @@ public class PurchaseRequest {
 
     @Version
     private long version;
+
+    @Column(name = "workspace_id", nullable = false)
+    private UUID workspaceId;
 
     @Column(name = "request_text", nullable = false, length = 4000)
     private String requestText;
@@ -88,6 +107,7 @@ public class PurchaseRequest {
     }
 
     public static PurchaseRequest draft(
+            UUID workspaceId,
             String requestText,
             String requestFingerprint,
             String title,
@@ -101,6 +121,7 @@ public class PurchaseRequest {
             Instant now) {
         PurchaseRequest request = new PurchaseRequest();
         request.id = UUID.randomUUID();
+        request.workspaceId = workspaceId;
         request.requestText = requestText;
         request.requestFingerprint = requestFingerprint;
         request.title = title;
@@ -140,11 +161,16 @@ public class PurchaseRequest {
         if (requestedBy.equals(actor)) {
             throw new OpsMateException(ErrorCode.UNAUTHORIZED_ACTION, "Self-rejection is not allowed");
         }
-        if (reason == null || reason.isBlank()) {
+        String normalizedReason = reason == null ? null : reason.strip();
+        if (normalizedReason == null || normalizedReason.isEmpty()) {
             throw new OpsMateException(ErrorCode.VALIDATION_ERROR, "Rejection reason is required");
         }
+        // REST·MVC adapter가 달라도 DB column 길이 전에 같은 도메인 규칙으로 거부한다.
+        if (normalizedReason.length() > 500) {
+            throw new OpsMateException(ErrorCode.VALIDATION_ERROR, "Rejection reason must not exceed 500 characters");
+        }
         decidedBy = actor;
-        rejectionReason = reason.strip();
+        rejectionReason = normalizedReason;
         status = PurchaseRequestStatus.REJECTED;
         updatedAt = now;
     }
@@ -171,6 +197,10 @@ public class PurchaseRequest {
 
     public UUID getId() {
         return id;
+    }
+
+    public UUID getWorkspaceId() {
+        return workspaceId;
     }
 
     public long getVersion() {

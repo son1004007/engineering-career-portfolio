@@ -8,6 +8,13 @@ import java.util.Set;
 import io.github.son1004007.opsmate.domain.PurchaseCategory;
 import org.springframework.stereotype.Component;
 
+/**
+ * 실제 회사 정책 대신 공개 데모 전용 합성 정책 근거를 keyword로 조회한다.
+ *
+ * <p>검색 결과는 모델이 임의로 만든 정책이 아니라 서버가 허용한 ID·분류·금액 한도다.
+ * catalog를 바꿀 때는 모델 prompt뿐 아니라 경계값·잘못된 policy ID·한도 초과 검증도
+ * 함께 확인해야 한다.
+ */
 @Component
 public class SyntheticPolicyEvidenceTool implements PolicyEvidenceTool {
 

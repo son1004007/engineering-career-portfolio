@@ -22,6 +22,8 @@
 
 상세 결정은 [`portfolio-strategy.md`](portfolio-strategy.md), 후보와 검토 상태는 [`case-study-index.md`](case-study-index.md)에서 확인합니다.
 
+`OpsMate Local`은 공개 session UI, workspace 격리, model guard, PostgreSQL 역할 분리와 서비스 open/close 자산까지 구현하고 `2026-08-04` 전체 `clean verify` 54개를 통과했습니다. 승인된 실제 모델 E2E, 공개 URL·외부 네트워크 정책과 양 호스트 close/reopen rehearsal은 아직 미검증이므로 전체 상태는 `tested-component`입니다.
+
 ---
 
 ## 핵심 강점

@@ -47,9 +47,9 @@ DRAFT -> PENDING_APPROVAL -> APPROVED -> ORDERED
 
 ## 현재 구현과 다음 검증
 
-구매 요청 생성, 제출, 승인·반려, 발주와 감사 이벤트까지 구현했습니다. 권한 위반, 모델 오류, 중복 요청, 상태 충돌과 트랜잭션 롤백을 포함한 19개 자동화 테스트가 통과했습니다.
+구매 요청 생성, 제출, 승인·반려, 발주와 감사 이벤트에 공개 session UI, workspace 격리·TTL, 모델 single-flight·호출량·동시 실행 제한, PostgreSQL 역할 분리와 배포·중단 자산을 추가했습니다. `2026-08-04` 전체 `clean verify`에서 권한 위반, 모델 오류, 동시 요청, 상태 충돌, PostgreSQL migration과 트랜잭션 롤백을 포함한 54개 자동화 테스트가 통과했습니다.
 
-Ollama 연동 계층은 mock HTTP 서버로 정상 응답과 오류 처리를 확인했습니다. 실제 오픈웨이트 모델의 생성 품질, 응답 시간, GPU 요구량과 운영 배포는 아직 검증하지 않았습니다.
+Ollama 연동 계층은 mock HTTP 서버로 정상·오류·과대 응답을 확인했습니다. 승인된 실제 오픈웨이트 모델의 생성 품질·p95·GPU 요구량, 공개 URL과 외부 network gate, 앱·모델 양쪽 호스트의 close/reopen rehearsal은 아직 검증하지 않았습니다.
 
 - [OpsMate Local 프로젝트와 코드]({{ '/02_projects/opsmate-local/' | relative_url }})
 - [상세 아키텍처]({{ '/02_projects/opsmate-local/ARCHITECTURE/' | relative_url }})
