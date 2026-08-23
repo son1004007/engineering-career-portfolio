@@ -1,9 +1,10 @@
 # Portfolio Work Ledger
 
-- 기준일: `2026-08-04`
-- 목적: 포트폴리오 작성부터 GitHub Pages 공개까지 작업, 의존성과 검증 근거를 한곳에서 추적
+- 기준일: `2026-08-23`
+- 목적: 포트폴리오 작성부터 GitHub Pages 공개와 OpsMate 운영 검증까지 작업, 의존성과 검증 근거를 한곳에서 추적
 - 원칙: 문서·코드·테스트·공개 안전성 검토가 함께 끝나기 전에는 완료로 표시하지 않음
 - 공통 검수표: [`03_portfolio/review-checklist.md`](03_portfolio/review-checklist.md)
+- 현재 완료 계획: [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)
 
 ## 상태
 
@@ -28,7 +29,7 @@
 | `W06` | GitHub Pages 블로그 구현 | 홈, 탐색, 레이아웃, 배포 workflow | 반응형 규칙·링크·접근성·빌드 검수 | `verified` |
 | `W07` | 통합 검수 | 테스트·링크·민감정보·렌더링 결과 | 공통 검수표의 필수 항목과 미검증 한계 기록 | `verified` |
 | `W08` | GitHub 공개 | commit, push, PR, Pages URL | 원격 배포 성공과 공개 URL 응답 확인 | `published` |
-| `W09` | OpsMate 공개 데모와 재현 가능한 운영 | 공개 session UI, model/DB 보호, Docker/Caddy, open·close·reopen, 코드 설명 기준 | 최신 clean verify, 실제 모델·외부 smoke·외부 정책과 양 호스트 rehearsal | `in-progress` |
+| `W09` | OpsMate 공개 데모와 재현 가능한 운영 | 공개 session UI, model/DB 보호, 실제 모델 E2E, Docker/Caddy, open·close·reopen | 최신 regression, public URL·외부 정책과 양 호스트 rehearsal | `in-progress` |
 
 ## 의존성
 
@@ -78,8 +79,8 @@ W08 -> W09
 
 - Spring Boot `3.5.16`, Java `21`, Maven Wrapper `3.9.11`
 - 구매 초안·제출·승인·반려·발주·감사 수직 기능과 서버 주도 `policy.search` 조회 포트 구현; 조회 결과만 모델에 전달하고 모델에는 도구 실행 권한을 부여하지 않음
-- `mvnw.cmd -q clean verify`: 19개 성공, 실패·오류·건너뜀 0개 (`2026-08-03`)
-- 공개 상태: `implemented`, `tested-component`; 실제 오픈웨이트 모델 서버 E2E와 운영 배포는 미검증
+- 과거 baseline `mvnw.cmd -q clean verify`: 19개 성공, 실패·오류·건너뜀 0개 (`2026-08-03`)
+- 이후 W09에서 공개 웹·PostgreSQL·model guard·운영 자산까지 확장
 
 ### W06
 
@@ -87,7 +88,7 @@ W08 -> W09
 - GitHub Pages workflow의 Jekyll 검증, build와 deploy 성공: [Actions run 30782896966](https://github.com/son1004007/engineering-career-portfolio/actions/runs/30782896966)
 - 기본 실제 뷰포트 `1280x720`에서 홈과 공개 문서의 CSS 적용, heading, 탐색과 가로 넘침 없음 확인
 - `52rem`, `32rem` 반응형 규칙, 키보드 focus, skip link, reduced-motion 규칙을 정적으로 검토
-- 검수 한계: 앱 내 실제 모바일 뷰포트 전환이 지원되지 않아 물리 모바일 기기의 최종 시각 검수는 별도 UX 점검 항목으로 남김
+- 검수 한계: 물리 모바일 기기의 최종 시각 검수는 별도 UX 점검 항목으로 남김
 
 ### W07
 
@@ -95,7 +96,7 @@ W08 -> W09
 - Jekyll PR build, Markdown 상대 링크, Pages pretty URL, 공개 텍스트 credential·로컬 경로 검사 성공
 - 공개 홈과 `WORKS`, evidence index, 전략, 체크리스트, AI context, OpsMate, 인증 사례, 회사 근거 경로를 직접 열어 404 없음 확인
 - 전략의 `track-a-flagship` 앵커와 `llms.txt`의 공개 URL을 확인하고 오래된 `.html` 문서 링크가 없음을 확인
-- 모델 서버가 없는 상태는 성공으로 간주하지 않음. 실제 오픈웨이트 모델 E2E와 운영 부하 검증은 계속 미검증으로 표시
+- 이 기록은 `2026-08-03` 당시 공개본의 통합 검수이며 최신 W09 regression을 대체하지 않음
 
 ### W08
 
@@ -113,15 +114,21 @@ W08 -> W09
 - 배포 경계: full-digest app/base/service image, `restart: no`, 분리 network, read-only·최소 권한 container, bounded log와 Caddy access log 미활성
 - 운영 자산: 앱·모델 호스트별 open, normal close, 환경 파일 독립 emergency close, closed verifier와 same-digest reopen 계약
 - 설명 기준: [`03_portfolio/code-explanation-standard.md`](03_portfolio/code-explanation-standard.md)와 핵심 업무 경계의 한국어 Javadoc·주석
-- `mvnw.cmd -q clean verify`: 54개 성공, 실패·오류·건너뜀 0개 (`2026-08-04`)
-- 미검증 gate: 승인된 실제 모델 E2E, public URL·외부 smoke, host egress allowlist, edge/WAF rate limit, 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal
-- 공개 상태: `implemented`, `tested-component`; 위 gate가 끝날 때까지 전체 서비스 `verified` 또는 운영 완료로 표시하지 않음
+- 전체 `mvnw.cmd -q clean verify`: 54개 성공, 실패·오류·건너뜀 0개 (`2026-08-04`)
+- 실제 모델 E2E: 사설 GPU 호스트 Ollama `0.13.5`, `gemma3:12b`, 9/9 성공, 요청·감사 이벤트 각각 9건, 관측 p95 21,076ms, gate `<= 30,000ms`, Maven exit code 0 (`2026-08-23`)
+- 실제 모델 검증 source commit: `ff67df0990cbed3a41cf5051a5e2701a7b2a7b50`; 상세 증거는 [`02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)
+- Office 원격 read-only 검증 경로: disposable detached Git worktree + Bubblewrap로 repository snapshot E2E 성공 (`2026-08-23`); runtime bridge의 상세 증거는 private `device-control`이 Source of Truth
+- 미검증 gate: 최신 commit 기준 전체 regression 재실행, public application URL·외부 smoke, host egress allowlist, edge/WAF rate limit, DB/model 외부 비노출, 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal
+- 공개 상태: `implemented`, `tested-component`; 실제 모델 adapter E2E 경계는 `verified`. 위 외부 운영 gate가 끝날 때까지 전체 서비스 `verified` 또는 운영 완료로 표시하지 않음
 
 ## 다음 실행 순서
 
-1. OpsMate Local 최신 변경분의 전체 `clean verify`, container/config와 문서 검수를 완료합니다.
-2. 승인된 사설 GPU 모델 호스트에서 실제 구조 출력·p95·실패 경계를 검증합니다.
-3. host egress allowlist와 edge/WAF rate limit을 적용한 뒤 public URL 외부 smoke를 수행합니다.
-4. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen을 rehearsal하고 최종 상태를 `CLOSED`로 둡니다.
-5. `03_portfolio/case-study-index.md`의 다음 Java/Spring 사례를 독립 재구현하고 검수합니다.
-6. `evidence/company-github/monthly/`를 월말에 갱신하고 공개 링크와 Pages workflow 상태를 정기 확인합니다.
+상세 체크리스트는 [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)를 Source of Truth로 사용합니다.
+
+1. 상태 문서를 `2026-08-23` 실제 모델 E2E 증거와 동기화합니다.
+2. 최신 commit 기준 OpsMate·인증 샘플·저장소/Jekyll/container regression을 다시 실행합니다.
+3. public application 배포 입력과 보안 경계를 확정합니다.
+4. host egress allowlist와 edge/WAF rate limit을 적용하고 public URL 외부 smoke 및 DB/model 비노출을 검증합니다.
+5. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen을 rehearsal하고 최종 상태를 `CLOSED`로 둡니다.
+6. `03_portfolio/case-study-index.md`의 다음 Java/Spring 사례를 독립 재구현하고 검수합니다.
+7. `evidence/company-github/monthly/`를 월말에 갱신하고 공개 링크와 Pages workflow 상태를 정기 확인합니다.
