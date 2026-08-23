@@ -24,7 +24,7 @@ compose() {
 }
 
 running_services=$(compose ps --status running --services 2>/dev/null || true)
-for service in caddy app migrate db
+for service in caddy app model-tunnel migrate db
 do
     if printf '%s\n' "$running_services" | grep -qx "$service"; then
         fail "$service is still running"
@@ -53,4 +53,4 @@ if command -v curl >/dev/null 2>&1 && [ -n "${DEMO_DOMAIN:-}" ]; then
     fi
 fi
 
-printf '%s\n' "verify-closed: app, database, and live Caddy edge are stopped; database volume retained"
+printf '%s\n' "verify-closed: edge, app, model tunnel and database are stopped; database volume retained"
