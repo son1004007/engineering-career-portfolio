@@ -24,12 +24,21 @@ case "$DEMO_DOMAIN" in
     *.invalid*) fail "DEMO_DOMAIN still contains a placeholder" ;;
 esac
 
+public_port=${DEMO_PUBLIC_PORT:-443}
+printf '%s' "$public_port" | grep -Eq '^[0-9]{1,5}$' || fail "DEMO_PUBLIC_PORT must be numeric"
+[ "$public_port" -ge 1 ] && [ "$public_port" -le 65535 ] || fail "DEMO_PUBLIC_PORT is outside the valid TCP port range"
+
+if [ "$public_port" = "443" ]; then
+    base_url="https://${DEMO_DOMAIN}"
+else
+    base_url="https://${DEMO_DOMAIN}:${public_port}"
+fi
+
 headers_file=$(mktemp)
 cookie_file=$(mktemp)
 page_file=$(mktemp)
 trap 'rm -f "$headers_file" "$cookie_file" "$page_file"' EXIT HUP INT TERM
 
-base_url="https://${DEMO_DOMAIN}"
 attempt=1
 retries=${SMOKE_RETRIES:-18}
 status=000
@@ -66,17 +75,21 @@ esac
 grep -qi '^X-OpsMate-Demo:[[:space:]]*live' "$headers_file" \
     || fail "the live edge marker header is missing"
 
-http_status=$(curl \
-    --silent \
-    --output /dev/null \
-    --write-out '%{http_code}' \
-    --connect-timeout 5 \
-    --max-time 10 \
-    "http://${DEMO_DOMAIN}/" || true)
-case "$http_status" in
-    301 | 302 | 307 | 308) ;;
-    *) fail "plain HTTP was not redirected to HTTPS" ;;
-esac
+# Standard HTTPS deployments also prove port-80 redirect behavior. A non-standard
+# public HTTPS port does not imply that router port 80 is intentionally exposed.
+if [ "$public_port" = "443" ]; then
+    http_status=$(curl \
+        --silent \
+        --output /dev/null \
+        --write-out '%{http_code}' \
+        --connect-timeout 5 \
+        --max-time 10 \
+        "http://${DEMO_DOMAIN}/" || true)
+    case "$http_status" in
+        301 | 302 | 307 | 308) ;;
+        *) fail "plain HTTP was not redirected to HTTPS" ;;
+    esac
+fi
 
 api_status=$(curl \
     --silent \
@@ -135,7 +148,8 @@ require_cookie_attribute() {
         || fail "the ${cookie_name} cookie is missing ${attribute}"
 }
 
-# Execute one complete synthetic persona flow so a wrong model name or broken /api/chat cannot open successfully.
+# Execute one complete synthetic persona flow so a wrong model name or broken
+# /api/chat cannot be reported as a successful public open.
 curl \
     --silent \
     --show-error \
