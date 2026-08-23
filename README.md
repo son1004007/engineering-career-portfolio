@@ -15,9 +15,10 @@ Java/Spring으로 업무 시스템을 개발해 왔습니다. Python/FastAPI 기
 - model single-flight·quota·동시 실행 제한과 모델 오류 `fail-closed`
 - Docker/Caddy, one-shot migration, 최소 권한 runtime DB와 open/close/reopen 자산 구현
 - `2026-08-04` 전체 `clean verify` 54개 성공, 실패·오류·건너뜀 0개
-- 승인된 실제 모델 E2E, 공개 URL·외부 smoke와 양 호스트 close/reopen rehearsal은 아직 미검증
+- `2026-08-23` 사설 GPU Ollama `gemma3:12b` 실제 모델 E2E 9/9 성공, 관측 p95 21,076ms (`<= 30,000ms` gate)
+- 공개 URL·외부 smoke와 양 호스트 close/reopen rehearsal은 아직 미검증
 
-[프로젝트 설명과 코드](02_projects/opsmate-local/README.md)
+[프로젝트 설명과 코드](02_projects/opsmate-local/README.md) · [실제 모델 E2E 증적](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)
 
 ### Spring Security 인증 통합 사례
 
@@ -69,4 +70,4 @@ python -B -m unittest discover -s tests -p "test_*.py" -v
 
 ## 공개 범위
 
-이 저장소에는 회사 코드, 고객 데이터, 내부 URL, 접속 정보와 실제 업무 규칙을 포함하지 않습니다. 실무 사례는 본인이 담당한 문제를 일반화해 설명하고, 공개 코드는 합성 데이터로 별도 구현합니다. 실제 모델 E2E, 외부 배포나 운영 rehearsal처럼 확인하지 않은 항목은 프로젝트 문서에 따로 명시합니다.
+이 저장소에는 회사 코드, 고객 데이터, 내부 URL, 접속 정보와 실제 업무 규칙을 포함하지 않습니다. 실무 사례는 본인이 담당한 문제를 일반화해 설명하고, 공개 코드는 합성 데이터로 별도 구현합니다. 외부 배포나 운영 rehearsal처럼 확인하지 않은 항목은 프로젝트 문서에 따로 명시합니다.

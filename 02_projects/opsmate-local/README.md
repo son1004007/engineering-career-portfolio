@@ -2,7 +2,7 @@
 
 OpsMate Local은 자연어 구매 요청을 정책 근거가 연결된 초안으로 만들고, 사람의 승인 이후에만 발주를 생성하는 Java/Spring 포트폴리오 프로젝트입니다. 모델은 구조화된 초안만 제안하고, 권한·상태 전이·멱등성·트랜잭션과 발주는 Spring 서비스와 데이터베이스가 최종 통제합니다.
 
-현재 공개 웹 데모, 방문자별 workspace 격리, PostgreSQL migration, 모델 호출 보호, Docker/Caddy 배포와 닫기·다시 열기 자산까지 구현했습니다. `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했고 실패·오류·건너뜀은 0개였습니다. 승인된 실제 모델 E2E, 공개 URL, 외부 smoke test, 호스트 egress allowlist와 edge/WAF rate limit, 애플리케이션·모델 양쪽 호스트의 close/reopen rehearsal은 아직 검증하지 않았으므로 전체 상태는 `tested-component`입니다.
+현재 공개 웹 데모, 방문자별 workspace 격리, PostgreSQL migration, 모델 호출 보호, Docker/Caddy 배포와 닫기·다시 열기 자산까지 구현했습니다. `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했고 실패·오류·건너뜀은 0개였습니다. `2026-08-23` 사설 GPU 호스트의 Ollama `gemma3:12b`로 실제 모델 E2E 9/9와 관측 p95 21,076ms(`<= 30,000ms` gate)를 확인했습니다. 공개 URL, 외부 smoke test, 호스트 egress allowlist와 edge/WAF rate limit, 애플리케이션·모델 양쪽 호스트의 close/reopen rehearsal은 아직 검증하지 않았으므로 전체 상태는 `tested-component`입니다.
 
 ## 구현 범위
 
@@ -84,11 +84,13 @@ DRAFT -> PENDING_APPROVAL -> APPROVED -> ORDERED
 | Docker/Caddy, 고정 digest, `restart: no`, 제한 로그·권한·네트워크 | `implemented`, 구성 검증 자산 존재 |
 | 앱 호스트와 모델 호스트의 open/normal close/emergency close/closed 확인 | `implemented`, 실제 양 호스트 rehearsal 미검증 |
 | 최신 전체 `clean verify` | 2026-08-04, 54개 성공, 실패·오류·건너뜀 0개 |
-| 승인된 실제 오픈웨이트 모델 9개 합성 prompt E2E | 미검증 |
+| 승인된 실제 오픈웨이트 모델 9개 합성 prompt E2E | `2026-08-23 PASS`, `gemma3:12b`, 9/9, 관측 p95 21,076ms (`<= 30,000ms`) |
 | 공개 URL·외부 모바일 smoke·외부 포트 차단 | 미검증 |
 | host egress allowlist·edge/WAF 익명 요청 rate limit 증거 | 외부 배포 gate, 미검증 |
 
-모델이 비활성 또는 사용할 수 없는 상태이면 해당 초안 생성은 저장 전에 중단되므로 그 요청에서 구매 요청이나 후속 발주가 만들어지지 않습니다. 이미 제출된 요청의 승인·반려·발주는 모델 가용성과 분리됩니다. 실제 모델의 생성 품질·응답 시간·GPU 요구량은 승인된 모델 호스트에서 별도로 측정해야 합니다.
+실제 모델 E2E의 환경·명령·측정 경계는 [`docs/REAL_MODEL_E2E_EVIDENCE.md`](docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록했습니다. 이 결과는 9개 합성 요청과 해당 GPU 호스트에 한정된 관측값이며 일반적인 생성 품질이나 용량 계획을 보장하지 않습니다.
+
+모델이 비활성 또는 사용할 수 없는 상태이면 해당 초안 생성은 저장 전에 중단되므로 그 요청에서 구매 요청이나 후속 발주가 만들어지지 않습니다. 이미 제출된 요청의 승인·반려·발주는 모델 가용성과 분리됩니다.
 
 ## 열기, 닫기, 다시 열기
 
@@ -107,6 +109,7 @@ reopen은 이전에 검증한 애플리케이션 image의 정확한 digest와 �
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md): 신뢰 경계, 상태 전이, 데이터·모델·배포 통제
 - [`SETUP.md`](SETUP.md): 로컬 빌드, 테스트, 실제 모델 E2E와 배포 전 준비
+- [`docs/REAL_MODEL_E2E_EVIDENCE.md`](docs/REAL_MODEL_E2E_EVIDENCE.md): 실제 모델 9개 합성 요청 E2E의 환경·측정·남은 경계
 - [`docs/PUBLIC_DEMO.md`](docs/PUBLIC_DEMO.md): 공개 UI와 배포 완료 검수 기준
 - [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md): 위협, 구현 통제와 외부 검증 gate
 - [`docs/SERVICE_RUNBOOK.md`](docs/SERVICE_RUNBOOK.md): 앱·모델 호스트의 open/close/reopen 절차
