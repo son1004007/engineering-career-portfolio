@@ -39,8 +39,12 @@ chmod 600 "$KEY_FILE"
 ssh-keygen -y -f "$KEY_FILE" >/dev/null 2>&1 \
     || fail "office tunnel private key is invalid"
 
-# The tunnel exposes Ollama only to the Docker-internal model_link network.
-# The Office-side target remains loopback-only; no Ollama public listener is created.
+# The NAS trust store contains the reviewed Office Ed25519 host key only. Pin the
+# client algorithm as well so an older SSH client cannot prefer another Office
+# host-key type and bypass that exact trust boundary.
+#
+# The tunnel exposes Ollama only to the Docker-internal model_link network. The
+# Office-side target remains loopback-only; no Ollama public listener is created.
 printf '%s\n' "model-tunnel: opening restricted SSH forwarding path"
 exec ssh \
     -F /dev/null \
@@ -52,6 +56,7 @@ exec ssh \
     -o IdentitiesOnly=yes \
     -o PasswordAuthentication=no \
     -o StrictHostKeyChecking=yes \
+    -o HostKeyAlgorithms=ssh-ed25519 \
     -o UserKnownHostsFile="$KNOWN_HOSTS" \
     -o ExitOnForwardFailure=yes \
     -o ServerAliveInterval=30 \
