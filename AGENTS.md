@@ -1,5 +1,13 @@
 # AGENTS.md
 
+## Global AI Control
+
+This repository participates in the owner's shared GitHub AI control plane.
+
+When GitHub access is available, before substantive work read `son1004007/ai-agent-workflow-playbook/CONTROL.md`, then return here and follow this repository's local rules and current-state documents. The global control defines cross-repository discovery, Official-Source-First behavior, shared verification rules, and remote-runtime resolution. **This repository remains the source of truth for portfolio code, implementation state, tests, public content and backlog.**
+
+If the private global control is unavailable, continue from this file and repository evidence. Never weaken public-disclosure, security or verification rules because the global control cannot be read.
+
 ## Repository Purpose
 This repository is a public engineering portfolio.
 Its purpose is to show:
@@ -7,7 +15,7 @@ Its purpose is to show:
 2. what kinds of systems he designs and builds
 3. how he documents, implements, and validates work
 
-When an AI receives only this repository URL, it must read `AI_CONTEXT.md`, `WORKS.md`, `03_portfolio/portfolio-strategy.md`, `03_portfolio/case-study-index.md`, `evidence/company-github/README.md`, and `03_portfolio/evidence-index.md` first. This repository is a public evidence source, not the authority for private job-choice constraints or offer decisions.
+When an AI receives only this repository URL, it must read `AI_CONTEXT.md`, `WORKS.md`, `TASKS.md`, `03_portfolio/portfolio-strategy.md`, `03_portfolio/case-study-index.md`, `evidence/company-github/README.md`, and `03_portfolio/evidence-index.md` first. This repository is a public evidence source, not the authority for private job-choice constraints or offer decisions.
 
 ## Public Repository Rule
 Do not add private job-search notes, company comparisons, support decisions, or internal-only memos.
@@ -21,7 +29,7 @@ For company GitHub evidence, publish only sanitized metadata and reviewed career
 
 Keep the two portfolio tracks separate and complementary:
 
-1. `OpsMate Local` is the implemented flagship candidate that demonstrates safe AI Agent integration with enterprise transactions. Keep its `tested-component` boundary explicit until a real local-model E2E run succeeds.
+1. `OpsMate Local` is the implemented flagship candidate that demonstrates safe AI Agent integration with enterprise transactions. A real private `gemma3:12b` E2E was verified on `2026-08-23`; keep the overall `tested-component` boundary explicit until public URL/external network gates and close/reopen rehearsal are verified.
 2. Case-study posts demonstrate existing Java/Spring, SQL, authentication, deployment, and operations depth.
 
 Do not position the owner as an ML model researcher. The target identity is a Java/Spring enterprise backend and platform engineer who can safely integrate open-weight LLM and Agent capabilities.
@@ -114,7 +122,8 @@ Each published case study should include:
 - `chore:` maintenance work
 
 ## Current Project Priority
-1. keep the GitHub Pages site and published evidence links healthy
-2. connect `02_projects/opsmate-local` to an authorized open-weight model server and record an E2E result without adding a paid API fallback
-3. independently reconstruct and verify the next Java/Spring case from `03_portfolio/case-study-index.md`
-4. repair or archive the older partial samples only when they strengthen the two primary tracks
+1. synchronize public/state documents with the verified `2026-08-23` OpsMate real-model E2E evidence
+2. finish OpsMate public URL/external smoke, network exposure/policy gates and close/reopen rehearsal without adding a paid API fallback
+3. keep the GitHub Pages site and published evidence links healthy, including physical mobile verification when practical
+4. independently reconstruct and verify the next Java/Spring case from `03_portfolio/case-study-index.md`
+5. repair or archive the older partial samples only when they strengthen the two primary tracks
