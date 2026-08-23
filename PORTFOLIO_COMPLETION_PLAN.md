@@ -57,11 +57,15 @@ container job은 shell syntax, Compose config, Caddy config, non-root image, one
 
 사용자 작업: 없음.
 
-### P20. OpsMate public application 배포 준비 — `blocked-user`
+### P20. OpsMate public application 배포 준비 — `in-progress`
 
 목표: 실제 인터넷에서 접근 가능한 애플리케이션 URL을 만들되 DB와 모델 endpoint는 공개하지 않는다.
 
 - [x] 현재 배포 자산과 target runtime 재점검
+- [x] 모델 호스트 사용 권한 확인: 조직 승인 확인됨
+- [x] app-host 후보 확정: 개인 Synology NAS
+- [x] model-host 후보 확정: Office GPU 서버
+- [ ] NAS↔Office 모델 전용 연결 방식의 실제 runtime preflight
 - [ ] 공개 hostname/TLS 방식 확정
 - [x] app runtime secret 주입 경로 확인: 실제 값은 target-local `deploy/.env`에만 저장하고 Git/Issue/CI log에는 남기지 않음
 - [x] immutable image digest와 one-shot migration 절차 확인: CI에서 non-root image와 migration rehearsal 성공
@@ -70,20 +74,15 @@ container job은 shell syntax, Compose config, Caddy config, non-root image, one
 확인 결과:
 
 1. public deploy 설정의 `DEMO_DOMAIN`은 아직 예시값이며 실제 hostname이 확정되지 않았다.
-2. 개인 Synology NAS는 Docker/Compose가 검증된 개인 소유 container host이며 app-host 후보로 검토할 수 있다. `device-control`의 Synology target은 Tailscale이 아니라 공인 SSH endpoint `son1004007.synology.me:65022`를 사용하고 read-only E2E가 검증됐다. 이는 NAS가 tailnet 전용이라는 뜻이 아니다. 다만 OpsMate의 별도 public HTTPS application ingress는 아직 구성·검증되지 않았다.
-3. Office GPU 서버는 회사 소유 자산이다. `2026-08-23` 실제 `gemma3:12b` adapter E2E는 검증됐지만, **외부 개인 포트폴리오 방문자의 추론 요청을 이 회사 자산에서 처리해도 된다는 명시적 승인 증거는 현재 repository/control/runtime evidence에서 확인되지 않았다.**
-4. IDC Docker 서버 역시 회사 소유이므로 승인 없이 public app-host로 사용하지 않는다.
-5. 회사 소유 GPU의 public-traffic 사용 승인 전에는 model proxy, VPN/tunnel, public app 연결이나 공개 포트를 구성하지 않는다.
+2. 개인 Synology NAS는 Docker/Compose가 검증된 개인 소유 container host이며 app-host로 사용한다. `device-control`의 Synology target은 Tailscale이 아니라 공인 SSH endpoint `son1004007.synology.me:65022`를 사용하고 read-only E2E가 검증됐다. 이는 NAS가 tailnet 전용이라는 뜻이 아니다. OpsMate의 별도 public HTTPS application ingress는 아직 구성·검증되지 않았다.
+3. Office GPU 서버는 조직 승인을 받아 외부 개인 포트폴리오 데모의 모델 추론 용도로 사용할 수 있다. 공개 저장소에는 승인 주체·내부 문서 원문을 기록하지 않고 승인 경계만 기록한다.
+4. `2026-08-23` Office GPU의 Ollama `gemma3:12b` 실제 adapter E2E는 9/9 성공했고 관측 p95 21,076ms로 30초 gate를 통과했다.
+5. 모델 API/Ollama 자체 포트를 인터넷에 공개하지 않는다. NAS가 Office의 기존 승인 SSH 경로를 사용해 제한된 모델 연결을 만드는 방식을 우선 검토한다.
+6. IDC Docker 서버는 이번 공개 포트폴리오 배포 경로에서 제외한다.
 
-현재 사용자 작업:
+현재 사용자 작업: **없음**. GitHub와 기존 허용 runtime으로 NAS/Office read-only preflight를 먼저 수행한다. 공유기/DSM UI, DNS, 방화벽 또는 계정 승인이 실제 blocker가 될 때만 한 가지 작업으로 요청한다.
 
-- **회사 Office GPU 서버를 외부 개인 포트폴리오 데모의 모델 추론 용도로 사용하는 것이 명시적으로 허용되는지 확인한다.**
-- 승인됐다면 비밀값이나 내부 문서를 전달할 필요 없이 `승인됨`과 허용 범위(예: 외부 포트폴리오 요청 처리 가능, 사용 기간/시간 제한 여부)만 알려준다.
-- 승인되지 않았거나 확인할 수 없으면 `승인 없음`이라고 알려준다. 그러면 회사 장비를 제외하고 개인/외부 모델 호스트 대안으로 설계를 변경한다.
-
-이 승인 여부가 확정되기 전에는 hostname/DNS나 public edge 계정을 먼저 만들지 않는다. 모델 호스트 경계가 확정된 뒤 가장 적은 추가 계정·비용으로 public ingress를 선택한다.
-
-완료 조건: 모델 호스트 사용 권한, app host, 공개 hostname/TLS, secret 주입 경로와 보안 경계가 확정되고 실제 target에서 공개 전 preflight가 성공한다.
+완료 조건: NAS↔Office 모델 연결, app host, 공개 hostname/TLS, secret 주입 경로와 보안 경계가 확정되고 실제 target에서 공개 전 preflight가 성공한다.
 
 ### P30. 외부 네트워크·보안 gate — `pending`
 
@@ -143,9 +142,9 @@ container job은 shell syntax, Compose config, Caddy config, non-root image, one
 
 ## 현재 사용자에게 필요한 작업
 
-`P00`과 `P10`은 사용자 작업 없이 완료했다.
+`P00`과 `P10`은 사용자 작업 없이 완료했다. Office GPU의 공개 포트폴리오 추론 사용 승인도 확인됐다.
 
-현재 필요한 작업은 P20의 **회사 Office GPU 서버 public-traffic 사용 승인 여부 확인 한 가지**다. 승인 여부가 정해지기 전에는 회사 장비에 공개 트래픽 경로를 만들거나 외부 서비스를 임의로 구독하지 않는다.
+현재 즉시 필요한 사용자 작업은 **없음**. P20 runtime preflight와 설계 확정을 계속 수행한다. 사용자만 가능한 공유기/DSM/DNS/보안 승인이 실제 blocker가 되었을 때 그 한 가지 작업만 요청한다.
 
 ## 완료 판정
 
