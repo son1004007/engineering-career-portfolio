@@ -29,8 +29,8 @@ command -v tr >/dev/null 2>&1 || fail "tr is required"
 docker info >/dev/null 2>&1 || fail "docker daemon is unavailable"
 compose config --quiet >/dev/null 2>&1 || fail "docker compose configuration is invalid"
 
-printf '%s\n' "close-demo: stopping the public Caddy service"
-compose stop --timeout 30 caddy >/dev/null 2>&1 || fail "public Caddy service could not be stopped"
+printf '%s\n' "close-demo: stopping the loopback Nginx edge"
+compose stop --timeout 30 edge >/dev/null 2>&1 || fail "loopback edge could not be stopped"
 
 printf '%s\n' "close-demo: draining and stopping the application before data deletion"
 compose stop --timeout 45 app >/dev/null 2>&1 || fail "application service could not be stopped"
@@ -38,11 +38,11 @@ compose stop --timeout 45 app >/dev/null 2>&1 || fail "application service could
 printf '%s\n' "close-demo: stopping the Office model tunnel"
 compose stop --timeout 15 model-tunnel >/dev/null 2>&1 || fail "model tunnel could not be stopped"
 
-# The public edge, write-capable app and model transport must all be closed before
-# synthetic data is purged. This avoids late application writes and ensures the
-# model path is not left open after the demo closes.
-still_running=$(compose ps --status running --services caddy app model-tunnel 2>/dev/null || fail "stopped-service state could not be verified")
-[ -z "$still_running" ] || fail "Caddy, application or model tunnel is still running; synthetic data was not deleted"
+# The edge, write-capable app and model transport must all be closed before
+# synthetic data is purged. This avoids late writes and ensures the model path
+# is not left open after the demo closes.
+still_running=$(compose ps --status running --services edge app model-tunnel 2>/dev/null || fail "stopped-service state could not be verified")
+[ -z "$still_running" ] || fail "edge, application or model tunnel is still running; synthetic data was not deleted"
 
 purge_failed=0
 if ! compose up --detach --wait --wait-timeout "${DB_WAIT_SECONDS:-90}" db >/dev/null; then
