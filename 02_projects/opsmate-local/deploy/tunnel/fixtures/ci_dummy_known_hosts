@@ -1,0 +1,2 @@
+# CI-only placeholder. Real deployments use a verified Office SSH host-key file.
+example.invalid ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICIONLYPLACEHOLDERNOTAREALHOSTKEY0000000
