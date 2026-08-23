@@ -11,126 +11,163 @@ on:
       - '02_projects/opsmate-local/deploy/tunnel/**'
       - '.github/workflows/publish-opsmate-images.yml'
   workflow_dispatch:
+  issues:
+    types: [opened]
 
 permissions:
   contents: read
   packages: write
+  issues: write
 
 concurrency:
-  group: opsmate-image-publish-${{ github.ref }}
+  group: opsmate-image-publish-${{ github.repository }}
   cancel-in-progress: false
 
 jobs:
   publish:
+    if: github.event_name != 'issues' || github.event.issue.title == '[opsmate-image-publish]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Resolve source commit
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="$(git rev-parse HEAD)"
+          [[ "$source_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
-        env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
-
-      - name: Prepare Buildx
-        shell: bash
-        run: |
-          set -euo pipefail
-          docker buildx version
-          docker buildx inspect --bootstrap
+        id: login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish application image
         id: app
-        shell: bash
-        run: |
-          set -euo pipefail
-          owner="${GITHUB_REPOSITORY_OWNER,,}"
-          tag="ghcr.io/${owner}/opsmate-local:${GITHUB_SHA}"
-          metadata="$RUNNER_TEMP/opsmate-app-metadata.json"
-
-          docker buildx build \
-            --platform linux/amd64 \
-            --provenance=true \
-            --sbom=true \
-            --push \
-            --metadata-file "$metadata" \
-            --tag "$tag" \
-            ./02_projects/opsmate-local
-
-          digest="$(python3 - "$metadata" <<'PY'
-          import json, sys
-          with open(sys.argv[1], encoding='utf-8') as handle:
-              metadata = json.load(handle)
-          digest = metadata.get('containerimage.digest', '')
-          if not digest.startswith('sha256:') or len(digest) != 71:
-              raise SystemExit('missing or invalid application image digest')
-          print(digest)
-          PY
-          )"
-          ref="${tag%@*}@${digest}"
-          echo "ref=$ref" >> "$GITHUB_OUTPUT"
-          printf 'OPSMATE_APP_IMAGE=%s\n' "$ref" | tee "$RUNNER_TEMP/opsmate-app-ref.txt"
+        uses: docker/build-push-action@v6
+        with:
+          context: ./02_projects/opsmate-local
+          platforms: linux/amd64
+          push: true
+          provenance: true
+          sbom: true
+          tags: ghcr.io/son1004007/opsmate-local:${{ steps.source.outputs.sha }}
 
       - name: Publish model tunnel image
         id: tunnel
-        shell: bash
-        run: |
-          set -euo pipefail
-          owner="${GITHUB_REPOSITORY_OWNER,,}"
-          tag="ghcr.io/${owner}/opsmate-model-tunnel:${GITHUB_SHA}"
-          metadata="$RUNNER_TEMP/opsmate-tunnel-metadata.json"
-
-          docker buildx build \
-            --platform linux/amd64 \
-            --provenance=true \
-            --sbom=true \
-            --push \
-            --metadata-file "$metadata" \
-            --tag "$tag" \
-            ./02_projects/opsmate-local/deploy/tunnel
-
-          digest="$(python3 - "$metadata" <<'PY'
-          import json, sys
-          with open(sys.argv[1], encoding='utf-8') as handle:
-              metadata = json.load(handle)
-          digest = metadata.get('containerimage.digest', '')
-          if not digest.startswith('sha256:') or len(digest) != 71:
-              raise SystemExit('missing or invalid tunnel image digest')
-          print(digest)
-          PY
-          )"
-          ref="${tag%@*}@${digest}"
-          echo "ref=$ref" >> "$GITHUB_OUTPUT"
-          printf 'OPSMATE_TUNNEL_IMAGE=%s\n' "$ref" | tee "$RUNNER_TEMP/opsmate-tunnel-ref.txt"
+        uses: docker/build-push-action@v6
+        with:
+          context: ./02_projects/opsmate-local/deploy/tunnel
+          platforms: linux/amd64
+          push: true
+          provenance: true
+          sbom: true
+          tags: ghcr.io/son1004007/opsmate-model-tunnel:${{ steps.source.outputs.sha }}
 
       - name: Verify immutable pulls
+        id: verify
         env:
-          APP_REF: ${{ steps.app.outputs.ref }}
-          TUNNEL_REF: ${{ steps.tunnel.outputs.ref }}
+          APP_DIGEST: ${{ steps.app.outputs.digest }}
+          TUNNEL_DIGEST: ${{ steps.tunnel.outputs.digest }}
         shell: bash
         run: |
           set -euo pipefail
-          docker pull --platform linux/amd64 "$APP_REF"
-          docker pull --platform linux/amd64 "$TUNNEL_REF"
-          docker image inspect "$APP_REF" >/dev/null
-          docker image inspect "$TUNNEL_REF" >/dev/null
+          [[ "$APP_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$TUNNEL_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          app_ref="ghcr.io/son1004007/opsmate-local@${APP_DIGEST}"
+          tunnel_ref="ghcr.io/son1004007/opsmate-model-tunnel@${TUNNEL_DIGEST}"
+          docker pull --platform linux/amd64 "$app_ref" >/dev/null
+          docker pull --platform linux/amd64 "$tunnel_ref" >/dev/null
+          docker image inspect "$app_ref" >/dev/null
+          docker image inspect "$tunnel_ref" >/dev/null
+          echo "app_ref=$app_ref" >> "$GITHUB_OUTPUT"
+          echo "tunnel_ref=$tunnel_ref" >> "$GITHUB_OUTPUT"
 
       - name: Record release digests
+        if: success()
         env:
-          APP_REF: ${{ steps.app.outputs.ref }}
-          TUNNEL_REF: ${{ steps.tunnel.outputs.ref }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          APP_REF: ${{ steps.verify.outputs.app_ref }}
+          TUNNEL_REF: ${{ steps.verify.outputs.tunnel_ref }}
         shell: bash
         run: |
           set -euo pipefail
           {
             echo '## OpsMate immutable images'
             echo
-            echo "Source commit: \`$GITHUB_SHA\`"
+            echo "Source commit: \`$SOURCE_SHA\`"
             echo
             echo "- Application: \`$APP_REF\`"
             echo "- Model tunnel: \`$TUNNEL_REF\`"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report controlled publish result
+        if: always() && github.event_name == 'issues'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          APP_REF: ${{ steps.verify.outputs.app_ref }}
+          TUNNEL_REF: ${{ steps.verify.outputs.tunnel_ref }}
+          LOGIN_OUTCOME: ${{ steps.login.outcome }}
+          APP_OUTCOME: ${{ steps.app.outcome }}
+          TUNNEL_OUTCOME: ${{ steps.tunnel.outcome }}
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$VERIFY_OUTCOME" = success ]; then
+            body=$(cat <<EOF
+## OpsMate image publish result
+
+- status: SUCCESS
+- source_commit: \`$SOURCE_SHA\`
+- application: \`$APP_REF\`
+- model_tunnel: \`$TUNNEL_REF\`
+- immutable_pull_verify: PASS
+EOF
+)
+          else
+            body=$(cat <<EOF
+## OpsMate image publish result
+
+- status: FAILED
+- source_commit: \`${SOURCE_SHA:-unknown}\`
+- registry_login: \`$LOGIN_OUTCOME\`
+- application_publish: \`$APP_OUTCOME\`
+- tunnel_publish: \`$TUNNEL_OUTCOME\`
+- immutable_pull_verify: \`$VERIFY_OUTCOME\`
+
+No credential values are included. Inspect the workflow job logs for the failing fixed step.
+EOF
+)
+          fi
+          gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$body"
+
+      - name: Enforce publish success
+        if: always()
+        env:
+          LOGIN_OUTCOME: ${{ steps.login.outcome }}
+          APP_OUTCOME: ${{ steps.app.outcome }}
+          TUNNEL_OUTCOME: ${{ steps.tunnel.outcome }}
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "$LOGIN_OUTCOME" = success ]
+          [ "$APP_OUTCOME" = success ]
+          [ "$TUNNEL_OUTCOME" = success ]
+          [ "$VERIFY_OUTCOME" = success ]
