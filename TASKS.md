@@ -2,12 +2,13 @@
 
 This file defines the current work queue for the portfolio.
 
-The active execution ledger, dependencies and verification evidence are maintained in [`WORKS.md`](WORKS.md). This file keeps the long-term backlog.
+The active execution ledger, dependencies and verification evidence are maintained in [`WORKS.md`](WORKS.md). The ordered completion sequence is maintained in [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md). This file keeps the long-term backlog.
 
 ## Rules
 - Always work from top to bottom
 - Complete each task fully before moving on
 - Each task must include design, implementation, and test
+- Do not repeat a verification gate already supported by current evidence; preserve the evidence and continue from the next unverified boundary
 
 ---
 
@@ -23,12 +24,12 @@ The active execution ledger, dependencies and verification evidence are maintain
 - before leaving the employer, create a final departure snapshot
 
 ### 1. OpsMate Local final verification and controlled deployment
-- finish the latest `clean verify`, container/config checks and documentation consistency review
+- synchronize all public/state documents with the `2026-08-23` real-model evidence
+- rerun latest `clean verify`, container/config checks, repository publication checks and documentation consistency review
+- retain the verified real-model evidence: Ollama `gemma3:12b`, synthetic request 9/9, p95 21,076ms within the 30,000ms gate
 - use only an authorized private open-weight model endpoint; no paid API fallback
-- verify real structured-output success, p95, timeout, malformed output and model-unavailable behavior
-- verify the implemented single-flight, workspace/global quota, queue/follower and concurrency limits against the real model boundary
 - apply and retain evidence for app-host egress allowlisting and public edge/WAF rate limiting
-- verify the public URL, external smoke and DB/model non-exposure
+- verify the public application URL, external smoke and DB/model non-exposure
 - rehearse app/model normal close, environment-independent emergency close and same-image-digest reopen
 - leave both hosts closed after validation and record only generalized results without access details
 
@@ -41,6 +42,7 @@ The active execution ledger, dependencies and verification evidence are maintain
 ### 3. portfolio publication maintenance
 - check Pages deployment and public links after material changes
 - keep status badges, test counts and limitations synchronized
+- perform physical mobile UX verification when practical
 - refresh sanitized company GitHub evidence at the defined review interval
 
 ### 4. older sample disposition
@@ -57,3 +59,4 @@ A task is complete only when:
 - tests exist
 - tests pass
 - documentation matches implementation
+- any external/runtime gate claimed as complete has bounded execution evidence
