@@ -70,7 +70,7 @@ container job은 shell syntax, Compose config, Caddy config, non-root image, one
 확인 결과:
 
 1. public deploy 설정의 `DEMO_DOMAIN`은 아직 예시값이며 실제 hostname이 확정되지 않았다.
-2. 개인 Synology NAS는 Docker/Compose와 Tailscale이 검증된 개인 소유 container host이므로 app-host 후보로 검토할 수 있다. 현재 확인된 서비스 노출은 tailnet 전용이며 OpsMate의 public ingress는 아직 구성되지 않았다.
+2. 개인 Synology NAS는 Docker/Compose가 검증된 개인 소유 container host이며 app-host 후보로 검토할 수 있다. `device-control`의 Synology target은 Tailscale이 아니라 공인 SSH endpoint `son1004007.synology.me:65022`를 사용하고 read-only E2E가 검증됐다. 이는 NAS가 tailnet 전용이라는 뜻이 아니다. 다만 OpsMate의 별도 public HTTPS application ingress는 아직 구성·검증되지 않았다.
 3. Office GPU 서버는 회사 소유 자산이다. `2026-08-23` 실제 `gemma3:12b` adapter E2E는 검증됐지만, **외부 개인 포트폴리오 방문자의 추론 요청을 이 회사 자산에서 처리해도 된다는 명시적 승인 증거는 현재 repository/control/runtime evidence에서 확인되지 않았다.**
 4. IDC Docker 서버 역시 회사 소유이므로 승인 없이 public app-host로 사용하지 않는다.
 5. 회사 소유 GPU의 public-traffic 사용 승인 전에는 model proxy, VPN/tunnel, public app 연결이나 공개 포트를 구성하지 않는다.
