@@ -2,12 +2,12 @@
 
 ## 문서 상태
 
-- 상태: 운영 자산 `implemented`, 실제 양 호스트 rehearsal `unverified`
+- 상태: 운영 자산 `implemented`, 실제 모델 adapter E2E `verified`, 실제 양 호스트 rehearsal `unverified`
 - 목적: 필요한 기간에만 서비스를 열고, 개발·검증 뒤 안전하게 닫았다가 같은 artifact로 다시 여는 절차
 - 기본 상태: `CLOSED`
 - 공개 금지: credential, host/IP, 내부 URL, VPN 정보와 승인 문서 원문
 
-현재 저장소에는 앱·모델 호스트의 open, normal close, emergency close와 closed verification 스크립트가 있습니다. `2026-08-04` 전체 `clean verify`는 54개 테스트 성공, 실패·오류·건너뜀 0개였습니다. 그러나 승인된 실제 모델 호스트, 공개 URL과 양 호스트를 사용한 전체 rehearsal은 아직 수행하지 않았습니다. 스크립트 존재를 실제 운영 완료로 해석하지 않습니다.
+현재 저장소에는 앱·모델 호스트의 open, normal close, emergency close와 closed verification 스크립트가 있습니다. `2026-08-23` 최신 PR regression에서 OpsMate `clean verify`, container/config 검증, non-root image build와 one-shot migration rehearsal이 모두 성공했습니다. 같은 날 사설 GPU 호스트의 Ollama `gemma3:12b` 실제 모델 adapter E2E도 9/9와 p95 21,076ms(`<= 30,000ms`)로 성공했습니다. 다만 공개 포트폴리오 트래픽용 model-host 배포 gate, 공개 URL과 양 호스트를 사용한 전체 lifecycle rehearsal은 아직 수행하지 않았습니다. 스크립트 존재나 제한된 실제 모델 E2E를 실제 공개 운영 완료로 해석하지 않습니다.
 
 ## 두 호스트의 책임
 
@@ -58,6 +58,8 @@ deploy/model-host/.env.example
 - [ ] Ollama 자체 host port는 노출하지 않음
 - [ ] Ollama image full digest, 모델 tag와 실제 content ID를 고정함
 - [ ] 한 GPU만 선택하고 다른 workload를 변경하지 않음
+
+`2026-08-23` 실제 모델 adapter E2E는 모델 호환성·구조화 출력·서버 검증·저장 경계를 확인한 증거입니다. 위 체크리스트는 **공개 포트폴리오 트래픽을 처리하는 실제 model-host 운영 gate**이므로 별도로 충족해야 합니다.
 
 모델 `open-model.sh`는 승인 flag가 정확히 `YES`인지 Docker, GPU, network 또는 model 작업보다 먼저 확인합니다. 승인이 없으면 여기서 중단하고 유료 API나 다른 모델로 자동 전환하지 않습니다.
 
@@ -275,4 +277,4 @@ host, IP, 계정, 내부 URL, VPN route, token과 승인 문서 원문은 기록
 - close 뒤 합성 workspace 삭제와 외부 접근 차단 확인
 - 공개 문서와 evidence label이 실제 결과와 일치
 
-현재는 배포 자산까지 구현했지만 실제 승인 모델·공개 URL·외부 정책·양 호스트 rehearsal이 남아 있습니다. 따라서 서비스가 실제로 열려 있거나 운영 검증이 끝났다고 표시하지 않습니다.
+현재 실제 모델 adapter E2E와 최신 CI regression은 검증됐습니다. 공개 포트폴리오 트래픽용 model-host 운영 gate, public URL·외부 정책·양 호스트 lifecycle rehearsal은 남아 있습니다. 따라서 서비스가 실제로 열려 있거나 운영 검증이 끝났다고 표시하지 않습니다.
