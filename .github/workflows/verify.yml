@@ -84,17 +84,12 @@ jobs:
       - name: Validate shell syntax
         run: |
           sh -n deploy/open-demo.sh deploy/close-demo.sh deploy/emergency-close.sh deploy/smoke-test.sh deploy/verify-closed.sh
-          sh -n deploy/postgres/init-roles.sh
-          sh -n deploy/model-host/open-model.sh deploy/model-host/close-model.sh deploy/model-host/emergency-close.sh deploy/model-host/verify-private.sh
+          sh -n deploy/postgres/init-roles.sh deploy/tunnel/tunnel-entrypoint.sh
 
       - name: Validate Compose configuration
-        env:
-          OLLAMA_IMAGE: ollama/ollama@sha256:0000000000000000000000000000000000000000000000000000000000000000
-        run: |
-          docker compose --env-file deploy/.env.example --file deploy/compose.yml config --quiet
-          docker compose --env-file deploy/model-host/.env.example --file deploy/model-host/compose.yml config --quiet
+        run: docker compose --env-file deploy/.env.example --file deploy/compose.yml config --quiet
 
-      - name: Validate Caddy configuration
+      - name: Validate public Caddy configuration
         run: |
           docker run --rm \
             -e DEMO_DOMAIN=demo.example.com \
@@ -102,21 +97,32 @@ jobs:
             -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
             caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c \
             caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
-          docker run --rm \
-            -e MODEL_PROXY_TOKEN=synthetic-token-with-at-least-32-characters \
-            -v "$PWD/deploy/model-host/Caddyfile:/etc/caddy/Caddyfile:ro" \
-            caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c \
-            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 
-      - name: Build non-root application image
+      - name: Build non-root application and tunnel images
         run: |
           docker build --check .
           docker build --tag opsmate-local:ci .
           test "$(docker image inspect --format '{{.Config.User}}' opsmate-local:ci)" = "opsmate:opsmate"
 
+          docker build --check --file deploy/tunnel/Dockerfile deploy/tunnel
+          docker build --tag opsmate-model-tunnel:ci --file deploy/tunnel/Dockerfile deploy/tunnel
+          test "$(docker image inspect --format '{{.Config.User}}' opsmate-model-tunnel:ci)" = "tunnel:tunnel"
+
+      - name: Verify tunnel entrypoint rejects unsafe target input
+        run: |
+          if docker run --rm \
+            -e OFFICE_SSH_HOST='bad host' \
+            -e OFFICE_SSH_PORT=22 \
+            -e OFFICE_SSH_USER=test \
+            opsmate-model-tunnel:ci; then
+            echo 'tunnel entrypoint accepted an unsafe host' >&2
+            exit 1
+          fi
+
       - name: Rehearse the one-shot migration container
         env:
           OPSMATE_APP_IMAGE: opsmate-local:ci
+          OPSMATE_TUNNEL_IMAGE: opsmate-model-tunnel:ci
         run: |
           docker compose --project-name opsmate-ci-rehearsal \
             --env-file deploy/.env.example \
@@ -127,6 +133,7 @@ jobs:
         if: always()
         env:
           OPSMATE_APP_IMAGE: opsmate-local:ci
+          OPSMATE_TUNNEL_IMAGE: opsmate-model-tunnel:ci
         run: |
           docker compose --project-name opsmate-ci-rehearsal \
             --env-file deploy/.env.example \
