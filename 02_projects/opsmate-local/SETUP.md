@@ -81,6 +81,20 @@ $env:OPSMATE_REAL_MODEL_P95_MAX_MS = "30000"
 
 이 gate는 9개 합성 요청을 실제 `/api/chat`에 보내고 서버 검증을 통과한 분류, 저장 건수와 p95 상한을 확인합니다. host, token과 원문 응답은 공개 검증 기록에 남기지 않습니다. 승인이 없거나 endpoint를 사용할 수 없으면 실행하지 않고 `미검증`으로 유지합니다.
 
+### 2026-08-23 검증 기록
+
+사설 GPU 호스트의 로컬 Ollama `0.13.5`와 `gemma3:12b`를 사용해 source commit `ff67df0990cbed3a41cf5051a5e2701a7b2a7b50`의 `RealOpenWeightModelE2EIT`를 실행했습니다.
+
+- 9개 합성 요청: 9 / 9 성공
+- 실제 `/api/chat` 구조화 출력과 서버 측 category·policy ID 검증 통과
+- 요청·감사 이벤트 저장 건수 각각 9건
+- 관측 p95: 21,076ms
+- gate: p95 `<= 30,000ms`
+- Maven exit code: 0
+- Ollama runtime: `gemma3:12b` `100% GPU`
+
+이 실행은 실제 모델 E2E만 분리해 확인한 것이므로 `2026-08-04`의 전체 54개 `clean verify` 기록이나 PostgreSQL Testcontainers 검증을 대체하지 않습니다. 상세한 환경과 미검증 경계는 [`docs/REAL_MODEL_E2E_EVIDENCE.md`](docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록했습니다.
+
 ## one-shot PostgreSQL migration
 
 공개 배포에서는 장기 실행 앱이 Flyway credential을 갖지 않습니다. 같은 jar를 migration 전용 명령으로 한 번 실행합니다.
@@ -145,8 +159,8 @@ emergency close는 credential 없이 컨테이너를 멈추지만 합성 데이�
 
 - 2026-08-03 기준 과거 baseline: 기본 자동화 테스트 19개 성공. 이 기록은 당시 구현의 역사적 근거입니다.
 - 최신 애플리케이션·PostgreSQL 컴포넌트: `2026-08-04` 전체 `clean verify` 54개 성공, 실패·오류·건너뜀 0개
+- 실제 승인 모델 E2E: `2026-08-23 PASS`, `gemma3:12b`, 9/9, 관측 p95 21,076ms (`<= 30,000ms`)
 - 배포 자산: `implemented`; 실제 양 호스트 rehearsal과 외부 gate는 미검증
-- 실제 승인 모델 E2E: 미검증
 - 실제 public domain/ACME, 외부 모바일 smoke, DB·모델 외부 차단: 미검증
 - host egress allowlist와 edge/WAF rate limit: 외부 배포 gate, 미검증
 - 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal: 미검증
