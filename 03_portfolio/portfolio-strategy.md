@@ -1,6 +1,7 @@
 # Portfolio Content Strategy
 
 - 결정일: `2026-08-03`
+- 상태 갱신일: `2026-08-23`
 - 상태: `approved`
 - 목적: 신규 대표 프로젝트와 기존 실무 사례가 서로 다른 역량을 증명하도록 포트폴리오를 구성
 
@@ -21,7 +22,7 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 
 ### OpsMate Local
 
-- 상태: `implemented`, `tested-component`
+- 상태: `implemented`, `tested-component`; 실제 모델 adapter E2E 경계 `verified`
 - 형식: 실행 가능한 독립 서비스
 - 역할: AI Agent 응용과 안전한 업무 실행 설계 증명
 - 기술 중심: Java 21, Spring Boot 3.5, Thymeleaf/HttpSession, JPA/H2·PostgreSQL/Flyway, 오픈웨이트 LLM gateway, 서버 주도 정책 조회 포트, Docker/Caddy
@@ -52,7 +53,11 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 - immutable image digest 기반 open, normal/emergency close와 reopen 절차
 - 감사로그, 테스트와 재현 가능한 실행 절차 제공
 
-수직 기능, 공개 웹, PostgreSQL migration·역할 분리, model guard와 배포·중단 자산은 구현됐고 `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했습니다. 승인된 실제 모델 E2E, 공개 URL·외부 smoke, host egress allowlist·edge/WAF rate limit과 앱·모델 양쪽 호스트 close/reopen rehearsal은 검증하지 않았습니다. 따라서 프로젝트 전체를 `verified` 또는 운영 완료로 표현하지 않습니다.
+수직 기능, 공개 웹, PostgreSQL migration·역할 분리, model guard와 배포·중단 자산은 구현됐고 `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했습니다.
+
+`2026-08-23` 사설 GPU 호스트의 Ollama `0.13.5`, `gemma3:12b`로 실제 모델 E2E를 실행해 합성 구매 요청 9/9 성공, 서버 측 category·policy 검증, 요청·감사 이벤트 저장, 관측 p95 21,076ms와 `<= 30,000ms` gate를 확인했습니다. 상세 증거와 확대 해석 금지 범위는 [`../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록합니다.
+
+아직 public application URL·외부 smoke, host egress allowlist·edge/WAF rate limit, DB/model 외부 비노출과 앱·모델 양쪽 호스트 close/reopen rehearsal은 검증하지 않았습니다. 따라서 실제 모델 adapter E2E 경계만 `verified`로 구분하고 프로젝트 전체를 `verified` 또는 운영 완료로 표현하지 않습니다.
 
 ## Track B. 기존 업무 사례집
 
@@ -76,7 +81,7 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 
 | 결과물 | 주로 증명하는 것 | 증명하지 않는 것 |
 |---|---|---|
-| OpsMate Local | 서버 주도 정책 조회, 구조화된 AI 초안, 승인 통제와 로컬 모델 장애 처리 | 과거 회사 시스템의 운영 성과 |
+| OpsMate Local | 서버 주도 정책 조회, 구조화된 AI 초안, 승인 통제, 로컬 모델 E2E와 장애 처리 | 과거 회사 시스템의 운영 성과, 실제 인터넷 운영 완료 |
 | 기존 업무 사례 | Java/Spring, SQL, 인증, 배포, 장애와 운영 판단 | 회사 원본 코드의 공개 또는 전체 팀 성과 |
 
 면접에서는 두 트랙을 다음 문장으로 연결합니다.
@@ -109,13 +114,14 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 - `02_projects/case-study-samples/`: 회사 코드와 독립된 재현 샘플
 - `02_projects/opsmate-local/`: 신규 대표 프로젝트
 
-실행 상태와 Work별 완료 조건은 [`../WORKS.md`](../WORKS.md), 공통 검수 기준은 [`review-checklist.md`](review-checklist.md)에서 관리합니다.
+실행 상태와 Work별 완료 조건은 [`../WORKS.md`](../WORKS.md), 완료까지의 현재 순서는 [`../PORTFOLIO_COMPLETION_PLAN.md`](../PORTFOLIO_COMPLETION_PLAN.md), 공통 검수 기준은 [`review-checklist.md`](review-checklist.md)에서 관리합니다.
 
 ## 다음 실행 순서
 
-1. OpsMate Local 최신 변경분의 전체 `clean verify`, container와 문서 검수를 완료
-2. 승인된 사설 GPU 모델 호스트에서 실제 모델 구조 출력·p95·실패 E2E 검증
-3. public host의 egress allowlist와 edge/WAF rate limit을 적용하고 외부 URL smoke 수행
-4. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal 수행
-5. GitHub Pages 문구·링크·모바일 렌더링을 다시 확인
-6. [`case-study-index.md`](case-study-index.md)의 다음 Java/Spring 후보를 독립 샘플로 재현
+1. 상태 문서를 `2026-08-23` 실제 모델 증거와 동기화합니다.
+2. 최신 commit 기준 OpsMate `clean verify`, 인증 샘플, repository/Jekyll/container regression을 수행합니다.
+3. public application 배포 입력과 보안 경계를 확정합니다.
+4. public host의 egress allowlist와 edge/WAF rate limit을 적용하고 외부 URL smoke, DB/model 외부 비노출을 검증합니다.
+5. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal을 수행하고 최종 상태를 `CLOSED`로 둡니다.
+6. GitHub Pages 문구·링크·물리 모바일 렌더링을 다시 확인합니다.
+7. [`case-study-index.md`](case-study-index.md)의 다음 Java/Spring 후보를 독립 샘플로 재현합니다.
