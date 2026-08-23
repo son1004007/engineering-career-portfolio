@@ -20,6 +20,9 @@ FROM eclipse-temurin:21-jre-jammy@sha256:d63bd8d9b171999cbed8576f2c76e874dd48567
 ARG APP_UID=10001
 ARG APP_GID=10001
 
+LABEL org.opencontainers.image.source="https://github.com/son1004007/engineering-career-portfolio"
+LABEL org.opencontainers.image.description="OpsMate Local controlled public demo application"
+
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
