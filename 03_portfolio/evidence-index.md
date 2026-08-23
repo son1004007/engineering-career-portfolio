@@ -1,6 +1,6 @@
 # Portfolio Evidence Index
 
-- 최종 점검일: `2026-08-04`
+- 최종 점검일: `2026-08-23`
 - 목적: 프로필 주장, 구현 코드, 테스트, 계획을 구분해 과장 없는 기술 검토를 가능하게 함
 
 ## 상태 정의
@@ -21,24 +21,41 @@
 ## 공개 사이트 검증
 
 - 공개 URL: [GitHub Pages 포트폴리오](https://son1004007.github.io/engineering-career-portfolio/)
-- 검증일: `2026-08-03`
+- 마지막 전체 공개본 검증일: `2026-08-03`
 - 원격 결과: [Pages Actions run 30782896966](https://github.com/son1004007/engineering-career-portfolio/actions/runs/30782896966)의 Jekyll build, Java 2개 프로젝트, 공개 저장소 검사와 deploy 성공
 - 테스트: 당시 Spring Security 인증 브리지 24개, OpsMate Local 19개, 저장소 공개 검수 12개 성공
 - 실화면: 홈, Work ledger, 근거 인덱스, 전략과 앵커, 체크리스트, AI context, 대표 프로젝트·사례 경로의 응답과 가로 넘침 없음 확인
-- 한계: 이 항목은 `2026-08-03` 공개본의 역사적 검증입니다. 이후 OpsMate 변경분은 로컬 `clean verify` 54개를 통과했지만 아직 Pages에 게시되지 않았고, 물리 모바일 검수와 실제 모델 E2E도 미검증입니다.
+- 이후 증거: OpsMate는 `2026-08-04` 전체 `clean verify` 54개 성공, `2026-08-23` 실제 `gemma3:12b` E2E 9/9와 p95 gate 성공
+- 한계: 최신 commit 기준 통합 regression, 물리 모바일 최종 검수와 OpsMate public application 외부 배포 gate는 별도 수행 필요
 
 ## 프로젝트 상태
 
 | 프로젝트 | 코드 | 테스트 | 문서 | 현재 상태 | 확인 사항 |
 |---|---:|---:|---:|---|---|
-| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL·배포 자산 있음 | 2026-08-04 `clean verify` 54개 성공, 실패·오류·건너뜀 0개 | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK | `implemented`, `tested-component` | 실제 모델 E2E, 공개 URL·외부 smoke, host egress/edge rate limit과 양 호스트 close/reopen rehearsal은 미검증 |
+| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL·배포 자산 있음 | 2026-08-04 `clean verify` 54개 성공. 2026-08-23 실제 `gemma3:12b` E2E 9/9, p95 21,076ms <= 30,000ms | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK·REAL_MODEL_E2E_EVIDENCE | `implemented`, `tested-component`; real-model boundary `verified` | public application URL·외부 smoke, host egress/edge rate limit, DB/model 비노출과 양 호스트 close/reopen rehearsal은 미검증 |
 | [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 회사 원본이 아닌 합성 사용자·issuer·audience 바인딩 SSO 샘플. 운영 시스템 검증을 뜻하지 않음 |
 | [Java/Spring 사례 후보](case-study-index.md) | 회사 원본에서 확인 | 공개 샘플 1건만 있음 | 후보 인덱스 있음 | `sample-verified` 1건, `source-reviewed` 4건, 나머지 `candidate` 또는 `hold` | 원본 코드를 공개할 수 없으며 각 독립 재현 코드와 테스트가 생기기 전 `published` 표현 금지 |
-| [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에 `pytest`가 없어 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
+| [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행을 확인하지 않음. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
 | [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 인증·모니터링·PostgreSQL·Redis 구현도 현재 파일 목록에서 확인되지 않음 |
 | [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | route가 존재하지 않는 `app.service.audit_service`를 import. 앱 진입점, 저장 모델, service, tests 보완 필요 |
 | 개인 공개 `text2sql` 샘플 | 없음 | 없음 | 상위 문서의 계획만 있음 | `planned` | 회사 실무 Text2SQL과 혼동 금지. 공개 샘플 프로젝트 디렉터리는 아직 없음 |
 | `security-backend-platform` | 없음 | 없음 | 상위 문서의 예시만 있음 | `planned` | 별도 프로젝트로 완료되기 전 기술 근거로 사용 금지 |
+
+## OpsMate 실제 모델 E2E 증거
+
+`2026-08-23` 사설 GPU 호스트에서 source commit `ff67df0990cbed3a41cf5051a5e2701a7b2a7b50`의 실제 모델 gate를 실행했습니다.
+
+- Ollama `0.13.5`
+- model `gemma3:12b`
+- 합성 구매 요청 9건 중 9건 성공
+- 실제 `/api/chat` 구조화 출력, JSON 역직렬화와 서버 측 category·policy 검증 통과
+- 요청·감사 이벤트 저장 건수 각각 9건
+- 관측 p95 `21,076ms`
+- gate `p95 <= 30,000ms`
+- Maven exit code `0`
+- 실행 직후 모델은 GPU 100% 사용으로 관측됨
+
+상세 환경·명령·한계는 [`../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)를 기준으로 합니다. 이 결과는 실제 모델 adapter 경계의 검증이며 public network/deployment/lifecycle 전체 검증을 의미하지 않습니다.
 
 ## 회사 GitHub 실무 근거
 
@@ -55,6 +72,7 @@
 | `WORK-DATA-02` | 재현 가능한 데이터 분석 pipeline, CLI, SQL runner와 검증 테스트 | `tested-component`, `E3` | 독립 재실행 및 CI 성공은 미확인 |
 | `WORK-EDU-01` | 데이터 플랫폼 기능 개선과 제한형 배포 자동화 | `implemented`, `E2` | tests와 운영 성과는 별도 확인 |
 | `WORK-INTEGRATION-01` | 문서 파싱, dry-run, DB 확인과 CSV export 도구 | `implemented`, `E2` | 전체 운영 pipeline 완료로 확대 금지 |
+
 ## 공개 프로필 주장
 
 | 주장 | 현재 분류 | 안전한 표현 | 추가 근거 |
@@ -73,6 +91,7 @@
 
 - Java/Spring Security 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
 - AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두고 workspace·GPU 호출량·DB 권한·서비스 수명주기까지 통제하는 설계와 구현
+- 실제 오픈웨이트 모델의 구조화 출력을 Spring 서버 검증과 저장 경계까지 연결한 제한된 E2E 증거
 - 목표하는 엔지니어 정체성과 Java/Python/AI 응용 기술 조합
 - 비공개 업무 근거를 비식별 claim과 공개 재현 상태로 나누는 검수 방식
 - 문서화와 구조화 능력
@@ -81,7 +100,7 @@
 
 - 프로덕션 수준 백엔드·플랫폼 숙련도 증명
 - 대규모 트래픽·분산 시스템·클라우드 네이티브 운영 증명
-- 실제 오픈웨이트 모델 서버를 포함한 OpsMate Local E2E와 GPU 부하 경계 증명
+- OpsMate public application의 실제 인터넷 배포와 장기 안정성 증명
 - public URL, 외부 네트워크 정책과 앱·모델 양쪽 호스트 close/reopen 증명
 - 프로젝트별 정량 성과와 본인 기여 범위 증명
 - 모든 README에 적힌 기능의 실제 구현 증명
@@ -100,6 +119,8 @@ implemented -> tested-file-present:
 tested-file-present -> verified:
 최근 테스트 명령, 성공 결과, 환경·버전 기록
 ```
+
+전체 서비스가 여러 외부 gate를 가지면 컴포넌트별 `verified`와 전체 상태를 분리합니다. 예를 들어 실제 모델 E2E가 성공해도 public network와 lifecycle rehearsal이 남아 있으면 프로젝트 전체는 `tested-component`를 유지합니다.
 
 경력 주장에는 가능한 경우 다음을 연결합니다.
 
