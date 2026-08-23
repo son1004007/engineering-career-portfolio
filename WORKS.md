@@ -118,17 +118,16 @@ W08 -> W09
 - 실제 모델 E2E: 사설 GPU 호스트 Ollama `0.13.5`, `gemma3:12b`, 9/9 성공, 요청·감사 이벤트 각각 9건, 관측 p95 21,076ms, gate `<= 30,000ms`, Maven exit code 0 (`2026-08-23`)
 - 실제 모델 검증 source commit: `ff67df0990cbed3a41cf5051a5e2701a7b2a7b50`; 상세 증거는 [`02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)
 - Office 원격 read-only 검증 경로: disposable detached Git worktree + Bubblewrap로 repository snapshot E2E 성공 (`2026-08-23`); runtime bridge의 상세 증거는 private `device-control`이 Source of Truth
-- 미검증 gate: 최신 commit 기준 전체 regression 재실행, public application URL·외부 smoke, host egress allowlist, edge/WAF rate limit, DB/model 외부 비노출, 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal
-- 공개 상태: `implemented`, `tested-component`; 실제 모델 adapter E2E 경계는 `verified`. 위 외부 운영 gate가 끝날 때까지 전체 서비스 `verified` 또는 운영 완료로 표시하지 않음
+- 최신 PR regression: PR [#10](https://github.com/son1004007/engineering-career-portfolio/pull/10), `Verify Portfolio` run [32638023909](https://github.com/son1004007/engineering-career-portfolio/actions/runs/32638023909)에서 OpsMate `clean verify`, Spring Security 샘플, public portfolio 검사, Jekyll build, shell/Compose/Caddy 검증, non-root image build와 one-shot migration rehearsal 모두 성공 (`2026-08-23`)
+- 미검증 gate: public application URL·외부 smoke, host egress allowlist, edge/WAF rate limit, DB/model 외부 비노출, 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal
+- 공개 상태: `implemented`, `tested-component`; 실제 모델 adapter E2E 경계와 최신 regression은 `verified`. 위 외부 운영 gate가 끝날 때까지 전체 서비스 `verified` 또는 운영 완료로 표시하지 않음
 
 ## 다음 실행 순서
 
 상세 체크리스트는 [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)를 Source of Truth로 사용합니다.
 
-1. 상태 문서를 `2026-08-23` 실제 모델 E2E 증거와 동기화합니다.
-2. 최신 commit 기준 OpsMate·인증 샘플·저장소/Jekyll/container regression을 다시 실행합니다.
-3. public application 배포 입력과 보안 경계를 확정합니다.
-4. host egress allowlist와 edge/WAF rate limit을 적용하고 public URL 외부 smoke 및 DB/model 비노출을 검증합니다.
-5. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen을 rehearsal하고 최종 상태를 `CLOSED`로 둡니다.
-6. `03_portfolio/case-study-index.md`의 다음 Java/Spring 사례를 독립 재구현하고 검수합니다.
-7. `evidence/company-github/monthly/`를 월말에 갱신하고 공개 링크와 Pages workflow 상태를 정기 확인합니다.
+1. public application 배포 자산과 실제 target runtime을 재점검하고 hostname/TLS/secret 경계를 확정합니다.
+2. host egress allowlist와 edge/WAF rate limit을 적용하고 public URL 외부 smoke 및 DB/model 비노출을 검증합니다.
+3. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen을 rehearsal하고 최종 상태를 `CLOSED`로 둡니다.
+4. `03_portfolio/case-study-index.md`의 다음 Java/Spring 사례를 독립 재구현하고 검수합니다.
+5. `evidence/company-github/monthly/`를 월말에 갱신하고 공개 링크와 Pages workflow 상태를 정기 확인합니다.
