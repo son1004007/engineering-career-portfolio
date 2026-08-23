@@ -19,35 +19,43 @@
 
 ## 실행 순서
 
-### P00. 상태 문서 동기화 — `in-progress`
+### P00. 상태 문서 동기화 — `verified`
 
 목표: `2026-08-23` 실제 모델 E2E와 전역 Control/Office runtime 검증 결과를 공개 상태 문서에 일관되게 반영한다.
 
-- [ ] `AI_CONTEXT.md` 기준일과 OpsMate 상태 갱신
-- [ ] `WORKS.md` W09 실제 모델 E2E 증거와 남은 gate 갱신
-- [ ] `03_portfolio/evidence-index.md` 실제 모델 E2E 증거와 현재 판단 갱신
-- [ ] `03_portfolio/portfolio-strategy.md` Track A 검증 상태 갱신
-- [ ] `TASKS.md` 완료된 실제 모델 gate를 제거하고 남은 순서를 명확화
-- [ ] README/AGENTS/REAL_MODEL_E2E_EVIDENCE와 상호 모순이 없는지 확인
+- [x] `AI_CONTEXT.md` 기준일과 OpsMate 상태 갱신
+- [x] `WORKS.md` W09 실제 모델 E2E 증거와 남은 gate 갱신
+- [x] `03_portfolio/evidence-index.md` 실제 모델 E2E 증거와 현재 판단 갱신
+- [x] `03_portfolio/portfolio-strategy.md` Track A 검증 상태 갱신
+- [x] `TASKS.md` 완료된 실제 모델 gate를 제거하고 남은 순서를 명확화
+- [x] README/AGENTS/REAL_MODEL_E2E_EVIDENCE와 상호 모순이 없는지 확인
+
+검증: PR `#10`의 `Verify Portfolio` run `32638023909`에서 public portfolio 정합성 검사와 Jekyll build가 성공했다.
 
 사용자 작업: 없음.
 
-완료 조건: 공개 상태 문서가 동일한 검증 사실과 동일한 미검증 gate를 표현한다.
-
-### P10. 최신 baseline regression — `pending`
+### P10. 최신 baseline regression — `verified`
 
 목표: 문서 동기화 후 현재 `main` 후보에 대해 기존 검증을 다시 실행한다.
 
-- [ ] OpsMate `clean verify`
-- [ ] Spring Security 샘플 `clean verify`
-- [ ] 저장소 공개 링크·credential·상태 정합성 검사
-- [ ] Jekyll/Pages build 검증
-- [ ] container/config 정적 검수
-- [ ] 실패가 있으면 수정 후 동일 gate 재실행
+- [x] OpsMate `clean verify`
+- [x] Spring Security 샘플 `clean verify`
+- [x] 저장소 공개 링크·credential·상태 정합성 검사
+- [x] Jekyll/Pages build 검증
+- [x] container/config 정적 검수
+- [x] Docker non-root image build와 one-shot migration rehearsal
 
-사용자 작업: 없음. GitHub CI 또는 허용된 Office 실행 경로로 수행한다.
+검증: PR `#10`, `Verify Portfolio` run `32638023909`에서 다음 job이 모두 성공했다.
 
-완료 조건: 최신 commit 기준 자동화 검증이 모두 성공하고 실행 증거를 남긴다.
+- `OpsMate Local`
+- `Spring Security auth bridge`
+- `public-portfolio`
+- `Jekyll site build`
+- `OpsMate container and runbook assets`
+
+container job은 shell syntax, Compose config, Caddy config, non-root image, one-shot migration container와 cleanup까지 통과했다.
+
+사용자 작업: 없음.
 
 ### P20. OpsMate public application 배포 준비 — `pending`
 
@@ -121,16 +129,16 @@
 
 ## 현재 사용자에게 필요한 작업
 
-`P00`과 `P10` 동안에는 **없음**.
+`P00`과 `P10`은 사용자 작업 없이 완료했다.
 
-이후에도 가능한 작업은 GitHub와 기존 허용 runtime으로 먼저 처리한다. 사용자만 가능한 계정 승인, DNS/보안 설정, 물리 모바일 확인이 실제 blocker가 되었을 때 그 한 가지 작업만 구체적으로 요청한다.
+현재 즉시 필요한 사용자 작업은 **없음**. `P20`부터도 GitHub와 기존 허용 runtime으로 확인 가능한 내용을 먼저 처리한다. 사용자만 가능한 계정 승인, DNS/보안 설정, 물리 모바일 확인이 실제 blocker가 되었을 때 그 한 가지 작업만 구체적으로 요청한다.
 
 ## 완료 판정
 
 전체 포트폴리오를 단순히 `완료`라고 부르지 않고 다음을 분리한다.
 
 1. GitHub Pages 포트폴리오: `published`
-2. OpsMate 코드/컴포넌트: `implemented` + 최신 테스트 증거
+2. OpsMate 코드/컴포넌트: `implemented` + 최신 CI regression 성공
 3. 실제 모델 adapter E2E: `verified` 범위 명시
 4. public application/network/lifecycle: 해당 gate 완료 전까지 `pending`/`tested-component`
 5. 회사 업무 사례: 원본 검토와 독립 공개 샘플 검증 상태를 분리
