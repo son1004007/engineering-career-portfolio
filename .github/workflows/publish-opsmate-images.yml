@@ -1,0 +1,136 @@
+name: Publish OpsMate Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '02_projects/opsmate-local/Dockerfile'
+      - '02_projects/opsmate-local/pom.xml'
+      - '02_projects/opsmate-local/.mvn/**'
+      - '02_projects/opsmate-local/src/**'
+      - '02_projects/opsmate-local/deploy/tunnel/**'
+      - '.github/workflows/publish-opsmate-images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: opsmate-image-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Log in to GitHub Container Registry
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+
+      - name: Prepare Buildx
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker buildx version
+          docker buildx inspect --bootstrap
+
+      - name: Publish application image
+        id: app
+        shell: bash
+        run: |
+          set -euo pipefail
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          tag="ghcr.io/${owner}/opsmate-local:${GITHUB_SHA}"
+          metadata="$RUNNER_TEMP/opsmate-app-metadata.json"
+
+          docker buildx build \
+            --platform linux/amd64 \
+            --provenance=true \
+            --sbom=true \
+            --push \
+            --metadata-file "$metadata" \
+            --tag "$tag" \
+            ./02_projects/opsmate-local
+
+          digest="$(python3 - "$metadata" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding='utf-8') as handle:
+              metadata = json.load(handle)
+          digest = metadata.get('containerimage.digest', '')
+          if not digest.startswith('sha256:') or len(digest) != 71:
+              raise SystemExit('missing or invalid application image digest')
+          print(digest)
+          PY
+          )"
+          ref="${tag%@*}@${digest}"
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          printf 'OPSMATE_APP_IMAGE=%s\n' "$ref" | tee "$RUNNER_TEMP/opsmate-app-ref.txt"
+
+      - name: Publish model tunnel image
+        id: tunnel
+        shell: bash
+        run: |
+          set -euo pipefail
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          tag="ghcr.io/${owner}/opsmate-model-tunnel:${GITHUB_SHA}"
+          metadata="$RUNNER_TEMP/opsmate-tunnel-metadata.json"
+
+          docker buildx build \
+            --platform linux/amd64 \
+            --provenance=true \
+            --sbom=true \
+            --push \
+            --metadata-file "$metadata" \
+            --tag "$tag" \
+            ./02_projects/opsmate-local/deploy/tunnel
+
+          digest="$(python3 - "$metadata" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding='utf-8') as handle:
+              metadata = json.load(handle)
+          digest = metadata.get('containerimage.digest', '')
+          if not digest.startswith('sha256:') or len(digest) != 71:
+              raise SystemExit('missing or invalid tunnel image digest')
+          print(digest)
+          PY
+          )"
+          ref="${tag%@*}@${digest}"
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          printf 'OPSMATE_TUNNEL_IMAGE=%s\n' "$ref" | tee "$RUNNER_TEMP/opsmate-tunnel-ref.txt"
+
+      - name: Verify immutable pulls
+        env:
+          APP_REF: ${{ steps.app.outputs.ref }}
+          TUNNEL_REF: ${{ steps.tunnel.outputs.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull --platform linux/amd64 "$APP_REF"
+          docker pull --platform linux/amd64 "$TUNNEL_REF"
+          docker image inspect "$APP_REF" >/dev/null
+          docker image inspect "$TUNNEL_REF" >/dev/null
+
+      - name: Record release digests
+        env:
+          APP_REF: ${{ steps.app.outputs.ref }}
+          TUNNEL_REF: ${{ steps.tunnel.outputs.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '## OpsMate immutable images'
+            echo
+            echo "Source commit: \`$GITHUB_SHA\`"
+            echo
+            echo "- Application: \`$APP_REF\`"
+            echo "- Model tunnel: \`$TUNNEL_REF\`"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -24,7 +24,7 @@ compose() {
 }
 
 running_services=$(compose ps --status running --services 2>/dev/null || true)
-for service in caddy app migrate db
+for service in edge app model-tunnel migrate db
 do
     if printf '%s\n' "$running_services" | grep -qx "$service"; then
         fail "$service is still running"
@@ -35,22 +35,49 @@ volume_name="${COMPOSE_PROJECT_NAME:-opsmate-demo}-postgres-data"
 docker volume inspect "$volume_name" >/dev/null 2>&1 \
     || fail "the persistent PostgreSQL volume is missing"
 
-if command -v curl >/dev/null 2>&1 && [ -n "${DEMO_DOMAIN:-}" ]; then
-    headers_file=$(mktemp)
-    trap 'rm -f "$headers_file"' EXIT HUP INT TERM
+# The Compose edge must be stopped and its loopback live marker must disappear.
+if command -v curl >/dev/null 2>&1 && [ -n "${OPSMATE_EDGE_HOST_PORT:-}" ]; then
+    local_headers=$(mktemp)
+    trap 'rm -f "$local_headers"' EXIT HUP INT TERM
     if curl \
         --silent \
         --output /dev/null \
-        --dump-header "$headers_file" \
+        --dump-header "$local_headers" \
+        --head \
+        --connect-timeout 2 \
+        --max-time 5 \
+        "http://127.0.0.1:${OPSMATE_EDGE_HOST_PORT}/demo"
+    then
+        if grep -qi '^X-OpsMate-Demo:[[:space:]]*live' "$local_headers"; then
+            fail "the NAS loopback live edge marker is still reachable"
+        fi
+    fi
+fi
+
+# When public ingress exists, closing the stack must also remove the live marker
+# from the public origin. An unavailable origin is an acceptable closed result.
+if command -v curl >/dev/null 2>&1 && [ -n "${DEMO_DOMAIN:-}" ]; then
+    public_headers=$(mktemp)
+    trap 'rm -f "${local_headers:-}" "$public_headers"' EXIT HUP INT TERM
+    public_port=${DEMO_PUBLIC_PORT:-443}
+    if [ "$public_port" = "443" ]; then
+        public_url="https://${DEMO_DOMAIN}/demo"
+    else
+        public_url="https://${DEMO_DOMAIN}:${public_port}/demo"
+    fi
+    if curl \
+        --silent \
+        --output /dev/null \
+        --dump-header "$public_headers" \
         --head \
         --connect-timeout 5 \
         --max-time 10 \
-        "https://${DEMO_DOMAIN}/demo"
+        "$public_url"
     then
-        if grep -qi '^X-OpsMate-Demo:[[:space:]]*live' "$headers_file"; then
+        if grep -qi '^X-OpsMate-Demo:[[:space:]]*live' "$public_headers"; then
             fail "the external live edge marker is still reachable"
         fi
     fi
 fi
 
-printf '%s\n' "verify-closed: app, database, and live Caddy edge are stopped; database volume retained"
+printf '%s\n' "verify-closed: edge, app, model tunnel and database are stopped; database volume retained"

@@ -3,9 +3,9 @@
 ## 요구사항
 
 - JDK 21
-- 기본 테스트: Docker daemon과 Testcontainers가 사용할 PostgreSQL image
+- 기본 통합 테스트: Docker daemon과 Testcontainers
 - 실제 모델 E2E: 승인된 Ollama 호환 `/api/chat` endpoint
-- 공개 배포: Linux, Docker Compose v2, HTTPS domain, 승인된 사설 GPU 모델 호스트
+- 공개 배포: Synology Container Manager/Docker Compose v2, DSM Reverse Proxy/TLS, Office native Ollama
 
 Maven Wrapper가 포함되어 있어 전역 Maven 설치는 필요하지 않습니다. 최초 실행에는 Maven 배포본과 의존성을 내려받을 네트워크 연결이 필요합니다.
 
@@ -17,41 +17,23 @@ Maven Wrapper가 포함되어 있어 전역 Maven 설치는 필요하지 않습�
 .\mvnw.cmd -q clean verify
 ```
 
-이 명령은 기본 회귀 테스트, PostgreSQL Testcontainers 통합 경로와 Javadoc 검사를 실행합니다. `2026-08-04` 실행에서는 54개 테스트가 성공했고 실패·오류·건너뜀은 0개였습니다. Docker를 사용할 수 없으면 PostgreSQL 검증은 완료로 간주할 수 없습니다.
-
-검증 범위에는 다음이 포함됩니다.
+`2026-08-04` 전체 실행에서는 54개 테스트가 성공했고 실패·오류·건너뜀은 0개였습니다. 검증 범위에는 다음이 포함됩니다.
 
 - 초안 → 제출 → 승인/반려 → 발주 → 감사 이벤트
 - 역할, 자기 승인 차단, 객체 소유권·상태·workspace 격리
 - 웹 CSRF, session, persona 전환과 공개 `/api/**` 거부
-- workspace TTL·수용량·시작률 제한과 거부 요청의 session 미할당
-- 모델 장애·malformed/unknown/oversized 응답, 출력 token·응답 byte 제한
+- workspace TTL·수용량·시작률 제한
+- 모델 장애·malformed/unknown/oversized 응답과 출력 제한
 - 동일 key single-flight, follower·queue·workspace·전체 호출량 제한
 - 멱등성, optimistic lock, DB constraint와 트랜잭션 롤백
-- PostgreSQL Flyway migration, runtime DML, runtime DDL·Flyway history 접근 거부와 cascade
-- 코드 설명 표준과 Javadoc doclint
+- PostgreSQL Flyway migration, runtime 최소 권한과 cascade
+- Javadoc/doclint
 
-## 모델 없이 로컬 API 실행
+## 모델 없이 로컬 실행
 
-모델을 활성화하지 않는 것이 안전한 기본값입니다. 역할별 비밀번호는 현재 PowerShell 프로세스의 환경변수에만 둡니다.
-
-```powershell
-$requesterCredential = Get-Credential -UserName requester -Message "REQUESTER 임시 비밀번호"
-$approverCredential = Get-Credential -UserName approver -Message "APPROVER 임시 비밀번호"
-$buyerCredential = Get-Credential -UserName buyer -Message "BUYER 임시 비밀번호"
-$auditorCredential = Get-Credential -UserName auditor -Message "AUDITOR 임시 비밀번호"
-$env:OPSMATE_REQUESTER_PASSWORD = $requesterCredential.GetNetworkCredential().Password
-$env:OPSMATE_APPROVER_PASSWORD = $approverCredential.GetNetworkCredential().Password
-$env:OPSMATE_BUYER_PASSWORD = $buyerCredential.GetNetworkCredential().Password
-$env:OPSMATE_AUDITOR_PASSWORD = $auditorCredential.GetNetworkCredential().Password
-.\mvnw.cmd spring-boot:run
-```
-
-모델이 비활성 상태이면 서버는 기동되지만 초안 생성은 `503 Service Unavailable`로 실패하고 해당 초안 데이터를 만들지 않습니다. in-memory 계정과 H2는 로컬 API 검증 전용입니다.
+모델을 활성화하지 않는 것이 안전한 기본값입니다. 역할별 비밀번호는 현재 프로세스의 환경변수에만 둡니다. 모델이 비활성 상태이면 서버는 기동되지만 모델 기반 초안 생성은 저장 전에 `fail-closed`로 중단됩니다.
 
 ## 로컬 오픈웨이트 모델 연결
-
-모델 서버를 별도 프로세스로 실행하고 현재 셸에 고정 endpoint와 모델을 지정합니다.
 
 ```powershell
 $env:OPSMATE_LLM_ENABLED = "true"
@@ -63,7 +45,7 @@ $env:OPSMATE_LLM_MAX_RESPONSE_BYTES = "65536"
 .\mvnw.cmd spring-boot:run
 ```
 
-인증 proxy가 있으면 `OPSMATE_LLM_AUTH_TOKEN`도 현재 프로세스에만 추가합니다. 사용자 요청으로 base URL, 경로나 provider를 바꿀 수 없고 adapter의 호출 경로는 `/api/chat`으로 고정됩니다.
+사용자 요청으로 base URL, 경로나 provider를 바꿀 수 없고 adapter의 호출 경로는 `/api/chat`으로 고정됩니다.
 
 ## 승인된 실제 모델 E2E
 
@@ -71,97 +53,133 @@ $env:OPSMATE_LLM_MAX_RESPONSE_BYTES = "65536"
 
 ```powershell
 $env:OPSMATE_REAL_MODEL_E2E = "YES"
-$env:OPSMATE_LLM_BASE_URL = "<approved-private-model-base-url>"
+$env:OPSMATE_LLM_BASE_URL = "<approved-model-base-url>"
 $env:OPSMATE_LLM_ALLOWED_HOSTS = "<approved-model-host>"
 $env:OPSMATE_LLM_MODEL = "<approved-model:tag>"
-$env:OPSMATE_LLM_AUTH_TOKEN = "<ephemeral-proxy-token>"
 $env:OPSMATE_REAL_MODEL_P95_MAX_MS = "30000"
 .\mvnw.cmd -q -Preal-model-e2e verify
 ```
 
-이 gate는 9개 합성 요청을 실제 `/api/chat`에 보내고 서버 검증을 통과한 분류, 저장 건수와 p95 상한을 확인합니다. host, token과 원문 응답은 공개 검증 기록에 남기지 않습니다. 승인이 없거나 endpoint를 사용할 수 없으면 실행하지 않고 `미검증`으로 유지합니다.
-
 ### 2026-08-23 검증 기록
 
-사설 GPU 호스트의 로컬 Ollama `0.13.5`와 `gemma3:12b`를 사용해 source commit `ff67df0990cbed3a41cf5051a5e2701a7b2a7b50`의 `RealOpenWeightModelE2EIT`를 실행했습니다.
+승인된 GPU 호스트의 native Ollama `0.13.5`와 `gemma3:12b`를 사용해 source commit `ff67df0990cbed3a41cf5051a5e2701a7b2a7b50`의 `RealOpenWeightModelE2EIT`를 실행했습니다.
 
-- 9개 합성 요청: 9 / 9 성공
+- 9개 합성 요청: 9/9 성공
 - 실제 `/api/chat` 구조화 출력과 서버 측 category·policy ID 검증 통과
 - 요청·감사 이벤트 저장 건수 각각 9건
 - 관측 p95: 21,076ms
 - gate: p95 `<= 30,000ms`
 - Maven exit code: 0
-- Ollama runtime: `gemma3:12b` `100% GPU`
+- 모델: `gemma3:12b`
 
-이 실행은 실제 모델 E2E만 분리해 확인한 것이므로 `2026-08-04`의 전체 54개 `clean verify` 기록이나 PostgreSQL Testcontainers 검증을 대체하지 않습니다. 상세한 환경과 미검증 경계는 [`docs/REAL_MODEL_E2E_EVIDENCE.md`](docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록했습니다.
+상세 경계는 [`docs/REAL_MODEL_E2E_EVIDENCE.md`](docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록합니다.
 
 ## one-shot PostgreSQL migration
 
-공개 배포에서는 장기 실행 앱이 Flyway credential을 갖지 않습니다. 같은 jar를 migration 전용 명령으로 한 번 실행합니다.
+공개 배포에서는 장기 실행 앱이 Flyway credential을 갖지 않습니다. 같은 jar/image를 migration 전용 명령으로 한 번 실행합니다.
 
 ```text
 java -jar opsmate-local.jar --opsmate-migrate-only
 ```
 
-실제 값은 `OPSMATE_DB_URL`, `OPSMATE_FLYWAY_USERNAME`, `OPSMATE_FLYWAY_PASSWORD`, `OPSMATE_FLYWAY_APP_ROLE` 환경변수로 주입합니다. 앱은 migration 성공 뒤 runtime 계정으로 `ddl-auto=validate`를 수행합니다. 운영 비밀값을 명령행, 문서, Git 또는 CI log에 넣지 않습니다.
+실제 값은 `OPSMATE_DB_URL`, `OPSMATE_FLYWAY_USERNAME`, `OPSMATE_FLYWAY_PASSWORD`, `OPSMATE_FLYWAY_APP_ROLE`로 주입합니다. 운영 비밀값을 명령행, 문서, Git 또는 CI log에 넣지 않습니다.
 
-## 공개 배포 준비
-
-저장소 예시 파일을 실제 호스트의 비추적 `.env`로 복사합니다.
+## 공개 배포 아키텍처
 
 ```text
-deploy/.env.example
-deploy/model-host/.env.example
+Internet
+  -> Synology DSM Reverse Proxy / TLS
+  -> 127.0.0.1:<OPSMATE_EDGE_HOST_PORT>
+  -> OpsMate Nginx edge
+  -> Spring Boot
+       -> PostgreSQL internal network
+       -> model_link internal network
+            -> non-root SSH tunnel
+                 -> Office SSH
+                 -> 127.0.0.1:11434 native Ollama
 ```
 
-두 파일은 서로 다른 호스트에서 사용합니다. 실제 값에는 다음이 필요합니다.
+NAS 실측에서 80/443은 DSM이 이미 사용하고 있으므로 OpsMate Compose가 이 포트를 직접 bind하지 않습니다. 예시 설정은 loopback edge `18083`과 별도 public HTTPS 후보 포트 `58889`를 사용하지만 실제 공개 ingress를 구성하기 전 다시 충돌을 확인합니다.
 
-- 검증한 애플리케이션 image의 full SHA-256 digest
-- full digest로 고정한 Ollama·Caddy image
-- 승인한 모델의 명시적 tag와 실제 content ID
-- 서로 다른 PostgreSQL admin·migration·runtime 역할과 충분히 긴 비밀번호
-- 승인된 VPN IPv4에만 bind한 model proxy와 임시 Bearer token
-- 공개 domain과 ACME 연락 주소
-- 실제 host egress allowlist와 edge/WAF rate limit을 확인한 증거 flag
+## 공개 배포 입력 준비
 
-`.env`, backup, token, host/IP, tunnel과 승인 문서 원문을 저장소에 추가하지 않습니다.
+`deploy/.env.example`을 NAS의 비추적 `deploy/.env`로 복사하고 실제 값으로 채웁니다. 실제 secret 파일과 `.env`는 Git에 커밋하지 않습니다.
+
+필수 범주:
+
+- 검증된 `OPSMATE_APP_IMAGE` full SHA-256 digest
+- 검증된 `OPSMATE_TUNNEL_IMAGE` full SHA-256 digest
+- public hostname/HTTPS port와 loopback edge port
+- 서로 다른 PostgreSQL admin·migration·runtime 역할과 긴 비밀번호
+- Office SSH endpoint metadata
+- OpsMate 전용 Office SSH private key의 NAS-local 파일
+- exact Office SSH host key를 담은 NAS-local known_hosts 파일
+- `OPSMATE_LLM_BASE_URL=http://model-tunnel:11434`
+- `OPSMATE_LLM_ALLOWED_HOSTS=model-tunnel`
+- `OPSMATE_LLM_MODEL=gemma3:12b`
+
+전용 Office public key는 `authorized_keys`에서 Ollama loopback 한 곳만 local forwarding하도록 제한해야 합니다. 앱 자체에는 일반 인터넷 egress network가 없고 tunnel 컨테이너만 Office SSH로 나갑니다.
+
+## 이미지 발행
+
+`Publish OpsMate Images` GitHub Actions workflow는 관련 `main` 소스가 변경되면 linux/amd64 app/tunnel 이미지를 GHCR에 발행하고 full digest를 기록합니다.
+
+실제 NAS 배포에는 mutable tag가 아니라 다음 형태의 digest reference를 사용합니다.
+
+```text
+ghcr.io/.../opsmate-local:<source-sha>@sha256:<digest>
+ghcr.io/.../opsmate-model-tunnel:<source-sha>@sha256:<digest>
+```
+
+NAS에서 실제 pull 가능 여부까지 확인해야 이미지 발행 gate가 완료됩니다.
+
+## DSM Reverse Proxy/TLS
+
+OpsMate Compose의 `edge` 서비스는 NAS loopback high port에만 bind합니다. DSM Reverse Proxy가 공개 HTTPS origin을 해당 loopback endpoint로 전달합니다.
+
+실제 source hostname/port, 인증서와 공유기 port forwarding은 배포 직전 현재 DSM/router 상태를 확인한 뒤 구성합니다. 소스 저장소에서 DSM 내부 설정을 추측하거나 80/443을 직접 점유하지 않습니다.
 
 ## 공개 서비스 열기와 닫기
 
-모델 호스트를 먼저 연 뒤 애플리케이션 호스트를 엽니다.
+DSM ingress와 NAS-local secret이 준비된 뒤 NAS에서 실행합니다.
 
 ```sh
-./deploy/model-host/open-model.sh
 ./deploy/open-demo.sh
 ```
 
-`open-demo.sh`는 private model health, digest와 환경을 확인하고 DB→one-shot migration→app→Caddy를 시작한 뒤 HTTPS 실제 모델 smoke를 완료해야 성공합니다. host egress allowlist나 edge/WAF rate limit 증거가 없으면 fail-closed로 중단합니다.
+순서는 다음과 같습니다.
 
-개발과 검증이 끝나면 각 호스트에서 별도로 닫습니다.
+1. immutable image/DB/SSH/network gate 확인
+2. restricted `model-tunnel` 시작 및 `/api/version` health
+3. PostgreSQL 시작
+4. one-shot Flyway migration
+5. runtime app 시작
+6. loopback Nginx edge 시작
+7. 실제 public HTTPS smoke
+
+정상 종료:
 
 ```sh
 ./deploy/close-demo.sh
-./deploy/model-host/close-model.sh
 ```
 
-앱 close는 공개 edge·app을 먼저 멈춘 뒤 합성 workspace를 삭제하고 DB를 중단합니다. 모델 close는 proxy와 Ollama를 멈추고 GPU를 해제합니다. 두 closed verification을 모두 통과해야 전체 서비스가 닫혔다고 판단합니다.
+edge -> app -> model-tunnel을 먼저 닫고 합성 workspace를 삭제한 뒤 DB를 중단합니다. Office native Ollama 자체는 공유 개발 runtime이므로 OpsMate 종료 과정에서 임의로 중단하지 않습니다.
 
-환경 파일을 사용할 수 없는 사고 상황에서는 명시적인 Compose project 이름으로 emergency close를 실행합니다.
+환경 파일을 사용할 수 없는 사고 상황:
 
 ```sh
 ./deploy/emergency-close.sh opsmate-demo
-./deploy/model-host/emergency-close.sh opsmate-model-host
 ```
 
-emergency close는 credential 없이 컨테이너를 멈추지만 합성 데이터 purge는 하지 않습니다. 환경을 복구한 뒤 정상 close와 삭제 확인이 필요합니다. 자세한 절차는 [`docs/SERVICE_RUNBOOK.md`](docs/SERVICE_RUNBOOK.md)에 있습니다.
+Compose label로 해당 OpsMate project만 중단합니다. 다른 NAS workload와 Office Ollama는 건드리지 않으며 합성 데이터 purge는 정상 close에서 별도로 수행합니다.
 
 ## 현재 검증 경계
 
-- 2026-08-03 기준 과거 baseline: 기본 자동화 테스트 19개 성공. 이 기록은 당시 구현의 역사적 근거입니다.
-- 최신 애플리케이션·PostgreSQL 컴포넌트: `2026-08-04` 전체 `clean verify` 54개 성공, 실패·오류·건너뜀 0개
-- 실제 승인 모델 E2E: `2026-08-23 PASS`, `gemma3:12b`, 9/9, 관측 p95 21,076ms (`<= 30,000ms`)
-- 배포 자산: `implemented`; 실제 양 호스트 rehearsal과 외부 gate는 미검증
-- 실제 public domain/ACME, 외부 모바일 smoke, DB·모델 외부 차단: 미검증
-- host egress allowlist와 edge/WAF rate limit: 외부 배포 gate, 미검증
-- 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal: 미검증
+- 전체 애플리케이션·PostgreSQL: `2026-08-04` clean verify 54개 성공
+- 실제 모델 E2E: `2026-08-23 PASS`, `gemma3:12b`, 9/9, 관측 p95 21,076ms
+- Synology Docker/x86_64, DSM 80/443 점유: runtime probe 확인
+- Office native Ollama/model: runtime probe 확인
+- Synology→restricted SSH tunnel→Office Ollama: 아직 실제 E2E 미검증
+- public DSM ingress, 외부 smoke, DB/model 외부 비노출: 미검증
+- normal/emergency close와 same-digest reopen: 미검증
 - 외부 유료 API fallback: 없음

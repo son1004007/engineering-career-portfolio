@@ -29,18 +29,21 @@ command -v tr >/dev/null 2>&1 || fail "tr is required"
 docker info >/dev/null 2>&1 || fail "docker daemon is unavailable"
 compose config --quiet >/dev/null 2>&1 || fail "docker compose configuration is invalid"
 
-printf '%s\n' "close-demo: stopping the public Caddy service"
-compose stop --timeout 30 caddy >/dev/null 2>&1 || fail "public Caddy service could not be stopped"
+printf '%s\n' "close-demo: stopping the loopback Nginx edge"
+compose stop --timeout 30 edge >/dev/null 2>&1 || fail "loopback edge could not be stopped"
 
 printf '%s\n' "close-demo: draining and stopping the application before data deletion"
 compose stop --timeout 45 app >/dev/null 2>&1 || fail "application service could not be stopped"
 
-# 삭제 전에 외부 진입점과 쓰기 주체가 모두 실제로 중단됐음을 확인한다.
-# 이 경계를 생략하면 stop 오류 뒤에도 진행되어, 새 트랜잭션과 합성 데이터 삭제가 경합할 수 있다.
-still_running=$(compose ps --status running --services caddy app 2>/dev/null || fail "stopped-service state could not be verified")
-[ -z "$still_running" ] || fail "Caddy or application is still running; synthetic data was not deleted"
+printf '%s\n' "close-demo: stopping the Office model tunnel"
+compose stop --timeout 15 model-tunnel >/dev/null 2>&1 || fail "model tunnel could not be stopped"
 
-# No application transaction can race with the purge after the graceful stop completes.
+# The edge, write-capable app and model transport must all be closed before
+# synthetic data is purged. This avoids late writes and ensures the model path
+# is not left open after the demo closes.
+still_running=$(compose ps --status running --services edge app model-tunnel 2>/dev/null || fail "stopped-service state could not be verified")
+[ -z "$still_running" ] || fail "edge, application or model tunnel is still running; synthetic data was not deleted"
+
 purge_failed=0
 if ! compose up --detach --wait --wait-timeout "${DB_WAIT_SECONDS:-90}" db >/dev/null; then
     purge_failed=1
@@ -79,5 +82,4 @@ if [ "$purge_failed" -ne 0 ]; then
     fail "services are stopped, but synthetic data deletion could not be verified"
 fi
 
-printf '%s\n' "close-demo: public app closed and synthetic rows deleted; PostgreSQL volume retained"
-printf '%s\n' "close-demo: close and verify the separate model host to release its GPU"
+printf '%s\n' "close-demo: edge, app, model tunnel and database are closed; synthetic rows deleted and PostgreSQL volume retained"

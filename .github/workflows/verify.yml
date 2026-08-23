@@ -84,39 +84,84 @@ jobs:
       - name: Validate shell syntax
         run: |
           sh -n deploy/open-demo.sh deploy/close-demo.sh deploy/emergency-close.sh deploy/smoke-test.sh deploy/verify-closed.sh
-          sh -n deploy/postgres/init-roles.sh
-          sh -n deploy/model-host/open-model.sh deploy/model-host/close-model.sh deploy/model-host/emergency-close.sh deploy/model-host/verify-private.sh
+          sh -n deploy/postgres/init-roles.sh deploy/tunnel/tunnel-entrypoint.sh
 
-      - name: Validate Compose configuration
-        env:
-          OLLAMA_IMAGE: ollama/ollama@sha256:0000000000000000000000000000000000000000000000000000000000000000
+      - name: Validate Compose configuration and isolation
         run: |
           docker compose --env-file deploy/.env.example --file deploy/compose.yml config --quiet
-          docker compose --env-file deploy/model-host/.env.example --file deploy/model-host/compose.yml config --quiet
+          docker compose --env-file deploy/.env.example --file deploy/compose.yml config --format json > /tmp/opsmate-compose.json
+          python3 - <<'PY'
+          import json
 
-      - name: Validate Caddy configuration
+          with open('/tmp/opsmate-compose.json', encoding='utf-8') as handle:
+              compose = json.load(handle)
+
+          services = compose['services']
+          edge_ports = services['edge'].get('ports', [])
+          if len(edge_ports) != 1:
+              raise SystemExit(f'edge must publish exactly one loopback port, got {edge_ports!r}')
+          edge_port = edge_ports[0]
+          if edge_port.get('host_ip') != '127.0.0.1':
+              raise SystemExit(f'edge host_ip must be 127.0.0.1, got {edge_port!r}')
+          if str(edge_port.get('target')) != '8080':
+              raise SystemExit(f'edge target must be 8080, got {edge_port!r}')
+          if str(edge_port.get('published')) != '18083':
+              raise SystemExit(f'CI fixture edge port must be 18083, got {edge_port!r}')
+
+          for name in ('db', 'app', 'model-tunnel'):
+              if services[name].get('ports'):
+                  raise SystemExit(f'{name} must not publish a host port')
+
+          app_networks = set(services['app'].get('networks', {}))
+          tunnel_networks = set(services['model-tunnel'].get('networks', {}))
+          if 'tunnel_egress' in app_networks:
+              raise SystemExit('app must not have direct tunnel/internet egress')
+          if not {'model_link', 'tunnel_egress'} <= tunnel_networks:
+              raise SystemExit(f'model-tunnel networks are incomplete: {tunnel_networks!r}')
+          if not compose['networks']['model_link'].get('internal'):
+              raise SystemExit('model_link must be internal')
+          if not compose['networks']['app_to_db'].get('internal'):
+              raise SystemExit('app_to_db must be internal')
+          if not compose['networks']['edge_to_app'].get('internal'):
+              raise SystemExit('edge_to_app must be internal')
+          PY
+
+      - name: Validate loopback Nginx edge configuration
         run: |
+          grep -Fq 'limit_req zone=opsmate_global' deploy/nginx.conf
+          grep -Fq 'limit_req_status 429' deploy/nginx.conf
           docker run --rm \
-            -e DEMO_DOMAIN=demo.example.com \
-            -e ACME_EMAIL=operator@example.com \
-            -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
-            caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c \
-            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
-          docker run --rm \
-            -e MODEL_PROXY_TOKEN=synthetic-token-with-at-least-32-characters \
-            -v "$PWD/deploy/model-host/Caddyfile:/etc/caddy/Caddyfile:ro" \
-            caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c \
-            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+            --user 101:101 \
+            --tmpfs /tmp:size=16m,mode=1777 \
+            -v "$PWD/deploy/nginx.conf:/etc/nginx/nginx.conf:ro" \
+            nginx:1.30.4-alpine@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46 \
+            nginx -t -c /etc/nginx/nginx.conf
 
-      - name: Build non-root application image
+      - name: Build non-root application and tunnel images
         run: |
           docker build --check .
           docker build --tag opsmate-local:ci .
           test "$(docker image inspect --format '{{.Config.User}}' opsmate-local:ci)" = "opsmate:opsmate"
 
+          docker build --check --file deploy/tunnel/Dockerfile deploy/tunnel
+          docker build --tag opsmate-model-tunnel:ci --file deploy/tunnel/Dockerfile deploy/tunnel
+          test "$(docker image inspect --format '{{.Config.User}}' opsmate-model-tunnel:ci)" = "tunnel:tunnel"
+
+      - name: Verify tunnel entrypoint rejects unsafe target input
+        run: |
+          if docker run --rm \
+            -e OFFICE_SSH_HOST='bad host' \
+            -e OFFICE_SSH_PORT=22 \
+            -e OFFICE_SSH_USER=test \
+            opsmate-model-tunnel:ci; then
+            echo 'tunnel entrypoint accepted an unsafe host' >&2
+            exit 1
+          fi
+
       - name: Rehearse the one-shot migration container
         env:
           OPSMATE_APP_IMAGE: opsmate-local:ci
+          OPSMATE_TUNNEL_IMAGE: opsmate-model-tunnel:ci
         run: |
           docker compose --project-name opsmate-ci-rehearsal \
             --env-file deploy/.env.example \
@@ -127,6 +172,7 @@ jobs:
         if: always()
         env:
           OPSMATE_APP_IMAGE: opsmate-local:ci
+          OPSMATE_TUNNEL_IMAGE: opsmate-model-tunnel:ci
         run: |
           docker compose --project-name opsmate-ci-rehearsal \
             --env-file deploy/.env.example \

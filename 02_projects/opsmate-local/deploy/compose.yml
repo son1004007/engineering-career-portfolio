@@ -9,7 +9,6 @@ x-logging: &bounded-logging
 services:
   db:
     image: postgres:16.8-alpine@sha256:3b057e1c2c6dfee60a30950096f3fab33be141dbb0fdd7af3d477083de94166c
-    # 공개 demo는 수동 open gate를 통과할 때만 시작한다. daemon 재시작 자동 복구는 금지한다.
     restart: "no"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
@@ -57,6 +56,39 @@ services:
       - no-new-privileges:true
     logging: *bounded-logging
 
+  model-tunnel:
+    image: ${OPSMATE_TUNNEL_IMAGE:?OPSMATE_TUNNEL_IMAGE digest is required}
+    restart: "no"
+    init: true
+    environment:
+      OFFICE_SSH_HOST: ${OFFICE_SSH_HOST:?OFFICE_SSH_HOST is required}
+      OFFICE_SSH_PORT: ${OFFICE_SSH_PORT:?OFFICE_SSH_PORT is required}
+      OFFICE_SSH_USER: ${OFFICE_SSH_USER:?OFFICE_SSH_USER is required}
+    secrets:
+      - source: office_tunnel_key
+        target: office_tunnel_key
+      - source: office_known_hosts
+        target: office_known_hosts
+    expose:
+      - "11434"
+    networks:
+      - model_link
+      - tunnel_egress
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --show-error --fail http://127.0.0.1:11434/api/version >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    read_only: true
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging: *bounded-logging
+
   app:
     image: ${OPSMATE_APP_IMAGE:?OPSMATE_APP_IMAGE digest is required}
     restart: "no"
@@ -78,7 +110,7 @@ services:
       OPSMATE_LLM_BASE_URL: ${OPSMATE_LLM_BASE_URL:?OPSMATE_LLM_BASE_URL is required}
       OPSMATE_LLM_ALLOWED_HOSTS: ${OPSMATE_LLM_ALLOWED_HOSTS:?OPSMATE_LLM_ALLOWED_HOSTS is required}
       OPSMATE_LLM_MODEL: ${OPSMATE_LLM_MODEL:?OPSMATE_LLM_MODEL is required}
-      OPSMATE_LLM_AUTH_TOKEN: ${OPSMATE_LLM_AUTH_TOKEN:?OPSMATE_LLM_AUTH_TOKEN is required}
+      OPSMATE_LLM_AUTH_TOKEN: ${OPSMATE_LLM_AUTH_TOKEN:-}
       OPSMATE_LLM_MAX_OUTPUT_TOKENS: ${OPSMATE_LLM_MAX_OUTPUT_TOKENS:-512}
       OPSMATE_LLM_MAX_RESPONSE_BYTES: ${OPSMATE_LLM_MAX_RESPONSE_BYTES:-65536}
       OPSMATE_MODEL_MAX_CONCURRENT: "1"
@@ -93,14 +125,14 @@ services:
     networks:
       - app_to_db
       - edge_to_app
-      # 원격 사설 모델에 도달하기 위한 outbound bridge다. 목적지 제한은 이 선언이 아니라
-      # 배포 호스트 firewall/egress policy로 적용하고 open gate에서 별도 확인한다.
-      - model_egress
+      - model_link
     depends_on:
       db:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+      model-tunnel:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --show-error --fail http://127.0.0.1:8080/actuator/health/readiness >/dev/null"]
       interval: 5s
@@ -116,51 +148,49 @@ services:
       - no-new-privileges:true
     logging: *bounded-logging
 
-  caddy:
-    image: caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c
+  edge:
+    image: nginx:1.30.4-alpine@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46
     restart: "no"
-    environment:
-      DEMO_DOMAIN: ${DEMO_DOMAIN:?DEMO_DOMAIN is required}
-      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+    user: "101:101"
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "127.0.0.1:${OPSMATE_EDGE_HOST_PORT:-18083}:8080"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
-      - edge
       - edge_to_app
     depends_on:
       app:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/edge-health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
       start_period: 5s
     read_only: true
     tmpfs:
       - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
     security_opt:
       - no-new-privileges:true
     logging: *bounded-logging
 
 networks:
-  edge:
   edge_to_app:
     internal: true
   app_to_db:
     internal: true
-  model_egress:
+  model_link:
+    internal: true
+  tunnel_egress:
 
 volumes:
   postgres_data:
     name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-postgres-data
-  caddy_data:
-    name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-caddy-data
-  caddy_config:
-    name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-caddy-config
+
+secrets:
+  office_tunnel_key:
+    file: ${OPSMATE_OFFICE_SSH_KEY_FILE:?OPSMATE_OFFICE_SSH_KEY_FILE is required}
+  office_known_hosts:
+    file: ${OPSMATE_OFFICE_KNOWN_HOSTS_FILE:?OPSMATE_OFFICE_KNOWN_HOSTS_FILE is required}

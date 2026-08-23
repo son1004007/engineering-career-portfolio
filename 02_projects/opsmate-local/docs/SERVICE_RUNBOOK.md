@@ -2,277 +2,269 @@
 
 ## 문서 상태
 
-- 상태: 운영 자산 `implemented`, 실제 양 호스트 rehearsal `unverified`
-- 목적: 필요한 기간에만 서비스를 열고, 개발·검증 뒤 안전하게 닫았다가 같은 artifact로 다시 여는 절차
-- 기본 상태: `CLOSED`
-- 공개 금지: credential, host/IP, 내부 URL, VPN 정보와 승인 문서 원문
+- 운영 자산: `implemented`, Synology + restricted SSH tunnel 구조로 전환 중
+- 실제 모델 adapter E2E: `verified` (`2026-08-23`, `gemma3:12b`, 9/9, 관측 p95 21,076ms <= 30,000ms)
+- public ingress / NAS→Office tunnel E2E / 실제 close-reopen: 아직 `unverified`
+- 기본 운영 상태: `CLOSED`
 
-현재 저장소에는 앱·모델 호스트의 open, normal close, emergency close와 closed verification 스크립트가 있습니다. `2026-08-04` 전체 `clean verify`는 54개 테스트 성공, 실패·오류·건너뜀 0개였습니다. 그러나 승인된 실제 모델 호스트, 공개 URL과 양 호스트를 사용한 전체 rehearsal은 아직 수행하지 않았습니다. 스크립트 존재를 실제 운영 완료로 해석하지 않습니다.
+이 문서는 **개인 Synology NAS의 공개 앱**과 **승인된 Office GPU 서버의 native Ollama**를 연결하는 현재 운영 경계를 정의합니다. 과거 Office Docker/NVIDIA model-host 설계는 현재 Office runtime에 Docker가 없다는 실측 결과와 맞지 않으므로 사용하지 않습니다.
 
-## 두 호스트의 책임
+공개 문서에는 credential, 실제 host/IP, SSH 계정, known_hosts 원문과 승인 문서 원문을 기록하지 않습니다.
+
+## 현재 구조
 
 ```mermaid
 flowchart LR
-    USER["External browser"] -->|"HTTPS"| APPHOST["App host: Caddy + app + PostgreSQL"]
-    APPHOST -->|"Approved private path"| MODELHOST["Model host: authenticated proxy + Ollama + one GPU"]
+    USER["External browser"] -->|"HTTPS"| DSM["Synology DSM Reverse Proxy / TLS"]
+    DSM -->|"loopback"| EDGE["Nginx edge"]
+    EDGE --> APP["OpsMate app"]
+    APP --> DB["PostgreSQL 16"]
+    APP -->|"model_link"| TUNNEL["non-root model-tunnel"]
+    TUNNEL -->|"strict SSH only"| OFFICE["Office SSH"]
+    OFFICE -->|"permitopen -> loopback"| OLLAMA["127.0.0.1:11434 native Ollama"]
 ```
 
-애플리케이션 호스트와 모델 호스트는 별도 수명주기를 가집니다.
+## 보안 경계
 
-| 대상 | open | normal close | emergency close | closed 확인 |
-|---|---|---|---|---|
-| 애플리케이션 호스트 | `deploy/open-demo.sh` | `deploy/close-demo.sh` | `deploy/emergency-close.sh [project]` | `deploy/verify-closed.sh` |
-| 모델 호스트 | `deploy/model-host/open-model.sh` | `deploy/model-host/close-model.sh` | `deploy/model-host/emergency-close.sh [project]` | `deploy/model-host/verify-private.sh --closed` |
+- DSM이 public TLS와 external ingress를 담당합니다.
+- OpsMate Nginx edge는 NAS loopback high port 한 곳에만 bind합니다.
+- PostgreSQL, app, model-tunnel은 NAS host port를 publish하지 않습니다.
+- app은 일반 인터넷 egress network에 연결하지 않습니다.
+- `model-tunnel`만 Office SSH를 위한 outbound network를 가집니다.
+- tunnel은 `StrictHostKeyChecking=yes`, exact known_hosts, public-key-only 인증을 사용합니다.
+- OpsMate 전용 Office public key는 Ollama loopback 한 곳으로의 local forwarding만 허용합니다.
+- Ollama `11434`는 Office public interface에 새로 노출하지 않습니다.
+- OpsMate close는 model-tunnel만 닫으며 공유 native Ollama daemon 자체를 임의로 종료하지 않습니다.
 
-앱 close만으로 GPU가 해제되지 않고, 모델 close만으로 public edge와 DB가 닫히지 않습니다. 두 호스트의 close와 verification이 모두 성공해야 전체 서비스를 `CLOSED`로 판정합니다.
+## 현재 runtime evidence
 
-모든 Compose service는 `restart: "no"`입니다. Docker daemon이나 호스트 재시작만으로 공개 서비스가 자동 복구되지 않으며, 항상 명시적인 open gate를 다시 통과해야 합니다.
+`2026-08-23` read-only probe 기준:
 
-## 비밀값과 환경 파일
+- Synology: Docker `24.0.2`, `x86_64`.
+- Synology: 80/443은 DSM이 이미 LISTEN 중이므로 OpsMate가 직접 점유하지 않습니다.
+- Synology: loopback `18083`은 OpsMate edge 후보이며 실제 open 직전 다시 충돌을 검사합니다.
+- Office: Ollama `0.13.5`, `gemma3:12b` 존재, API 응답 확인.
+- Office: Docker 없음.
+- 실제 모델 adapter E2E는 통과했지만 NAS -> SSH tunnel -> Office Ollama -> NAS app 전체 경로는 별도 검증합니다.
 
-각 호스트에서 예시 파일을 추적되지 않는 `.env`로 복사합니다.
+## 배포 입력값
 
-```text
-deploy/.env.example
-deploy/model-host/.env.example
-```
+실제 값은 NAS-local `deploy/.env`와 NAS-local secret files에만 둡니다.
 
-환경 파일에는 다음 유형의 값이 필요하지만 실제 값은 Git, 문서, issue, CI log와 shell history에 남기지 않습니다.
+필수 범주:
 
-- 앱 image full digest와 공개 domain
-- DB admin·migration·runtime 역할과 서로 다른 비밀번호
-- 승인된 private model endpoint와 임시 Bearer token
-- Ollama/Caddy image full digest와 승인 모델 tag·content ID
-- 선택한 한 GPU와 승인된 VPN interface
+- `OPSMATE_APP_IMAGE`: 검증된 app image full digest
+- `OPSMATE_TUNNEL_IMAGE`: 검증된 tunnel image full digest
+- `DEMO_DOMAIN`, `DEMO_PUBLIC_PORT`, `OPSMATE_EDGE_HOST_PORT`
+- DB admin / migration / runtime 역할과 서로 다른 비밀번호
+- Office SSH endpoint metadata
+- OpsMate 전용 tunnel private key 파일
+- exact Office SSH known_hosts 파일
+- `OPSMATE_LLM_BASE_URL=http://model-tunnel:11434`
+- `OPSMATE_LLM_ALLOWED_HOSTS=model-tunnel`
+- `OPSMATE_LLM_MODEL=gemma3:12b`
 
-`.env*`는 `.env.example`을 제외하고 ignore합니다. backup 이름을 포함한 비밀 파일도 커밋하지 않습니다.
+SSH-forwarded loopback 경로에서는 별도 model API Bearer token을 사용하지 않습니다. 인증과 목적지 제한은 SSH key + host-key 검증 + Office `authorized_keys` 제한으로 수행합니다.
+
+`.env`, private key와 real known_hosts는 Git, Issue, PR, workflow log에 저장하지 않습니다.
+
+## 이미지 발행
+
+`Publish OpsMate Images` workflow는 관련 `main` 소스가 바뀌면 linux/amd64 이미지를 GHCR에 발행하도록 구성합니다.
+
+- `ghcr.io/.../opsmate-local:<source-sha>`
+- `ghcr.io/.../opsmate-model-tunnel:<source-sha>`
+
+실제 배포에는 tag만 사용하지 않고 workflow가 기록한 `@sha256:<digest>` full reference를 사용합니다. NAS에서 해당 full digest가 실제 pull되는 것까지 확인해야 release artifact gate가 완료됩니다.
 
 ## 공개 전 필수 gate
 
-### 승인된 사설 GPU 모델 호스트
+### Office model path
 
-- [ ] 외부 포트폴리오 트래픽 처리 목적과 기간이 명시적으로 승인됨
-- [ ] GPU·VRAM·driver·NVIDIA container runtime을 실측함
-- [ ] 선택 모델의 license와 사용 범위를 검토함
-- [ ] 모델 proxy는 승인된 private/VPN IPv4에만 bind함
-- [ ] Ollama 자체 host port는 노출하지 않음
-- [ ] Ollama image full digest, 모델 tag와 실제 content ID를 고정함
-- [ ] 한 GPU만 선택하고 다른 workload를 변경하지 않음
+- [x] 공개 포트폴리오 추론 용도에 대한 조직 승인 확인
+- [x] native Ollama와 `gemma3:12b` runtime 확인
+- [x] 실제 모델 adapter E2E 성공
+- [ ] OpsMate 전용 SSH key 생성 및 NAS-local secret 배치
+- [ ] Office `authorized_keys`에 destination-restricted key 등록
+- [ ] exact Office host key를 NAS known_hosts로 배치
+- [ ] NAS `model-tunnel` health가 Office loopback Ollama까지 성공
+- [ ] Office `11434` 외부 비노출 확인
 
-모델 `open-model.sh`는 승인 flag가 정확히 `YES`인지 Docker, GPU, network 또는 model 작업보다 먼저 확인합니다. 승인이 없으면 여기서 중단하고 유료 API나 다른 모델로 자동 전환하지 않습니다.
+### Synology app path
 
-### 애플리케이션과 외부 네트워크
+- [x] Docker와 x86_64 runtime 확인
+- [x] DSM 80/443 점유 확인
+- [ ] app/tunnel GHCR image full digest 확보 및 NAS pull
+- [ ] DSM Reverse Proxy/TLS source 설정
+- [ ] DB 역할 분리와 NAS-local secret 구성
+- [ ] loopback edge와 기존 NAS workload port 충돌 없음 확인
+- [ ] Compose app direct-egress 부재 검증
+- [ ] Nginx rate limit 실제 동작 검증
+- [ ] 공개 전 closed 상태 확인
 
-- [ ] 같은 소스에서 빌드·검증한 앱 image full digest를 registry에서 사용할 수 있음
-- [ ] DB admin·migration·runtime 역할과 비밀번호가 서로 분리됨
-- [ ] public domain, DNS와 ACME 조건이 준비됨
-- [ ] app host firewall/egress가 승인 모델 목적지만 허용한다는 증거를 보관함
-- [ ] edge/WAF가 익명 요청 rate limit을 적용한다는 증거를 보관함
-- [ ] 최신 `clean verify`, container build와 구성 검사가 통과함
+`OPSMATE_HOST_EGRESS_POLICY_VERIFIED=YES`와 `OPSMATE_EDGE_RATE_LIMIT_VERIFIED=YES`는 실제 검증 증거가 있을 때만 설정합니다. 단순 flag 변경은 검증을 대신하지 않습니다.
 
-`open-demo.sh`는 egress allowlist와 edge rate limit의 증거 flag가 모두 `YES`가 아니면 실패합니다. flag는 실제 정책의 대체물이 아니므로 운영자가 외부 구성을 별도로 확인해야 합니다.
+## DSM Reverse Proxy/TLS
 
-## 모델 호스트 열기
+OpsMate Compose의 `edge`는 `127.0.0.1:<OPSMATE_EDGE_HOST_PORT>`에만 bind합니다. DSM Reverse Proxy source는 공개 HTTPS hostname/port를 받고 destination은 해당 loopback HTTP endpoint로 설정합니다.
 
-모델 호스트에서 실행합니다.
+현재 예시 후보는 다음과 같습니다.
 
-```sh
-./deploy/model-host/open-model.sh
+```text
+public HTTPS: <DEMO_DOMAIN>:58889
+DSM destination: http://127.0.0.1:18083
 ```
 
-스크립트는 다음 순서를 지킵니다.
+`58889`는 현재 후보일 뿐 실제 DSM/router 설정 완료 전 검증된 public port로 간주하지 않습니다. source port, 인증서와 공유기 forwarding은 공개 직전 현재 UI/runtime을 확인해 설정합니다.
 
-1. 승인 flag, 필수 명령, Docker/NVIDIA runtime과 환경값을 검사합니다.
-2. VPN interface에 승인한 private IPv4가 실제로 할당됐는지 확인합니다.
-3. GPU selector가 정확히 한 GPU를 가리키는지 `nvidia-smi`로 확인합니다.
-4. Ollama·Caddy image가 full SHA-256 digest인지 검사합니다.
-5. 모델에 명시적 tag와 승인 content ID가 있는지 검사합니다.
-6. 기존 proxy를 먼저 멈춰 검증 중 endpoint 노출을 막습니다.
-7. 선택한 한 GPU로 Ollama를 시작하고 승인 모델을 준비합니다.
-8. 실제 model inventory의 content ID가 승인값과 같은지 확인합니다.
-9. VPN-bound 인증 proxy를 시작합니다.
-10. private bind, token 없는 요청의 `401`, 인증 health `200`, Ollama host port 미노출과 model volume을 확인합니다.
+## 서비스 열기
 
-중간 실패 시 proxy와 Ollama를 멈추고 closed verification을 시도합니다. 자동 정리가 완전하지 않으면 앱 호스트를 열지 말고 모델 호스트를 먼저 점검합니다.
-
-## 애플리케이션 호스트 열기
-
-모델 호스트 검증 뒤 애플리케이션 호스트에서 실행합니다.
+DSM ingress와 NAS-local secret이 준비된 뒤 NAS에서 실행합니다.
 
 ```sh
 ./deploy/open-demo.sh
 ```
 
-preflight는 다음을 확인합니다.
+`open-demo.sh`의 순서:
 
-- 앱 image가 full SHA-256 digest로 고정됨
-- DB 역할 이름이 안전한 서로 다른 식별자이고 비밀번호 길이 기준을 만족함
-- model proxy token이 길이·문자 기준을 만족함
-- model base URL은 경로가 없는 승인된 private/VPN IPv4 한 개와 port로 구성됨
-- allowed hosts는 해당 IPv4 하나와 정확히 같음
-- private model health가 Bearer 인증으로 성공함
-- host egress와 edge rate limit 증거 flag가 `YES`임
-- Compose 구성이 유효함
+1. app/tunnel image가 full digest인지 확인합니다.
+2. DB 역할 분리와 비밀번호 기준을 확인합니다.
+3. Office SSH target 형식과 NAS-local key/known_hosts 파일 존재를 확인합니다.
+4. model URL이 정확히 `http://model-tunnel:11434`인지 확인합니다.
+5. tunnel-only egress와 edge rate-limit 검증 flag를 확인합니다.
+6. loopback edge port가 현재 비어 있는지 확인합니다.
+7. immutable app/tunnel/edge image를 pull/inspect합니다.
+8. `model-tunnel`을 시작하고 Ollama `/api/version` health를 기다립니다.
+9. PostgreSQL을 시작합니다.
+10. 같은 app image의 one-shot Flyway migration을 실행합니다.
+11. migration credential이 없는 runtime app을 시작합니다.
+12. loopback Nginx edge를 시작합니다.
+13. 실제 public HTTPS smoke를 수행합니다.
 
-시작 순서는 다음과 같습니다.
-
-1. 기존 public Caddy를 중단합니다.
-2. PostgreSQL을 시작하고 health를 기다립니다.
-3. 검증한 immutable 앱 image digest를 pull·inspect합니다.
-4. 같은 image의 one-shot `migrate`가 Flyway를 완료합니다.
-5. migration credential이 없는 runtime 앱을 시작하고 readiness를 기다립니다.
-6. Caddy를 시작합니다.
-7. 외부 HTTPS smoke test를 실행합니다.
-
-open 중 실패하면 public edge와 앱을 멈추고, 쓰기 주체가 실제로 중단된 경우에만 합성 workspace 삭제를 시도한 뒤 DB를 멈춥니다. 자동 정리 실패 메시지가 나오면 재시도 전에 emergency close와 수동 상태 확인을 수행합니다.
+중간 실패 시 edge -> app -> model-tunnel을 닫고 쓰기 주체가 중단된 경우에만 합성 workspace 삭제를 시도한 뒤 DB를 닫습니다.
 
 ## 공개 smoke 기준
 
-`deploy/smoke-test.sh`는 실제 HTTPS와 실제 모델 경로에서 다음을 확인합니다.
+`deploy/smoke-test.sh`는 실제 HTTPS origin에서 다음을 확인합니다.
 
-- public root 응답과 `X-OpsMate-Demo: live` marker
-- HTTP→HTTPS redirect
-- 공개 `/api/**`의 정확한 `403`과 Basic challenge 부재
+- root 응답과 `X-OpsMate-Demo: live` marker
+- standard 443 배포라면 HTTP -> HTTPS redirect
+- 공개 `/api/**`의 `403`과 Basic challenge 부재
 - XSRF/JSESSIONID의 `Secure`, `HttpOnly`, `SameSite=Lax`
-- `/demo/sessions`로 합성 workspace 시작
-- `/demo/drafts`에서 실제 모델 기반 서버 검증 초안 생성
-- `/demo/requests/{id}/submit`
-- `/demo/requests/{id}/decisions`
-- `/demo/orders`
-- AUDITOR 화면의 `ORDER_CREATED`
-- `/demo/end`를 통한 smoke workspace 삭제
+- 합성 workspace 시작
+- 실제 모델 기반 서버 검증 초안 생성
+- submit -> approve -> order
+- AUDITOR `ORDER_CREATED`
+- smoke workspace 삭제
 
 이 smoke가 성공하지 않으면 공개 open은 완료된 것이 아닙니다. 서로 다른 두 외부 세션의 cross-workspace 격리, 외부 DB/model port 차단과 모바일 네트워크 확인은 별도 운영 검수로 추가합니다.
 
-## 정상 애플리케이션 호스트 닫기
+## 정상 닫기
 
-애플리케이션 호스트에서 실행합니다.
+NAS에서 실행합니다.
 
 ```sh
 ./deploy/close-demo.sh
 ```
 
-실제 순서는 다음과 같습니다.
+순서:
 
-1. public Caddy를 먼저 중단합니다.
-2. 앱을 graceful shutdown으로 중단해 신규 쓰기와 진행 중 트랜잭션을 끝냅니다.
-3. Caddy와 앱이 모두 실제로 중단됐는지 확인합니다.
-4. PostgreSQL을 시작하거나 유지하고 admin 역할로 `demo_workspaces`를 truncate cascade 합니다.
-5. 남은 workspace 수가 `0`인지 확인합니다.
-6. one-shot migration service와 PostgreSQL을 중단합니다.
-7. app, migrate, DB와 live Caddy가 모두 중단됐고 PostgreSQL volume이 남아 있는지 `verify-closed.sh`로 확인합니다.
+1. loopback Nginx edge 중단
+2. app graceful stop
+3. model-tunnel 중단
+4. 세 서비스가 실제 중단됐는지 확인
+5. PostgreSQL을 유지/기동해 `demo_workspaces`를 `TRUNCATE ... CASCADE`
+6. 남은 workspace `0` 확인
+7. migrate/DB 중단
+8. `verify-closed.sh`로 edge/app/tunnel/DB 중단 + PostgreSQL volume 보존 확인
+9. public origin에서 live marker가 사라졌는지 확인
 
-앱보다 먼저 합성 데이터를 삭제하면 늦게 완료되는 트랜잭션과 경합할 수 있으므로 이 순서를 바꾸지 않습니다. 삭제 검증이 실패해도 서비스 중단은 유지하고, 원인을 해결하기 전에는 reopen하지 않습니다.
+Office native Ollama는 다른 개발 업무와 공유될 수 있으므로 정상 close가 Ollama daemon을 종료하지 않습니다.
 
-## 정상 모델 호스트 닫기
+## 긴급 닫기
 
-모델 호스트에서 별도로 실행합니다.
-
-```sh
-./deploy/model-host/close-model.sh
-```
-
-스크립트는 VPN-bound proxy를 먼저 멈추고 Ollama를 멈춥니다. 이후 proxy·Ollama container 중단, 11434 listener 부재, 승인 private endpoint의 접근 불가와 model volume 보존을 확인합니다. 이 절차가 끝나야 데모용 GPU가 해제됩니다.
-
-앱 close와 모델 close 중 하나만 실행한 상태를 전체 `CLOSED`라고 기록하지 않습니다.
-
-## 환경 파일 없이 긴급 닫기
-
-credential 노출, 환경 파일 손실 또는 정상 Compose 명령 실패 시 emergency close를 사용합니다.
+환경 파일이나 credential을 읽을 수 없어도 다음을 실행할 수 있습니다.
 
 ```sh
 ./deploy/emergency-close.sh opsmate-demo
-./deploy/model-host/emergency-close.sh opsmate-model-host
 ```
 
-두 스크립트는 `.env`를 읽지 않습니다. 안전한 project 이름을 검사하고 Docker Compose label로 정확한 service container만 찾은 뒤 다음 순서로 중단합니다.
+Compose label을 기준으로 **해당 OpsMate project의** edge -> app -> model-tunnel -> migrate -> DB만 중단합니다. 다른 NAS container나 Office Ollama를 건드리지 않습니다.
 
-- 앱 호스트: Caddy → app → migrate → DB
-- 모델 호스트: proxy → Ollama, 가능한 경우 11434 listener 부재 확인
+긴급 닫기는 DB credential이 없으므로 합성 데이터 삭제를 수행하지 않습니다. 환경을 복구한 뒤 정상 close를 수행해 purge까지 확인해야 reopen할 수 있습니다.
 
-emergency close는 volume을 삭제하지 않습니다. 앱 호스트에서는 DB credential이 없으므로 합성 workspace도 purge하지 않습니다. 환경을 복구한 뒤 정상 close를 실행해 합성 데이터 삭제와 closed verification을 완료해야 합니다.
+## 동일 artifact reopen
 
-## 같은 artifact로 다시 열기
+1. Office 사용 승인이 여전히 유효한지 확인합니다.
+2. Office native Ollama/model이 이전 검증 경계와 호환되는지 확인합니다.
+3. 이전과 동일한 `OPSMATE_APP_IMAGE@sha256`과 `OPSMATE_TUNNEL_IMAGE@sha256`를 사용합니다.
+4. emergency close 이력이 있다면 정상 close로 합성 데이터 삭제를 먼저 확인합니다.
+5. `open-demo.sh` 전체 preflight/tunnel health/migration/readiness/HTTPS smoke를 다시 통과합니다.
+6. 외부 DB/model 비노출을 재확인합니다.
+7. rehearsal 종료 후 최종 상태는 다시 `CLOSED`로 둡니다.
 
-reopen은 이전 session을 복구하는 작업이 아니라 새 공개 기간을 여는 작업입니다.
-
-1. 사설 GPU 모델 호스트 승인과 사용 기간이 아직 유효한지 확인합니다.
-2. 이전에 승인한 Ollama image digest, 모델 tag·content ID와 GPU 조건을 확인합니다.
-3. 이전 검증에서 기록한 앱 image의 정확한 full digest를 `.env`에 둡니다.
-4. emergency close 뒤라면 정상 close로 합성 workspace 삭제를 먼저 확인합니다.
-5. 모델 호스트의 `open-model.sh`와 private verification을 실행합니다.
-6. 앱 호스트의 `open-demo.sh`를 실행해 migration, readiness와 전체 HTTPS smoke를 다시 통과합니다.
-7. 외부 모바일 네트워크에서 전체 흐름과 외부 DB/model port 차단을 확인합니다.
-
-Compose는 tag가 아니라 `OPSMATE_APP_IMAGE=...@sha256:<digest>`를 요구합니다. reopen 시 앱 digest가 달라지면 same-artifact reopen이 아니며 새 release 검증이 필요합니다. 모델 content ID, driver, migration 또는 주요 dependency가 달라져도 이전 E2E 결과를 재사용하지 않습니다.
+소스, image digest, model ID, migration 또는 주요 runtime이 바뀌면 same-artifact reopen이 아니므로 새 release 검증이 필요합니다.
 
 ## 장애 대응
 
-### 모델 장애
+### 모델 또는 SSH tunnel 장애
 
-- 모델에 의존하는 초안 결과를 저장하지 않고 해당 생성 경로를 fail-closed 상태로 유지합니다. 이미 제출된 요청의 승인·반려·발주는 모델과 분리되어 있지만, 공개 데모 전체의 검증 경계를 보수적으로 유지하기 위해 edge도 닫습니다.
-- 다른 모델이나 유료 API로 자동 fallback하지 않습니다.
-- public edge를 닫고 앱·모델 호스트 close를 실행합니다.
-- 복구 뒤 실제 모델 E2E와 public smoke 전에는 다시 열지 않습니다.
+- draft 생성은 fail-closed로 유지합니다.
+- 유료 API나 다른 모델로 자동 fallback하지 않습니다.
+- edge/app/tunnel을 닫고 Office Ollama와 SSH 경계를 별도로 진단합니다.
+- 복구 뒤 tunnel health + 실제 모델 경로 + public smoke 전에는 reopen하지 않습니다.
 
 ### workspace 간 데이터 노출
 
-- 즉시 app emergency close로 public edge와 쓰기 주체를 중단합니다.
-- 모델 호스트도 닫습니다.
-- 환경을 복구해 모든 합성 workspace를 삭제합니다.
-- 관련 repository query와 service guard를 검토하고 cross-workspace 회귀 테스트를 추가합니다.
-- 전체 검증 전에는 reopen하지 않습니다.
+- 즉시 emergency close합니다.
+- 모든 합성 workspace를 정리합니다.
+- repository query/service guard와 cross-workspace 회귀 테스트를 추가합니다.
+- 전체 regression 전에는 reopen하지 않습니다.
 
-### credential 노출
+### SSH key 또는 credential 노출
 
-- 두 호스트를 닫고 노출된 DB, model proxy, VPN과 edge credential을 회수·교체합니다.
-- Git history, image layer, artifact와 log 범위를 확인합니다.
-- 파일 삭제만으로 사고 대응을 종료하지 않습니다.
-
-### 승인 철회 또는 자산 변경
-
-- 신규 공개를 중단하고 두 호스트 normal close를 실행합니다.
-- 모델 호스트 credential과 승인 경로를 회수합니다.
-- 사용자의 별도 결정 없이 다른 공급자나 유료 API로 전환하지 않습니다.
+- edge와 tunnel을 즉시 닫습니다.
+- Office restricted key를 `authorized_keys`에서 회수하고 새 key를 발급합니다.
+- NAS-local secret을 교체합니다.
+- Git history/image layer/log 노출 범위를 확인합니다.
 
 ## 검증 기록 양식
 
-공개 가능한 일반화 정보만 기록합니다.
+공개 기록에는 다음만 남깁니다.
 
 ```text
-검증 시각과 timezone:
-소스 commit:
-애플리케이션 image digest:
+검증 시각/timezone:
+source commit:
+application image digest:
+tunnel image digest:
 DB migration version:
 공개 가능한 모델 식별자:
-최신 clean verify: PASS / FAIL / PENDING
-실제 모델 E2E: PASS / FAIL / NOT RUN
+clean verify: PASS / FAIL / NOT RUN
+NAS -> SSH tunnel -> Ollama health: PASS / FAIL / NOT RUN
 public HTTPS smoke: PASS / FAIL / NOT RUN
-cross-workspace 격리: PASS / FAIL / NOT RUN
-외부 DB/model 차단: PASS / FAIL / NOT RUN
-host egress allowlist 증거: PASS / FAIL / NOT RUN
-edge/WAF rate limit 증거: PASS / FAIL / NOT RUN
-앱 호스트 close: PASS / FAIL / NOT RUN
-모델 호스트 close: PASS / FAIL / NOT RUN
+cross-workspace isolation: PASS / FAIL / NOT RUN
+external DB/model non-exposure: PASS / FAIL / NOT RUN
+edge rate limit: PASS / FAIL / NOT RUN
+normal close: PASS / FAIL / NOT RUN
+emergency close: PASS / FAIL / NOT RUN
 same-digest reopen: PASS / FAIL / NOT RUN
-합성 workspace 삭제: PASS / FAIL / NOT RUN
-알려진 제한:
+synthetic workspace purge: PASS / FAIL / NOT RUN
+known limitations:
 ```
 
-host, IP, 계정, 내부 URL, VPN route, token과 승인 문서 원문은 기록하지 않습니다.
+실제 host/IP/user, SSH key, known_hosts 원문과 조직 승인 문서 원문은 공개 기록에서 제외합니다.
 
-## 운영 완료 기준
+## 완료 기준
 
-다음 항목이 모두 충족돼야 개발·배포·검증 완료로 기록할 수 있습니다.
+다음 항목이 모두 검증돼야 OpsMate public deployment를 완료로 표시합니다.
 
-- 최신 자동화 테스트와 회귀 테스트의 `clean verify` 성공
-- PostgreSQL migration과 runtime 최소 권한 검증
-- 승인된 실제 모델 E2E 성공
-- public URL에서 전체 persona 흐름과 외부 smoke 성공
-- host egress allowlist와 edge/WAF rate limit 적용 증거 확인
-- 앱·모델 양쪽 호스트의 normal/emergency close rehearsal 성공
-- 같은 앱 image digest와 승인 모델 content ID의 reopen 성공
-- close 뒤 합성 workspace 삭제와 외부 접근 차단 확인
-- 공개 문서와 evidence label이 실제 결과와 일치
-
-현재는 배포 자산까지 구현했지만 실제 승인 모델·공개 URL·외부 정책·양 호스트 rehearsal이 남아 있습니다. 따라서 서비스가 실제로 열려 있거나 운영 검증이 끝났다고 표시하지 않습니다.
+- 최신 Maven regression과 container/config CI 성공
+- immutable app/tunnel image digest 발행 및 NAS pull 성공
+- destination-restricted SSH tunnel의 실제 NAS -> Office E2E 성공
+- public HTTPS 전체 persona smoke 성공
+- PostgreSQL과 Ollama 외부 비노출 확인
+- edge rate-limit과 tunnel-only model egress 확인
+- normal/emergency close 성공
+- 동일 app/tunnel digest reopen 성공
+- close 후 합성 workspace 삭제와 최종 `CLOSED` 확인
+- README/evidence/state 문서가 실제 결과와 일치
