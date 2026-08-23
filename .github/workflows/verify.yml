@@ -113,9 +113,14 @@ jobs:
                   raise SystemExit(f'{name} must not publish a host port')
 
           app_networks = set(services['app'].get('networks', {}))
+          edge_networks = set(services['edge'].get('networks', {}))
           tunnel_networks = set(services['model-tunnel'].get('networks', {}))
           if 'tunnel_egress' in app_networks:
               raise SystemExit('app must not have direct tunnel/internet egress')
+          if 'edge_ingress' in app_networks:
+              raise SystemExit('app must not attach to the host-ingress bridge')
+          if edge_networks != {'edge_to_app', 'edge_ingress'}:
+              raise SystemExit(f'edge must use only edge_to_app and edge_ingress: {edge_networks!r}')
           if not {'model_link', 'tunnel_egress'} <= tunnel_networks:
               raise SystemExit(f'model-tunnel networks are incomplete: {tunnel_networks!r}')
           if not compose['networks']['model_link'].get('internal'):
@@ -124,6 +129,15 @@ jobs:
               raise SystemExit('app_to_db must be internal')
           if not compose['networks']['edge_to_app'].get('internal'):
               raise SystemExit('edge_to_app must be internal')
+
+          edge_ingress = compose['networks'].get('edge_ingress', {})
+          if edge_ingress.get('internal'):
+              raise SystemExit('edge_ingress must not be Docker internal; Synology drops published ports on internal-only networks')
+          if edge_ingress.get('driver') not in (None, 'bridge'):
+              raise SystemExit(f'edge_ingress must use bridge driver: {edge_ingress!r}')
+          opts = edge_ingress.get('driver_opts', {})
+          if str(opts.get('com.docker.network.bridge.enable_ip_masquerade')).lower() != 'false':
+              raise SystemExit(f'edge_ingress must disable IP masquerade: {opts!r}')
           PY
 
       - name: Validate loopback Nginx edge configuration
