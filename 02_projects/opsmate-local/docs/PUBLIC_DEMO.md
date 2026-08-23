@@ -2,12 +2,12 @@
 
 ## 문서 상태
 
-- 상태: `implemented`, `tested-component`
+- 상태: `implemented`, `tested-component`; 실제 모델 adapter E2E 경계 `verified`
 - 대상: 채용 담당자가 브라우저에서 직접 실행할 수 있는 제한형 공개 데모
-- 현재 구현 범위: Thymeleaf session UI, workspace 격리·TTL, CSRF와 API 거부, model guard, PostgreSQL/Flyway 역할 분리, Docker/Caddy와 open/close 자산
-- 아직 증명하지 않은 범위: 승인된 실제 오픈웨이트 모델 E2E, 공개 URL과 외부 smoke, host egress allowlist와 edge/WAF rate limit, 양 호스트 close/reopen rehearsal
+- 현재 구현 범위: Thymeleaf session UI, workspace 격리·TTL, CSRF와 API 거부, model guard, PostgreSQL/Flyway 역할 분리, Docker/Caddy와 open/close 자산, `2026-08-23` 실제 `gemma3:12b` E2E
+- 아직 증명하지 않은 범위: 공개 URL과 외부 smoke, host egress allowlist와 edge/WAF rate limit, DB/model 외부 비노출, 양 호스트 close/reopen rehearsal
 
-이 문서는 구현된 공개 데모의 계약과 아직 남은 외부 검수 기준을 함께 정의합니다. `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했고 실패·오류·건너뜀은 0개였습니다. 실제 모델 E2E와 외부 검수를 모두 통과하기 전에는 프로젝트 상태를 `tested-component`로 유지합니다.
+이 문서는 구현된 공개 데모의 계약과 아직 남은 외부 검수 기준을 함께 정의합니다. `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했고 실패·오류·건너뜀은 0개였습니다. `2026-08-23` 사설 GPU 호스트의 Ollama `gemma3:12b`로 실제 모델 E2E 9/9와 관측 p95 21,076ms(`<= 30,000ms` gate)를 확인했습니다. 상세 환경과 한계는 [`REAL_MODEL_E2E_EVIDENCE.md`](REAL_MODEL_E2E_EVIDENCE.md)에 기록합니다. 공개 URL·외부 네트워크 정책과 양 호스트 lifecycle 검수가 끝나기 전에는 프로젝트 전체 상태를 `tested-component`로 유지합니다.
 
 ## 목표
 
@@ -211,8 +211,8 @@ in-memory single-flight와 semaphore는 공개 데모를 단일 애플리케이�
 
 - 같은 idempotency key의 동시 요청에서 모델 호출과 DB 저장이 각각 한 번이다.
 - 전체 동시 모델 호출이 한 건으로 제한되고 나머지는 제한된 queue 또는 busy 결과를 받는다.
-- 실제 승인된 모델의 정상 구조 출력과 p95를 기록하고, malformed·timeout·unavailable 실패 경계는 실제 endpoint 검수로 보완한다.
-- 실제 모델 E2E에서 구조 검증 전 DB 쓰기가 없음을 확인한다.
+- `2026-08-23` 실제 `gemma3:12b` E2E에서 정상 구조 출력과 관측 p95 21,076ms를 기록했습니다. malformed·timeout·unavailable의 fail-closed 경계는 자동화 테스트로 검증하며 실제 endpoint 장애 주입 검수는 별도 외부 gate로 보완합니다.
+- 실제 모델 E2E는 유효 응답의 구조 검증→서버 업무 검증→저장 경계를 확인했습니다. 검증 실패 전 DB 무쓰기 경계는 자동화된 실패 테스트로 유지합니다.
 
 ### 외부 운영
 
@@ -223,6 +223,6 @@ in-memory single-flight와 semaphore는 공개 데모를 단일 애플리케이�
 
 ## 공개 증거 갱신 원칙
 
-코드와 배포 자산이 있는 항목은 `implemented`, 명시된 자동화 검증 경로가 있는 항목은 `tested-component`로 표시합니다. 실제 모델 E2E, 공개 URL, 외부 smoke, 외부 네트워크 정책 증거와 양 호스트 close/reopen 검수가 모두 끝난 뒤에만 공개 운영 완료 문구와 검증 날짜를 README, 아키텍처 문서와 portfolio evidence에 반영합니다.
+코드와 배포 자산이 있는 항목은 `implemented`, 명시된 자동화 검증 경로가 있는 항목은 `tested-component`로 표시합니다. 실제 모델 adapter E2E 경계는 `2026-08-23` 검증 근거로 `verified`입니다. 공개 URL, 외부 smoke, 외부 네트워크 정책 증거와 양 호스트 close/reopen 검수가 모두 끝난 뒤에만 공개 운영 완료 문구와 검증 날짜를 README, 아키텍처 문서와 portfolio evidence에 반영합니다.
 
 사설 host, IP, 계정, 내부 URL, 승인 문서 원문과 운영 credential은 공개 증거에 포함하지 않습니다. 공개 기록에는 일반화한 구성, 모델명·라이선스, 검증 시각, 결과와 제한만 남깁니다.
