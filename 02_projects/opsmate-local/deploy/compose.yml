@@ -148,41 +148,35 @@ services:
       - no-new-privileges:true
     logging: *bounded-logging
 
-  caddy:
-    image: caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c
+  edge:
+    image: nginx:1.30.4-alpine@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46
     restart: "no"
-    environment:
-      DEMO_DOMAIN: ${DEMO_DOMAIN:?DEMO_DOMAIN is required}
-      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+    user: "101:101"
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "127.0.0.1:${OPSMATE_EDGE_HOST_PORT:-18083}:8080"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
-      - edge
       - edge_to_app
     depends_on:
       app:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/edge-health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
       start_period: 5s
     read_only: true
     tmpfs:
       - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
     security_opt:
       - no-new-privileges:true
     logging: *bounded-logging
 
 networks:
-  edge:
   edge_to_app:
     internal: true
   app_to_db:
@@ -194,10 +188,6 @@ networks:
 volumes:
   postgres_data:
     name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-postgres-data
-  caddy_data:
-    name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-caddy-data
-  caddy_config:
-    name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-caddy-config
 
 secrets:
   office_tunnel_key:
