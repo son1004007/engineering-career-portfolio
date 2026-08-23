@@ -37,11 +37,11 @@
 - [x] container/config 정적 검수
 - [x] Docker non-root image build와 one-shot migration rehearsal
 
-검증: PR `#10`, `Verify Portfolio` run `32638023909`의 모든 job 성공. 이후 P20 구조 변경은 PR `#11`에서 별도 최신 regression을 다시 통과해야 한다.
+검증: PR `#10`, `Verify Portfolio` run `32638023909`의 모든 job 성공. P20 tunnel host-key pin 변경은 PR `#12`, run `32659673514`에서 전체 portfolio regression을 다시 통과했다.
 
 사용자 작업: 없음.
 
-### P20. OpsMate public application 배포 준비 — `in-progress`
+### P20. OpsMate public application 배포 준비 — `blocked-user`
 
 목표: 실제 인터넷에서 접근 가능한 애플리케이션 URL을 만들되 DB와 모델 endpoint는 공개하지 않는다.
 
@@ -58,6 +58,7 @@
 - [x] app의 직접 egress를 제거하고 `model-tunnel`만 outbound network를 갖도록 Compose 분리
 - [x] PostgreSQL, app, model-tunnel은 host port를 publish하지 않는 구조로 변경
 - [x] 과거 Office Docker model-host/Caddy 자산 제거
+- [x] production `model-tunnel`을 exact Office ED25519 host key algorithm으로 pin하고 최신 CI regression 성공
 
 현재 target 구조:
 
@@ -75,18 +76,28 @@ Internet
 
 `58889`는 public HTTPS source/router 후보 포트이며 실제 DSM/router 설정 완료 전 검증된 public port가 아니다.
 
-#### P20 남은 실행
+#### P20 실행 상태
 
-- [ ] PR `#11`의 최신 DSM/Nginx/tunnel 구조 전체 CI 성공
-- [ ] OpsMate 전용 SSH key를 Synology에 생성하고 private key를 NAS-local secret으로만 보관
-- [ ] Office `authorized_keys`에 Ollama loopback 목적지만 허용하는 restricted key 등록
-- [ ] exact Office host key를 NAS-local known_hosts로 배치
-- [ ] NAS -> restricted SSH tunnel -> Office `/api/version` 실제 E2E 성공
-- [ ] app/tunnel linux/amd64 immutable GHCR image full digest 발행
+- [x] 최신 DSM/Nginx/tunnel 구조 전체 CI 성공: PR `#12`, `Verify Portfolio` run `32659673514`
+- [x] OpsMate 전용 SSH key를 Synology에 생성하고 private key를 NAS-local secret으로만 보관
+- [x] Office `authorized_keys`에 `restrict`, `port-forwarding`, `permitopen="127.0.0.1:11434"`, `command="/bin/false"` 제한 key 등록 및 확인
+- [x] exact Office ED25519 host key를 NAS-local known_hosts로 배치
+- [ ] 실제 production Alpine `model-tunnel` container -> Office `/api/version` E2E 성공
+- [ ] app/tunnel linux/amd64 immutable GHCR image full digest를 NAS에서 실제 확인
+- [ ] 두 GHCR container package의 anonymous pull 허용
 - [ ] Synology에서 두 GHCR full digest 실제 pull 성공
 - [ ] NAS-local `deploy/.env`/DB secret 준비
 - [ ] 실제 공개 전 OpsMate stack `CLOSED` 상태 확인
 - [ ] DSM Reverse Proxy/TLS source와 router ingress 구성
+
+#### 최신 runtime evidence
+
+- `device-control`의 dedicated tunnel bootstrap에서 NAS key와 known_hosts, Office restricted authorized key가 실제 target에 설치·검증됐다.
+- portfolio PR `#12`에서 production tunnel에 `HostKeyAlgorithms=ssh-ed25519` pin을 적용했고 run `32659673514`가 성공했다.
+- `device-control`에 exact portfolio source SHA만 받는 bounded NAS container preflight를 추가했고 CI를 통과했다.
+- NAS preflight run `32660575997`에서 비대화형 SSH PATH 문제를 확인한 뒤 기존 Synology runtime의 Container Manager Docker 경로를 재사용하도록 수정했다.
+- 재실행 run `32660707257`은 Docker daemon까지 정상 진입하고 `e2e_stage=image-pull`에 도달했지만 `ghcr.io/son1004007/opsmate-local:<source-sha>` anonymous pull이 `denied`되어 container 실행 전에 중단됐다.
+- 따라서 현재 blocker는 NAS Docker나 Office tunnel credential이 아니라 GHCR package access/visibility gate다.
 
 보안 원칙:
 
@@ -95,10 +106,11 @@ Internet
 - 전용 SSH key는 shell/agent/X11/임의 forwarding 용도로 사용하지 않고 Ollama loopback destination에만 제한한다.
 - app은 `http://model-tunnel:11434`만 allowlist한다.
 - 실제 SSH key, known_hosts 원문, DB password와 host credential은 공개 저장소에 넣지 않는다.
+- NAS에 장기 GHCR PAT를 저장하지 않는 방향을 우선한다. 공개 포트폴리오 소스에서 재현 가능한 container image만 anonymous pull 대상으로 사용한다.
 
-현재 사용자 작업: **없음**. GitHub와 기존 device-control write path로 전용 tunnel bootstrap과 CI/image gate를 먼저 완료한다. DSM/router UI가 실제 마지막 blocker가 되었을 때 필요한 설정 한 번만 구체적으로 요청한다.
+현재 사용자 작업: GitHub Packages에서 `opsmate-local`과 `opsmate-model-tunnel` 두 Container package의 visibility를 확인하고 **Public**으로 변경한다. GitHub Container Registry의 public package는 anonymous pull이 가능하며, GitHub 정책상 public으로 바꾼 package는 다시 private으로 되돌릴 수 없으므로 이 변경은 사용자 UI에서 명시적으로 수행한다. 완료 후 같은 exact source SHA preflight를 즉시 재실행한다.
 
-완료 조건: NAS↔Office restricted model connection, immutable images, NAS-local runtime input과 public ingress 직전 closed preflight가 실제 target에서 성공한다.
+완료 조건: NAS↔Office restricted production-container model connection, immutable image digests, NAS-local runtime input과 public ingress 직전 closed preflight가 실제 target에서 성공한다.
 
 ### P30. 외부 네트워크·보안 gate — `pending`
 
@@ -154,7 +166,14 @@ Office native Ollama 자체는 공유 runtime이므로 OpsMate lifecycle이 임�
 
 ## 현재 사용자에게 필요한 작업
 
-현재 즉시 필요한 사용자 작업은 **없음**. 다음 사용자 입력은 DSM Reverse Proxy/router 설정 또는 물리 모바일 외부망 확인처럼 연결된 도구로 수행할 수 없는 단계가 실제 blocker가 되었을 때만 요청한다.
+현재 즉시 필요한 사용자 작업은 **GitHub Container Registry package 2개의 visibility를 Public으로 변경하는 것**이다.
+
+대상:
+
+- `opsmate-local`
+- `opsmate-model-tunnel`
+
+이 단계가 완료되면 ChatGPT/device-control이 동일 source SHA로 anonymous pull, RepoDigest 추출, production tunnel container E2E를 다시 수행한다. 이후 DSM Reverse Proxy/router 설정이 실제 blocker가 될 때까지 NAS runtime 준비는 자동화 경로로 계속 진행한다.
 
 ## 완료 판정
 
