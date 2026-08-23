@@ -39,16 +39,18 @@ stop_service() {
     done
 }
 
-# 외부 진입점과 쓰기 주체를 먼저 닫는다. credential이 없으므로 data purge는 하지 않는다.
+# External entry, write-capable application and model transport are closed first.
+# Credential-independent emergency close intentionally does not purge data.
 stop_service caddy 30
 stop_service app 45
+stop_service model-tunnel 15
 stop_service migrate 10
 stop_service db 30
 
-for service in caddy app migrate db
+for service in caddy app model-tunnel migrate db
 do
     [ -z "$(running_ids "$service")" ] || fail "$service is still running"
 done
 
-printf '%s\n' "emergency-close: app stack closure verified for project $PROJECT_NAME"
+printf '%s\n' "emergency-close: app and model-tunnel closure verified for project $PROJECT_NAME"
 printf '%s\n' "emergency-close: synthetic rows were not purged; recover the env file and run normal close before reopen"
