@@ -147,6 +147,13 @@ jobs:
           docker build --tag opsmate-model-tunnel:ci --file deploy/tunnel/Dockerfile deploy/tunnel
           test "$(docker image inspect --format '{{.Config.User}}' opsmate-model-tunnel:ci)" = "tunnel:tunnel"
 
+      - name: Validate tunnel SSH trust pin
+        run: |
+          grep -Fq -- '-o StrictHostKeyChecking=yes' deploy/tunnel/tunnel-entrypoint.sh
+          grep -Fq -- '-o HostKeyAlgorithms=ssh-ed25519' deploy/tunnel/tunnel-entrypoint.sh
+          grep -Fq -- '-o UserKnownHostsFile="$KNOWN_HOSTS"' deploy/tunnel/tunnel-entrypoint.sh
+          grep -Fq -- '-L 0.0.0.0:11434:127.0.0.1:11434' deploy/tunnel/tunnel-entrypoint.sh
+
       - name: Verify tunnel entrypoint rejects unsafe target input
         run: |
           if docker run --rm \
