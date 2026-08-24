@@ -160,13 +160,17 @@ jobs:
           docker build --check --file deploy/tunnel/Dockerfile deploy/tunnel
           docker build --tag opsmate-model-tunnel:ci --file deploy/tunnel/Dockerfile deploy/tunnel
           test "$(docker image inspect --format '{{.Config.User}}' opsmate-model-tunnel:ci)" = "tunnel:tunnel"
+          docker run --rm --entrypoint nginx opsmate-model-tunnel:ci -t -c /etc/nginx/tunnel-nginx.conf
 
-      - name: Validate tunnel SSH trust pin
+      - name: Validate tunnel SSH trust and HTTP host normalization
         run: |
           grep -Fq -- '-o StrictHostKeyChecking=yes' deploy/tunnel/tunnel-entrypoint.sh
           grep -Fq -- '-o HostKeyAlgorithms=ssh-ed25519' deploy/tunnel/tunnel-entrypoint.sh
           grep -Fq -- '-o UserKnownHostsFile="$KNOWN_HOSTS"' deploy/tunnel/tunnel-entrypoint.sh
-          grep -Fq -- '-L 0.0.0.0:11434:127.0.0.1:11434' deploy/tunnel/tunnel-entrypoint.sh
+          grep -Fq -- '-L 127.0.0.1:11435:127.0.0.1:11434' deploy/tunnel/tunnel-entrypoint.sh
+          grep -Fq 'listen 11434;' deploy/tunnel/tunnel-nginx.conf
+          grep -Fq 'proxy_set_header Host 127.0.0.1:11434;' deploy/tunnel/tunnel-nginx.conf
+          grep -Fq 'proxy_pass http://127.0.0.1:11435;' deploy/tunnel/tunnel-nginx.conf
 
       - name: Verify tunnel entrypoint rejects unsafe target input
         run: |
