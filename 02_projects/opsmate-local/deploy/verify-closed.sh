@@ -24,7 +24,7 @@ compose() {
 }
 
 running_services=$(compose ps --status running --services 2>/dev/null || true)
-for service in edge app model-tunnel migrate db
+for service in edge app model-tunnel tunnel-secret-init migrate db
 do
     if printf '%s\n' "$running_services" | grep -qx "$service"; then
         fail "$service is still running"
@@ -34,6 +34,11 @@ done
 volume_name="${COMPOSE_PROJECT_NAME:-opsmate-demo}-postgres-data"
 docker volume inspect "$volume_name" >/dev/null 2>&1 \
     || fail "the persistent PostgreSQL volume is missing"
+
+tunnel_secret_volume="${COMPOSE_PROJECT_NAME:-opsmate-demo}-tunnel-secrets"
+if docker volume inspect "$tunnel_secret_volume" >/dev/null 2>&1; then
+    fail "the ephemeral tunnel secret volume still exists"
+fi
 
 # The Compose edge must be stopped and its loopback live marker must disappear.
 if command -v curl >/dev/null 2>&1 && [ -n "${OPSMATE_EDGE_HOST_PORT:-}" ]; then
@@ -80,4 +85,4 @@ if command -v curl >/dev/null 2>&1 && [ -n "${DEMO_DOMAIN:-}" ]; then
     fi
 fi
 
-printf '%s\n' "verify-closed: edge, app, model tunnel and database are stopped; database volume retained"
+printf '%s\n' "verify-closed: edge, app, model tunnel and database are stopped; tunnel secret volume absent; database volume retained"
