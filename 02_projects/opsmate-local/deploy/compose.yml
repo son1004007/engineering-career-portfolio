@@ -56,6 +56,52 @@ services:
       - no-new-privileges:true
     logging: *bounded-logging
 
+  # Compose file-based secrets are bind mounts on non-Swarm Docker and retain
+  # host UID/mode. Synology keeps the Office SSH key 0600 under the NAS user, so
+  # the fixed UID 10001 tunnel must never receive that bind directly. This
+  # networkless one-shot helper reads the host-owned inputs with only the
+  # capabilities needed for read/chown and writes UID-10001, mode-0600 copies
+  # into a short-lived Docker volume. The real tunnel mounts that volume read-only.
+  tunnel-secret-init:
+    image: alpine:3.21.3@sha256:1c4eef651f65e2f7daee7ee785882ac164b02b78fb74503052a26dc061c90474
+    restart: "no"
+    user: "0:0"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        umask 077
+        cp /source/office_tunnel_key /target/office_tunnel_key
+        cp /source/office_known_hosts /target/office_known_hosts
+        chmod 0600 /target/office_tunnel_key /target/office_known_hosts
+        chown 10001:10001 /target/office_tunnel_key /target/office_known_hosts
+        test "$$(stat -c '%u:%g:%a' /target/office_tunnel_key)" = "10001:10001:600"
+        test "$$(stat -c '%u:%g:%a' /target/office_known_hosts)" = "10001:10001:600"
+    volumes:
+      - type: bind
+        source: ${OPSMATE_OFFICE_SSH_KEY_FILE:?OPSMATE_OFFICE_SSH_KEY_FILE is required}
+        target: /source/office_tunnel_key
+        read_only: true
+      - type: bind
+        source: ${OPSMATE_OFFICE_KNOWN_HOSTS_FILE:?OPSMATE_OFFICE_KNOWN_HOSTS_FILE is required}
+        target: /source/office_known_hosts
+        read_only: true
+      - type: volume
+        source: tunnel_secrets
+        target: /target
+    network_mode: "none"
+    read_only: true
+    tmpfs:
+      - /tmp:size=4m,mode=1777
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_READ_SEARCH
+      - CHOWN
+    security_opt:
+      - no-new-privileges:true
+    logging: *bounded-logging
+
   model-tunnel:
     image: ${OPSMATE_TUNNEL_IMAGE:?OPSMATE_TUNNEL_IMAGE digest is required}
     restart: "no"
@@ -64,16 +110,19 @@ services:
       OFFICE_SSH_HOST: ${OFFICE_SSH_HOST:?OFFICE_SSH_HOST is required}
       OFFICE_SSH_PORT: ${OFFICE_SSH_PORT:?OFFICE_SSH_PORT is required}
       OFFICE_SSH_USER: ${OFFICE_SSH_USER:?OFFICE_SSH_USER is required}
-    secrets:
-      - source: office_tunnel_key
-        target: office_tunnel_key
-      - source: office_known_hosts
-        target: office_known_hosts
+    volumes:
+      - type: volume
+        source: tunnel_secrets
+        target: /run/secrets
+        read_only: true
     expose:
       - "11434"
     networks:
       - model_link
       - tunnel_egress
+    depends_on:
+      tunnel-secret-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --show-error --fail http://127.0.0.1:11434/api/version >/dev/null"]
       interval: 5s
@@ -196,9 +245,5 @@ networks:
 volumes:
   postgres_data:
     name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-postgres-data
-
-secrets:
-  office_tunnel_key:
-    file: ${OPSMATE_OFFICE_SSH_KEY_FILE:?OPSMATE_OFFICE_SSH_KEY_FILE is required}
-  office_known_hosts:
-    file: ${OPSMATE_OFFICE_KNOWN_HOSTS_FILE:?OPSMATE_OFFICE_KNOWN_HOSTS_FILE is required}
+  tunnel_secrets:
+    name: ${COMPOSE_PROJECT_NAME:-opsmate-demo}-tunnel-secrets
