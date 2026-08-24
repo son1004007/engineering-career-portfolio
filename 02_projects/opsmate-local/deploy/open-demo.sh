@@ -64,6 +64,15 @@ compose() {
     docker compose --env-file "$ENV_FILE" --file "$COMPOSE_FILE" "$@"
 }
 
+remove_tunnel_secret_material_best_effort() {
+    compose rm --force --stop model-tunnel tunnel-secret-init >/dev/null 2>&1 || return 1
+    secret_volume="${COMPOSE_PROJECT_NAME:-opsmate-demo}-tunnel-secrets"
+    if docker volume inspect "$secret_volume" >/dev/null 2>&1; then
+        docker volume rm "$secret_volume" >/dev/null 2>&1 || return 1
+    fi
+    return 0
+}
+
 stop_stack_on_failure() {
     status=$?
     trap - EXIT HUP INT TERM
@@ -72,8 +81,9 @@ stop_stack_on_failure() {
         compose stop --timeout 20 edge >/dev/null 2>&1 || cleanup_ok=0
         compose stop --timeout 45 app >/dev/null 2>&1 || cleanup_ok=0
         compose stop --timeout 15 model-tunnel >/dev/null 2>&1 || cleanup_ok=0
+        remove_tunnel_secret_material_best_effort || cleanup_ok=0
 
-        if running=$(compose ps --status running --services edge app model-tunnel 2>/dev/null); then
+        if running=$(compose ps --status running --services edge app model-tunnel tunnel-secret-init 2>/dev/null); then
             [ -z "$running" ] || cleanup_ok=0
         else
             cleanup_ok=0
@@ -95,7 +105,7 @@ stop_stack_on_failure() {
         compose stop --timeout 20 migrate db >/dev/null 2>&1 || cleanup_ok=0
 
         if [ "$cleanup_ok" -eq 1 ]; then
-            printf '%s\n' "open-demo: failed; edge, app, model tunnel and database were stopped and synthetic rows were deleted" >&2
+            printf '%s\n' "open-demo: failed; edge, app, model tunnel and database were stopped, tunnel secrets removed and synthetic rows were deleted" >&2
         else
             printf '%s\n' "open-demo: failed; automatic cleanup was incomplete, so verify the stack is closed before retrying" >&2
         fi
@@ -205,6 +215,11 @@ preflight() {
         fail "loopback edge port $OPSMATE_EDGE_HOST_PORT is already in use; the stack must be closed before opening"
     fi
 
+    tunnel_secret_volume="${COMPOSE_PROJECT_NAME:-opsmate-demo}-tunnel-secrets"
+    if docker volume inspect "$tunnel_secret_volume" >/dev/null 2>&1; then
+        fail "stale tunnel secret volume exists; run close or emergency-close before opening"
+    fi
+
     compose config --quiet >/dev/null 2>&1 \
         || fail "docker compose configuration is invalid"
 }
@@ -214,15 +229,17 @@ trap stop_stack_on_failure EXIT HUP INT TERM
 
 preflight
 
-printf '%s\n' "open-demo: pulling verified immutable application, tunnel and edge images"
-compose pull app migrate model-tunnel edge
+printf '%s\n' "open-demo: pulling verified immutable application, tunnel, secret-init and edge images"
+compose pull app migrate tunnel-secret-init model-tunnel edge
 docker image inspect "$OPSMATE_APP_IMAGE" >/dev/null 2>&1 \
     || fail "the verified application image digest is unavailable"
 docker image inspect "$OPSMATE_TUNNEL_IMAGE" >/dev/null 2>&1 \
     || fail "the verified tunnel image digest is unavailable"
 
-printf '%s\n' "open-demo: starting the restricted Office model tunnel"
+printf '%s\n' "open-demo: staging restricted tunnel secrets and starting the Office model tunnel"
 compose up --detach --no-build --wait --wait-timeout "${TUNNEL_WAIT_SECONDS:-60}" model-tunnel
+compose rm --force tunnel-secret-init >/dev/null 2>&1 \
+    || fail "completed tunnel secret initializer could not be removed"
 
 printf '%s\n' "open-demo: starting PostgreSQL"
 compose up --detach --wait --wait-timeout "${DB_WAIT_SECONDS:-90}" db
