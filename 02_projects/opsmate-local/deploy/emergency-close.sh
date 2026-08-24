@@ -20,6 +20,12 @@ running_ids() {
         --filter "label=com.docker.compose.service=$1"
 }
 
+all_ids() {
+    docker ps --all --quiet \
+        --filter "label=com.docker.compose.project=$PROJECT_NAME" \
+        --filter "label=com.docker.compose.service=$1"
+}
+
 stop_service() {
     service=$1
     timeout=$2
@@ -39,18 +45,45 @@ stop_service() {
     done
 }
 
+remove_service_containers() {
+    service=$1
+    ids=$(all_ids "$service")
+    [ -n "$ids" ] || return 0
+    for id in $ids
+    do
+        actual_project=$(docker inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' "$id")
+        actual_service=$(docker inspect --format '{{ index .Config.Labels "com.docker.compose.service" }}' "$id")
+        [ "$actual_project" = "$PROJECT_NAME" ] && [ "$actual_service" = "$service" ] \
+            || fail "container label verification failed for $id"
+        docker rm --force "$id" >/dev/null \
+            || fail "$service container $id could not be removed"
+    done
+}
+
 # External entry, write-capable application and model transport are closed first.
 # Credential-independent emergency close intentionally does not purge data.
 stop_service edge 30
 stop_service app 45
 stop_service model-tunnel 15
+stop_service tunnel-secret-init 5
 stop_service migrate 10
 stop_service db 30
 
-for service in edge app model-tunnel migrate db
+remove_service_containers model-tunnel
+remove_service_containers tunnel-secret-init
+secret_volume="${PROJECT_NAME}-tunnel-secrets"
+if docker volume inspect "$secret_volume" >/dev/null 2>&1; then
+    docker volume rm "$secret_volume" >/dev/null \
+        || fail "ephemeral tunnel secret volume could not be removed"
+fi
+
+for service in edge app model-tunnel tunnel-secret-init migrate db
 do
     [ -z "$(running_ids "$service")" ] || fail "$service is still running"
 done
+if docker volume inspect "$secret_volume" >/dev/null 2>&1; then
+    fail "ephemeral tunnel secret volume still exists"
+fi
 
-printf '%s\n' "emergency-close: edge, app and model-tunnel closure verified for project $PROJECT_NAME"
+printf '%s\n' "emergency-close: edge, app and model-tunnel closure verified for project $PROJECT_NAME; tunnel secrets removed"
 printf '%s\n' "emergency-close: synthetic rows were not purged; recover the env file and run normal close before reopen"
