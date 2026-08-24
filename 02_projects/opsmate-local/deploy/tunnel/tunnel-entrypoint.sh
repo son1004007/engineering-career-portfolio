@@ -29,24 +29,28 @@ printf '%s' "$OFFICE_SSH_PORT" | grep -Eq '^[0-9]{1,5}$' \
 KEY_SOURCE=/run/secrets/office_tunnel_key
 KNOWN_HOSTS=/run/secrets/office_known_hosts
 KEY_FILE=/tmp/office_tunnel_key
+NGINX_CONF=/etc/nginx/tunnel-nginx.conf
 
 [ -s "$KEY_SOURCE" ] || fail "office tunnel private key secret is missing"
 [ -s "$KNOWN_HOSTS" ] || fail "office known_hosts secret is missing"
+[ -r "$NGINX_CONF" ] || fail "tunnel nginx configuration is missing"
 
 umask 077
 cp "$KEY_SOURCE" "$KEY_FILE"
 chmod 600 "$KEY_FILE"
 ssh-keygen -y -f "$KEY_FILE" >/dev/null 2>&1 \
     || fail "office tunnel private key is invalid"
+nginx -t -c "$NGINX_CONF" >/dev/null 2>&1 \
+    || fail "tunnel nginx configuration is invalid"
 
-# The NAS trust store contains the reviewed Office Ed25519 host key only. Pin the
-# client algorithm as well so an older SSH client cannot prefer another Office
-# host-key type and bypass that exact trust boundary.
-#
-# The tunnel exposes Ollama only to the Docker-internal model_link network. The
-# Office-side target remains loopback-only; no Ollama public listener is created.
+# Ollama validates browser/host origins and accepts loopback hosts by default.
+# Docker clients address this service as model-tunnel, so a raw TCP forward would
+# preserve Host: model-tunnel:11434 and can be rejected with HTTP 403. Keep the
+# Office daemon unchanged: Nginx accepts only the Docker-internal model_link
+# traffic on 11434, rewrites Host to the Office loopback authority, and proxies
+# to the SSH forward bound only on this container's loopback port 11435.
 printf '%s\n' "model-tunnel: opening restricted SSH forwarding path"
-exec ssh \
+ssh \
     -F /dev/null \
     -N \
     -T \
@@ -61,5 +65,32 @@ exec ssh \
     -o ExitOnForwardFailure=yes \
     -o ServerAliveInterval=30 \
     -o ServerAliveCountMax=3 \
-    -L 0.0.0.0:11434:127.0.0.1:11434 \
-    -- "$OFFICE_SSH_USER@$OFFICE_SSH_HOST"
+    -L 127.0.0.1:11435:127.0.0.1:11434 \
+    -- "$OFFICE_SSH_USER@$OFFICE_SSH_HOST" &
+ssh_pid=$!
+
+nginx -c "$NGINX_CONF" -g 'daemon off;' &
+nginx_pid=$!
+
+shutdown() {
+    trap - HUP INT TERM
+    kill "$nginx_pid" "$ssh_pid" >/dev/null 2>&1 || true
+    wait "$nginx_pid" >/dev/null 2>&1 || true
+    wait "$ssh_pid" >/dev/null 2>&1 || true
+    exit 0
+}
+trap shutdown HUP INT TERM
+
+# No full supervisor is needed for this two-process container. Poll both bounded
+# local processes; if either the SSH transport or Host-normalizing proxy exits,
+# terminate the peer and fail the container so Compose health/dependency gates
+# cannot treat a half-open model path as healthy.
+while kill -0 "$ssh_pid" >/dev/null 2>&1 && kill -0 "$nginx_pid" >/dev/null 2>&1; do
+    sleep 1
+done
+
+trap - HUP INT TERM
+kill "$nginx_pid" "$ssh_pid" >/dev/null 2>&1 || true
+wait "$nginx_pid" >/dev/null 2>&1 || true
+wait "$ssh_pid" >/dev/null 2>&1 || true
+fail "SSH transport or Host-normalizing proxy exited"
