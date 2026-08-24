@@ -23,6 +23,16 @@ compose() {
     docker compose --env-file "$ENV_FILE" --file "$COMPOSE_FILE" "$@"
 }
 
+remove_tunnel_secret_material() {
+    compose rm --force --stop model-tunnel tunnel-secret-init >/dev/null 2>&1 \
+        || fail "tunnel containers could not be removed"
+    secret_volume="${COMPOSE_PROJECT_NAME:-opsmate-demo}-tunnel-secrets"
+    if docker volume inspect "$secret_volume" >/dev/null 2>&1; then
+        docker volume rm "$secret_volume" >/dev/null \
+            || fail "ephemeral tunnel secret volume could not be removed"
+    fi
+}
+
 load_environment
 command -v docker >/dev/null 2>&1 || fail "docker is required"
 command -v tr >/dev/null 2>&1 || fail "tr is required"
@@ -37,11 +47,12 @@ compose stop --timeout 45 app >/dev/null 2>&1 || fail "application service could
 
 printf '%s\n' "close-demo: stopping the Office model tunnel"
 compose stop --timeout 15 model-tunnel >/dev/null 2>&1 || fail "model tunnel could not be stopped"
+remove_tunnel_secret_material
 
 # The edge, write-capable app and model transport must all be closed before
 # synthetic data is purged. This avoids late writes and ensures the model path
 # is not left open after the demo closes.
-still_running=$(compose ps --status running --services edge app model-tunnel 2>/dev/null || fail "stopped-service state could not be verified")
+still_running=$(compose ps --status running --services edge app model-tunnel tunnel-secret-init 2>/dev/null || fail "stopped-service state could not be verified")
 [ -z "$still_running" ] || fail "edge, application or model tunnel is still running; synthetic data was not deleted"
 
 purge_failed=0
@@ -82,4 +93,4 @@ if [ "$purge_failed" -ne 0 ]; then
     fail "services are stopped, but synthetic data deletion could not be verified"
 fi
 
-printf '%s\n' "close-demo: edge, app, model tunnel and database are closed; synthetic rows deleted and PostgreSQL volume retained"
+printf '%s\n' "close-demo: edge, app, model tunnel and database are closed; tunnel secrets removed, synthetic rows deleted and PostgreSQL volume retained"
