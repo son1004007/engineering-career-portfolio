@@ -20,6 +20,9 @@ server:
     max-swallow-size: 16KB
   servlet:
     session:
+      # Public demo sessions must never fall back to URL rewriting such as
+      # /demo;jsessionid=... . Keep the session identifier cookie-only.
+      tracking-modes: cookie
       timeout: 30m
       cookie:
         http-only: true
