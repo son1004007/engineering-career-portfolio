@@ -23,15 +23,16 @@ The active execution ledger, dependencies and verification evidence are maintain
 - run the publication scan and evidence tests before push
 - before leaving the employer, create a final departure snapshot
 
-### 1. OpsMate Local final verification and controlled deployment
-- synchronize all public/state documents with the `2026-08-23` real-model evidence
-- rerun latest `clean verify`, container/config checks, repository publication checks and documentation consistency review
-- retain the verified real-model evidence: Ollama `gemma3:12b`, synthetic request 9/9, p95 21,076ms within the 30,000ms gate
-- use only an authorized private open-weight model endpoint; no paid API fallback
-- apply and retain evidence for app-host egress allowlisting and public edge/WAF rate limiting
-- verify the public application URL, external smoke and DB/model non-exposure
-- rehearse app/model normal close, environment-independent emergency close and same-image-digest reopen
-- leave both hosts closed after validation and record only generalized results without access details
+### 1. OpsMate Local public ingress and external verification
+- preserve the verified `2026-08-23` real-model evidence and `2026-08-25` NAS internal deployment/lifecycle E2E evidence
+- use only the reviewed source and immutable app/tunnel image digests recorded in [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
+- do not repeat internal stack/network/session/model/lifecycle gates unless the release changes
+- configure DSM Reverse Proxy/TLS and router public ingress
+- open the exact reviewed release only after public ingress is ready
+- verify Internet/LTE public application smoke, two-session workspace isolation, public rate limiting and security boundaries
+- verify PostgreSQL and model endpoint remain externally unreachable
+- perform public-origin normal close, same-digest reopen, emergency close, final normal close and leave runtime `CLOSED`
+- no paid API fallback
 
 ### 2. next Java/Spring case study publication
 - select the next `source-reviewed` case from `03_portfolio/case-study-index.md`

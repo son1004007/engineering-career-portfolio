@@ -1,7 +1,7 @@
 # Portfolio Content Strategy
 
 - 결정일: `2026-08-03`
-- 상태 갱신일: `2026-08-23`
+- 상태 갱신일: `2026-08-25`
 - 상태: `approved`
 - 목적: 신규 대표 프로젝트와 기존 실무 사례가 서로 다른 역량을 증명하도록 포트폴리오를 구성
 
@@ -22,10 +22,13 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 
 ### OpsMate Local
 
-- 상태: `implemented`, `tested-component`; 실제 모델 adapter E2E 경계 `verified`
+- 상태: `implemented`, `tested-component`
+- 실제 모델 adapter E2E 경계: `verified`
+- Synology internal deployment/network/security/lifecycle 경계: `verified`
+- public Internet ingress: `pending`
 - 형식: 실행 가능한 독립 서비스
-- 역할: AI Agent 응용과 안전한 업무 실행 설계 증명
-- 기술 중심: Java 21, Spring Boot 3.5, Thymeleaf/HttpSession, JPA/H2·PostgreSQL/Flyway, 오픈웨이트 LLM gateway, 서버 주도 정책 조회 포트, Docker/Caddy
+- 역할: AI Agent 응용과 안전한 업무 실행·운영 설계 증명
+- 기술 중심: Java 21, Spring Boot 3.5, Thymeleaf/HttpSession, JPA/PostgreSQL/Flyway, 오픈웨이트 LLM gateway, 서버 주도 정책 조회 포트, Docker/Nginx, restricted SSH model tunnel
 
 첫 번째 수직 범위는 전체 ERP가 아니라 다음 흐름으로 제한합니다.
 
@@ -43,21 +46,23 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 - Spring 서비스가 RBAC, 상태 전이와 업무 규칙을 최종 검증
 - 서버가 정책 조회 포트를 먼저 호출하고 사용자 요청과 조회 결과만 모델에 전달
 - LLM은 정책 조회 포트를 포함한 도구를 직접 실행하지 않으며 DB, 임의 URL 또는 승인 상태에 접근하지 않음
-- 모델 출력은 고정 JSON Schema와 서버 측 업무 규칙으로 검증
+- 모델 출력은 고정 구조와 서버 측 업무 규칙으로 재검증
 - 승인되지 않은 발주와 중복 발주 차단
 - 모델 미연결, 타임아웃 또는 잘못된 출력 시 모델 의존 초안 생성을 저장 전 `fail-closed`
 - 외부 유료 API로 자동 우회하지 않음
-- 공개 방문자별 workspace 격리·TTL과 API/CSRF/session 보안 경계
+- 방문자별 workspace 격리·TTL과 API/CSRF/session 보안 경계
+- COOKIE-only session tracking으로 URL session rewriting 차단
 - 동일 모델 요청 single-flight, workspace·전체 quota, queue/follower와 동시 실행 제한
 - one-shot migration과 장기 실행 runtime DB 역할 분리
+- app/DB/model-tunnel host port 미노출과 app direct-egress 차단
 - immutable image digest 기반 open, normal/emergency close와 reopen 절차
 - 감사로그, 테스트와 재현 가능한 실행 절차 제공
 
-수직 기능, 공개 웹, PostgreSQL migration·역할 분리, model guard와 배포·중단 자산은 구현됐고 `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했습니다.
+`2026-08-23` 실제 Ollama `gemma3:12b` E2E에서 합성 구매 요청 9/9 성공, 서버 측 category·policy 검증, 요청·감사 이벤트 저장, 관측 p95 21,076ms와 `<= 30,000ms` gate를 확인했습니다. 상세 증거는 [`../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록합니다.
 
-`2026-08-23` 사설 GPU 호스트의 Ollama `0.13.5`, `gemma3:12b`로 실제 모델 E2E를 실행해 합성 구매 요청 9/9 성공, 서버 측 category·policy 검증, 요청·감사 이벤트 저장, 관측 p95 21,076ms와 `<= 30,000ms` gate를 확인했습니다. 상세 증거와 확대 해석 금지 범위는 [`../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록합니다.
+`2026-08-25`에는 exact source `f99686981da7efb8802635ae2bde5b0f781433ad`와 immutable app/tunnel image digest를 Synology에 준비하고 restricted SSH model path를 포함한 bounded internal E2E를 완료했습니다. stack/port/network/edge security, Secure session, 실제 모델 persona flow, cross-workspace isolation, rate limit, credential-log scan, normal close, synthetic purge, same-digest reopen, emergency close와 최종 `CLOSED`를 확인했습니다. 공개 가능한 상세는 [`../02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)에 기록합니다.
 
-아직 public application URL·외부 smoke, host egress allowlist·edge/WAF rate limit, DB/model 외부 비노출과 앱·모델 양쪽 호스트 close/reopen rehearsal은 검증하지 않았습니다. 따라서 실제 모델 adapter E2E 경계만 `verified`로 구분하고 프로젝트 전체를 `verified` 또는 운영 완료로 표현하지 않습니다.
+아직 DSM Reverse Proxy/TLS public ingress와 실제 Internet/LTE 외부 smoke, 외부에서의 DB/model 비노출 및 public-origin lifecycle은 검증하지 않았습니다. 따라서 프로젝트 전체를 `verified public service` 또는 인터넷 운영 완료로 표현하지 않습니다.
 
 ## Track B. 기존 업무 사례집
 
@@ -81,7 +86,7 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 
 | 결과물 | 주로 증명하는 것 | 증명하지 않는 것 |
 |---|---|---|
-| OpsMate Local | 서버 주도 정책 조회, 구조화된 AI 초안, 승인 통제, 로컬 모델 E2E와 장애 처리 | 과거 회사 시스템의 운영 성과, 실제 인터넷 운영 완료 |
+| OpsMate Local | 서버 주도 정책 조회, 구조화 AI 초안, 승인 통제, 실제 모델 E2E, private DB/model network와 내부 lifecycle 운영 | 과거 회사 시스템 성과, 실제 인터넷 장기 운영 완료 |
 | 기존 업무 사례 | Java/Spring, SQL, 인증, 배포, 장애와 운영 판단 | 회사 원본 코드의 공개 또는 전체 팀 성과 |
 
 면접에서는 두 트랙을 다음 문장으로 연결합니다.
@@ -118,10 +123,9 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 
 ## 다음 실행 순서
 
-1. 상태 문서를 `2026-08-23` 실제 모델 증거와 동기화합니다.
-2. 최신 commit 기준 OpsMate `clean verify`, 인증 샘플, repository/Jekyll/container regression을 수행합니다.
-3. public application 배포 입력과 보안 경계를 확정합니다.
-4. public host의 egress allowlist와 edge/WAF rate limit을 적용하고 외부 URL smoke, DB/model 외부 비노출을 검증합니다.
-5. 앱·모델 양쪽 호스트의 normal/emergency close와 same-digest reopen rehearsal을 수행하고 최종 상태를 `CLOSED`로 둡니다.
-6. GitHub Pages 문구·링크·물리 모바일 렌더링을 다시 확인합니다.
-7. [`case-study-index.md`](case-study-index.md)의 다음 Java/Spring 후보를 독립 샘플로 재현합니다.
+1. 최신 내부 E2E와 immutable release 증거를 state/evidence 문서에 동기화합니다.
+2. DSM Reverse Proxy/TLS와 router public ingress를 구성합니다.
+3. exact reviewed release로 Internet/LTE public smoke, DB/model 외부 비노출, session/rate/security 경계를 검증합니다.
+4. public origin을 포함한 normal close, same-digest reopen, emergency close를 rehearsal하고 최종 `CLOSED`로 둡니다.
+5. GitHub Pages 문구·링크·물리 모바일 렌더링을 다시 확인합니다.
+6. [`case-study-index.md`](case-study-index.md)의 다음 Java/Spring 후보를 독립 샘플로 재현합니다.

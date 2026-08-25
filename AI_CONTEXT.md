@@ -2,7 +2,7 @@
 
 > 이 저장소 URL만 받은 AI는 이 문서, [`WORKS.md`](WORKS.md), [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md), [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md), [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다.
 
-- 기준일: `2026-08-23`
+- 기준일: `2026-08-25`
 - 공개 범위: `public`
 - 공개 사이트: [GitHub Pages 포트폴리오](https://son1004007.github.io/engineering-career-portfolio/)
 - 역할: 손기석의 기술 방향, 구현 샘플, 공개 가능한 경력·기술 근거
@@ -17,9 +17,9 @@
 
 핵심 정체성은 ML 모델 연구자가 아니라 **Java/Spring 엔터프라이즈 백엔드 경험을 중심으로 AI Agent 기능을 통합하는 백엔드·플랫폼 엔지니어**입니다.
 
-`OpsMate Local`은 현재 `implemented`, `tested-component`입니다. 구매 요청·승인·발주 수직 기능에 공개 Thymeleaf session UI, workspace 격리·TTL, model single-flight·quota·동시 실행 제한, PostgreSQL/Flyway 역할 분리와 Docker/Caddy open·close·reopen 자산을 구현했습니다. `2026-08-04` 전체 `clean verify`에서 54개 테스트가 성공했고 실패·오류·건너뜀은 0개였습니다. `2026-08-23` 사설 GPU 호스트의 Ollama `gemma3:12b`로 실제 모델 E2E 9/9와 관측 p95 21,076ms(`<= 30,000ms` gate)를 확인했습니다. 모델이 없거나 잘못된 출력을 반환하면 모델 의존 초안 생성은 저장 전에 `fail-closed`로 중단되고 외부 유료 API로 자동 우회하지 않습니다. 이미 제출된 요청의 승인·반려·발주는 모델 가용성과 분리되어 있습니다. 공개 application URL·외부 smoke, host egress allowlist·edge/WAF rate limit과 앱·모델 양 호스트의 close/reopen rehearsal은 아직 검증하지 않았으므로 전체 서비스 상태는 계속 `tested-component`입니다.
+`OpsMate Local`은 현재 `implemented`, `tested-component`이며, **실제 모델 adapter 경계와 Synology 내부 배포·network/security·lifecycle 경계는 `verified`**입니다. 구매 요청·승인·발주 수직 기능에 공개 Thymeleaf session UI, workspace 격리·TTL, model single-flight·quota·동시 실행 제한, PostgreSQL/Flyway 역할 분리와 open·close·reopen 자산을 구현했습니다. `2026-08-23` 사설 GPU 호스트의 Ollama `gemma3:12b`로 실제 모델 E2E 9/9와 관측 p95 21,076ms(`<= 30,000ms` gate)를 확인했습니다. `2026-08-25`에는 exact source와 immutable image digest를 Synology에 준비한 뒤 restricted SSH tunnel을 포함한 전체 내부 runtime E2E를 수행해 stack/port/network/edge gate, Secure-cookie session, 실제 모델 persona flow, cross-workspace isolation, rate limit, credential-log scan, normal close, same-digest reopen, emergency close와 최종 `CLOSED`를 확인했습니다. 모델이 없거나 잘못된 출력을 반환하면 모델 의존 초안 생성은 저장 전에 `fail-closed`로 중단되고 외부 유료 API로 자동 우회하지 않습니다. 이미 제출된 요청의 승인·반려·발주는 모델 가용성과 분리되어 있습니다.
 
-실제 모델 검증의 환경·범위·한계는 [`02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록합니다. 남은 실행 순서는 [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)를 따릅니다.
+아직 **DSM Reverse Proxy/TLS public ingress와 실제 Internet/LTE 외부 smoke**는 검증하지 않았습니다. 따라서 전체 인터넷 공개 서비스 상태를 `verified`로 확대하지 않습니다. 내부 배포 증거는 [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md), 실제 모델 단독 검증은 [`02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)에 기록합니다. 남은 실행 순서는 [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)를 따릅니다.
 
 기존 회사 업무는 원본 소스나 내부 식별자를 공개하지 않습니다. 게시물은 원본에서 본인 귀속과 구현 범위를 검증한 뒤 비식별 서술과 독립 재구현 코드로 만듭니다.
 
@@ -74,7 +74,7 @@
 
 | 항목 | 상태 | 판단 |
 |---|---|---|
-| `OpsMate Local` | `implemented`, `tested-component`; real-model boundary `verified` | 공개 웹·workspace·model guard·PostgreSQL 역할 분리·배포/중단 자산 구현, 54개 테스트 성공. 실제 `gemma3:12b` E2E 9/9와 p95 gate 성공. 공개 URL·외부 정책·양 호스트 rehearsal은 미검증 |
+| `OpsMate Local` | `implemented`, `tested-component`; real-model adapter 및 NAS internal deployment/lifecycle boundary `verified` | 공개 웹·workspace·model guard·PostgreSQL 역할 분리·배포/중단 자산 구현. 실제 `gemma3:12b` E2E 9/9 및 Synology 내부 network/security/lifecycle E2E 성공. DSM public ingress·Internet 외부 smoke는 미검증 |
 | Java/Spring 사례 5건 | `sample-verified` 1건, `source-reviewed` 4건 | 회사 비공개 원본에서 본인 귀속과 코드 범위를 확인. 인증 통합 사례는 회사 코드와 독립된 공개 샘플 24개 테스트 성공 |
 | `ai-rag-api` | `implemented`, `tested-file-present` | API·서비스·저장소 코드와 단위 테스트 파일 존재. 현재 점검에서는 의존성 미설치로 테스트 성공 미확인 |
 | `backend-platform-template` | `partial` | 앱·설정·테스트 파일은 있으나 `app.api.routes`가 없어 현재 구조로는 import 실패 예상 |
@@ -97,6 +97,7 @@ Java/Spring 인증, SQL 정합성·성능, 배포 이식성 사례의 원본 검
 Text2SQL/NL2SQL API, SQL 검증과 다중 모델 benchmark 업무
 Agentic AI Runtime의 작업 격리와 산출물 추적 구성요소 구현
 실제 오픈웨이트 모델을 Spring 업무 경계에 연결하고 구조화 출력·서버 검증·저장까지 확인한 E2E
+Synology + restricted SSH tunnel + private DB/model network에서 실제 모델 업무 흐름과 close/reopen을 검증한 내부 배포 E2E
 백엔드 설정·로깅·예외 처리 구조에 대한 관심
 감사로그·권한·통제 관점의 설계 의도
 문서 중심의 구조화와 커리어 포지셔닝
@@ -112,7 +113,7 @@ RAG 품질·보안·관측성·비용 최적화
 감사로그 프로젝트의 완성도
 팀 프로젝트 전체에서의 개인 기여 비율
 회사 비공개 서비스의 장기 운영 규모와 성과
-OpsMate public application의 실제 외부 운영 안정성과 네트워크 통제 완료
+OpsMate public application의 실제 인터넷 공개 안정성과 외부 네트워크 통제 완료
 ```
 
 ## 직무·직장 선택과 결합할 때
