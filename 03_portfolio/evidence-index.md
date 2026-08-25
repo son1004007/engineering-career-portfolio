@@ -1,6 +1,6 @@
 # Portfolio Evidence Index
 
-- 최종 점검일: `2026-08-23`
+- 최종 점검일: `2026-08-25`
 - 목적: 프로필 주장, 구현 코드, 테스트, 계획을 구분해 과장 없는 기술 검토를 가능하게 함
 
 ## 상태 정의
@@ -21,18 +21,16 @@
 ## 공개 사이트 검증
 
 - 공개 URL: [GitHub Pages 포트폴리오](https://son1004007.github.io/engineering-career-portfolio/)
-- 마지막 전체 공개본 검증일: `2026-08-03`
-- 원격 결과: [Pages Actions run 30782896966](https://github.com/son1004007/engineering-career-portfolio/actions/runs/30782896966)의 Jekyll build, Java 2개 프로젝트, 공개 저장소 검사와 deploy 성공
-- 테스트: 당시 Spring Security 인증 브리지 24개, OpsMate Local 19개, 저장소 공개 검수 12개 성공
-- 실화면: 홈, Work ledger, 근거 인덱스, 전략과 앵커, 체크리스트, AI context, 대표 프로젝트·사례 경로의 응답과 가로 넘침 없음 확인
-- 이후 증거: OpsMate는 `2026-08-04` 전체 `clean verify` 54개 성공, `2026-08-23` 실제 `gemma3:12b` E2E 9/9와 p95 gate 성공
-- 한계: 최신 commit 기준 통합 regression, 물리 모바일 최종 검수와 OpsMate public application 외부 배포 gate는 별도 수행 필요
+- 최초 전체 공개본 검증일: `2026-08-03`
+- 당시 원격 결과: [Pages Actions run 30782896966](https://github.com/son1004007/engineering-career-portfolio/actions/runs/30782896966)의 Jekyll build, Java 프로젝트와 공개 저장소 검사·deploy 성공
+- 최신 OpsMate source `f99686981da7efb8802635ae2bde5b0f781433ad` 기준 repository regression run `32848946968`: OpsMate, Spring Security sample, public portfolio, Jekyll, container/runbook job 모두 성공 (`2026-08-25`)
+- 물리 모바일 최종 UX 검수와 OpsMate public Internet ingress는 별도 gate로 남음
 
 ## 프로젝트 상태
 
 | 프로젝트 | 코드 | 테스트 | 문서 | 현재 상태 | 확인 사항 |
 |---|---:|---:|---:|---|---|
-| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL·배포 자산 있음 | 2026-08-04 `clean verify` 54개 성공. 2026-08-23 실제 `gemma3:12b` E2E 9/9, p95 21,076ms <= 30,000ms | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK·REAL_MODEL_E2E_EVIDENCE | `implemented`, `tested-component`; real-model boundary `verified` | public application URL·외부 smoke, host egress/edge rate limit, DB/model 비노출과 양 호스트 close/reopen rehearsal은 미검증 |
+| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL, restricted tunnel, 배포/lifecycle 자산 있음 | 실제 `gemma3:12b` 9/9 E2E. `2026-08-25` exact immutable release의 Synology internal stack/network/session/model/lifecycle E2E 성공 | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK·REAL_MODEL_E2E_EVIDENCE·NAS_INTERNAL_E2E_EVIDENCE | `implemented`, `tested-component`; real-model adapter 및 NAS internal deployment/lifecycle boundary `verified` | DSM Reverse Proxy/TLS, Internet/LTE public smoke, external DB/model non-exposure와 public-origin lifecycle은 미검증 |
 | [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 회사 원본이 아닌 합성 사용자·issuer·audience 바인딩 SSO 샘플. 운영 시스템 검증을 뜻하지 않음 |
 | [Java/Spring 사례 후보](case-study-index.md) | 회사 원본에서 확인 | 공개 샘플 1건만 있음 | 후보 인덱스 있음 | `sample-verified` 1건, `source-reviewed` 4건, 나머지 `candidate` 또는 `hold` | 원본 코드를 공개할 수 없으며 각 독립 재현 코드와 테스트가 생기기 전 `published` 표현 금지 |
 | [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행을 확인하지 않음. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
@@ -43,7 +41,7 @@
 
 ## OpsMate 실제 모델 E2E 증거
 
-`2026-08-23` 사설 GPU 호스트에서 source commit `ff67df0990cbed3a41cf5051a5e2701a7b2a7b50`의 실제 모델 gate를 실행했습니다.
+`2026-08-23` 사설 GPU runtime에서 source commit `ff67df0990cbed3a41cf5051a5e2701a7b2a7b50`의 실제 모델 gate를 실행했습니다.
 
 - Ollama `0.13.5`
 - model `gemma3:12b`
@@ -53,9 +51,32 @@
 - 관측 p95 `21,076ms`
 - gate `p95 <= 30,000ms`
 - Maven exit code `0`
-- 실행 직후 모델은 GPU 100% 사용으로 관측됨
 
-상세 환경·명령·한계는 [`../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)를 기준으로 합니다. 이 결과는 실제 모델 adapter 경계의 검증이며 public network/deployment/lifecycle 전체 검증을 의미하지 않습니다.
+상세 환경·명령·한계는 [`../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)를 기준으로 합니다.
+
+## OpsMate NAS internal deployment/lifecycle E2E 증거
+
+`2026-08-25` exact release source `f99686981da7efb8802635ae2bde5b0f781433ad`로 immutable application/model-tunnel image를 발행·pull verification한 뒤 Synology runtime에서 bounded E2E를 수행했습니다.
+
+검증된 경계:
+
+- exact immutable image pull/stage
+- NAS runtime input permission `600`, PostgreSQL persistent volume 보존
+- restricted SSH tunnel을 통한 실제 `gemma3:12b` model path
+- stack/host-port/Docker-network/Nginx edge security gate
+- app/edge direct egress blocked
+- app/DB/model-tunnel host port 없음
+- Secure XSRF/JSESSIONID session 및 COOKIE-only tracking
+- persona flow, durable draft, cross-workspace isolation
+- edge rate-limit `429`, credential/log scan
+- normal close와 synthetic workspace purge
+- strict CLOSED verifier와 ephemeral tunnel-secret material 제거
+- same immutable digest reopen
+- emergency close rehearsal
+- final normal close
+- final policy flags `YES_YES`, final state `CLOSED`
+
+공개 가능한 source/digest/검증 범위와 남은 한계는 [`../02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)를 기준으로 합니다. 이 증거는 내부 deployment/network/security/lifecycle 경계의 검증이며 public Internet ingress 검증을 의미하지 않습니다.
 
 ## 회사 GitHub 실무 근거
 
@@ -90,18 +111,19 @@
 이 저장소는 다음을 보여주기에 적합합니다.
 
 - Java/Spring Security 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
-- AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두고 workspace·GPU 호출량·DB 권한·서비스 수명주기까지 통제하는 설계와 구현
-- 실제 오픈웨이트 모델의 구조화 출력을 Spring 서버 검증과 저장 경계까지 연결한 제한된 E2E 증거
+- AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두고 workspace·모델 호출량·DB 권한·서비스 수명주기까지 통제하는 설계와 구현
+- 실제 오픈웨이트 모델 구조화 출력을 Spring 서버 검증·저장 경계까지 연결한 E2E
+- immutable deployment artifact, private DB/model network, restricted tunnel, normal/emergency close와 same-digest reopen을 실제 Synology internal runtime에서 검증한 증거
 - 목표하는 엔지니어 정체성과 Java/Python/AI 응용 기술 조합
 - 비공개 업무 근거를 비식별 claim과 공개 재현 상태로 나누는 검수 방식
 - 문서화와 구조화 능력
 
 다음에는 아직 충분하지 않습니다.
 
-- 프로덕션 수준 백엔드·플랫폼 숙련도 증명
+- 프로덕션 수준 백엔드·플랫폼 숙련도 전체 증명
 - 대규모 트래픽·분산 시스템·클라우드 네이티브 운영 증명
-- OpsMate public application의 실제 인터넷 배포와 장기 안정성 증명
-- public URL, 외부 네트워크 정책과 앱·모델 양쪽 호스트 close/reopen 증명
+- OpsMate public application의 실제 Internet 배포와 장기 안정성 증명
+- public origin에서의 외부 DB/model 비노출 및 lifecycle 증명
 - 프로젝트별 정량 성과와 본인 기여 범위 증명
 - 모든 README에 적힌 기능의 실제 구현 증명
 
@@ -120,7 +142,7 @@ tested-file-present -> verified:
 최근 테스트 명령, 성공 결과, 환경·버전 기록
 ```
 
-전체 서비스가 여러 외부 gate를 가지면 컴포넌트별 `verified`와 전체 상태를 분리합니다. 예를 들어 실제 모델 E2E가 성공해도 public network와 lifecycle rehearsal이 남아 있으면 프로젝트 전체는 `tested-component`를 유지합니다.
+전체 서비스가 여러 외부 gate를 가지면 컴포넌트별 `verified`와 전체 상태를 분리합니다. 예를 들어 internal deployment/lifecycle E2E가 성공해도 public Internet ingress가 남아 있으면 프로젝트 전체는 `tested-component`를 유지합니다.
 
 경력 주장에는 가능한 경우 다음을 연결합니다.
 
