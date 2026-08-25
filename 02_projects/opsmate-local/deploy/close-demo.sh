@@ -23,6 +23,24 @@ compose() {
     docker compose --env-file "$ENV_FILE" --file "$COMPOSE_FILE" "$@"
 }
 
+wait_for_service_stopped() {
+    service=$1
+    max_wait_seconds=$2
+    container_id=$(compose ps --all --quiet "$service" 2>/dev/null | sed -n '1p')
+    [ -n "$container_id" ] || return 0
+
+    elapsed=0
+    while [ "$elapsed" -lt "$max_wait_seconds" ]; do
+        running=$(docker inspect --format '{{.State.Running}}' "$container_id" 2>/dev/null || true)
+        case "$running" in
+            false|'') return 0 ;;
+        esac
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    return 1
+}
+
 remove_tunnel_secret_material() {
     compose rm --force --stop model-tunnel tunnel-secret-init >/dev/null 2>&1 \
         || fail "tunnel containers could not be removed"
@@ -86,6 +104,11 @@ compose stop --timeout 10 migrate >/dev/null 2>&1 || fail "migration service cou
 
 printf '%s\n' "close-demo: stopping PostgreSQL without deleting its volume"
 compose stop --timeout 30 db >/dev/null 2>&1 || fail "PostgreSQL service could not be stopped"
+# Synology Container Manager can briefly report a container as running after
+# `docker compose stop` returns. Keep the CLOSED gate strict, but allow a small,
+# bounded convergence window before the independent verifier evaluates state.
+wait_for_service_stopped db 15 \
+    || fail "PostgreSQL service did not converge to stopped state"
 
 "$SCRIPT_DIR/verify-closed.sh"
 
