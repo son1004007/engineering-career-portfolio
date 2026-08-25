@@ -41,14 +41,18 @@ wait_for_service_stopped() {
     return 1
 }
 
-remove_tunnel_secret_material() {
-    compose rm --force --stop model-tunnel tunnel-secret-init >/dev/null 2>&1 \
-        || fail "tunnel containers could not be removed"
+remove_tunnel_secret_volume() {
     secret_volume="${COMPOSE_PROJECT_NAME:-opsmate-demo}-tunnel-secrets"
     if docker volume inspect "$secret_volume" >/dev/null 2>&1; then
         docker volume rm "$secret_volume" >/dev/null \
             || fail "ephemeral tunnel secret volume could not be removed"
     fi
+}
+
+remove_tunnel_secret_material() {
+    compose rm --force --stop model-tunnel tunnel-secret-init >/dev/null 2>&1 \
+        || fail "tunnel containers could not be removed"
+    remove_tunnel_secret_volume
 }
 
 load_environment
@@ -109,6 +113,11 @@ compose stop --timeout 30 db >/dev/null 2>&1 || fail "PostgreSQL service could n
 # bounded convergence window before the independent verifier evaluates state.
 wait_for_service_stopped db 15 \
     || fail "PostgreSQL service did not converge to stopped state"
+
+# `docker compose up db` may recreate every declared named volume even when the
+# model-tunnel services stay stopped. Remove the tunnel-only volume again after
+# all Compose activity has finished so CLOSED never retains copied model material.
+remove_tunnel_secret_volume
 
 "$SCRIPT_DIR/verify-closed.sh"
 

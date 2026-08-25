@@ -22,6 +22,18 @@ class OpsMateCloseRunbookTest(unittest.TestCase):
         self.assertLess(script.index(stop), script.index(convergence))
         self.assertLess(script.index(convergence), script.index(verify))
 
+    def test_final_tunnel_secret_cleanup_occurs_after_database_compose_activity(self):
+        script = CLOSE_SCRIPT.read_text(encoding="utf-8")
+
+        convergence = 'wait_for_service_stopped db 15'
+        final_cleanup = 'remove_tunnel_secret_volume\n\n"$SCRIPT_DIR/verify-closed.sh"'
+        verify = '"$SCRIPT_DIR/verify-closed.sh"'
+
+        self.assertIn("remove_tunnel_secret_volume()", script)
+        self.assertIn(final_cleanup, script)
+        self.assertLess(script.index(convergence), script.index(final_cleanup))
+        self.assertLess(script.index(final_cleanup), script.index(verify, script.index(final_cleanup)))
+
     def test_normal_close_retains_postgres_volume(self):
         script = CLOSE_SCRIPT.read_text(encoding="utf-8")
 
