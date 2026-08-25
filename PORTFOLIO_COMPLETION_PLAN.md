@@ -1,11 +1,12 @@
 # Portfolio Completion Plan
 
-- 기준일: `2026-08-24`
-- 목적: 현재 공개 포트폴리오와 `OpsMate Local`을 실제 검증 증거에 맞춰 동기화하고 남은 외부 배포·운영 gate를 순서대로 완료한다.
-- 원칙: 문서상 완료가 아니라 최근 commit, test, workflow, bounded runtime E2E를 근거로 상태를 올린다.
+- 기준일: `2026-08-25`
+- 목적: 공개 포트폴리오와 `OpsMate Local`을 실제 검증 증거에 맞춰 동기화하고 남은 **외부 HTTPS ingress** gate를 완료한다.
+- 원칙: 문서상 완료가 아니라 exact source, immutable image digest, CI, bounded runtime E2E를 근거로 상태를 올린다.
 - 전역 기준: `son1004007/ai-agent-workflow-playbook/CONTROL.md`
 - 실행 ledger: [`WORKS.md`](WORKS.md)
 - 장기 backlog: [`TASKS.md`](TASKS.md)
+- 최신 내부 배포 증거: [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
 
 ## 상태
 
@@ -13,54 +14,45 @@
 |---|---|
 | `pending` | 아직 시작하지 않음 |
 | `in-progress` | 현재 수행 중 |
-| `blocked-user` | 계정 승인·물리 기기 확인 등 사용자만 가능한 입력 대기 |
+| `blocked-user` | DSM/router UI처럼 사용자 조작이 필요한 입력 대기 |
 | `blocked-external` | 외부 서비스/네트워크/runtime 조건 대기 |
 | `verified` | 요구된 검증 증거까지 확보 |
 
+## 현재 검증 release
+
+- portfolio source: `f99686981da7efb8802635ae2bde5b0f781433ad`
+- application image: `ghcr.io/son1004007/opsmate-local@sha256:61e267c05bf0ce0ea932ae62a3989194bd2a0065532d0ee4caee8b37c8f9d40b`
+- model-tunnel image: `ghcr.io/son1004007/opsmate-model-tunnel@sha256:7fc133485a8ba60190e55b5eeb2da8b5eb02c1aa7e70e0cc0ce7b723746db1df`
+- model: `gemma3:12b`
+- 기본 runtime 상태: `CLOSED`
+
 ## 실행 순서
 
-### P00. 상태 문서 동기화 — `verified`
+### P00. 상태 문서 동기화 — `in-progress`
 
-- [x] `2026-08-23` 실제 모델 E2E를 공개 상태 문서에 동기화
-- [x] README/AGENTS/evidence/strategy/task 문서 정합성 확인
-
-검증: PR `#10`의 `Verify Portfolio` run `32638023909`에서 public portfolio 정합성 검사와 Jekyll build가 성공했다.
-
-사용자 작업: 없음.
-
-### P10. 최신 baseline regression — `verified`
-
-- [x] OpsMate `clean verify`
-- [x] Spring Security 샘플 `clean verify`
-- [x] 저장소 공개 링크·credential·상태 정합성 검사
-- [x] Jekyll/Pages build 검증
-- [x] container/config 정적 검수
-- [x] Docker non-root image build와 one-shot migration rehearsal
-
-검증: PR `#10`, `Verify Portfolio` run `32638023909`의 모든 job 성공. P20 tunnel host-key pin 변경은 PR `#12`, run `32659673514`에서 전체 portfolio regression을 다시 통과했다.
+- [x] `2026-08-23` 실제 모델 E2E 기록
+- [x] `2026-08-25` Synology internal deployment/lifecycle E2E 증거 확보
+- [x] GHCR anonymous-pull blocker가 더 이상 현재 blocker가 아님을 runtime evidence로 확인
+- [ ] 최신 evidence/state 문서 변경의 portfolio CI와 Pages build 확인
 
 사용자 작업: 없음.
 
-### P20. OpsMate public application 배포 준비 — `blocked-user`
+### P10. 최신 repository regression — `verified`
 
-목표: 실제 인터넷에서 접근 가능한 애플리케이션 URL을 만들되 DB와 모델 endpoint는 공개하지 않는다.
+- [x] OpsMate Maven regression
+- [x] Spring Security 샘플 regression
+- [x] 공개 링크·credential·상태 정합성 검사
+- [x] Jekyll build
+- [x] shell/Compose/Nginx/container/runbook 검증
+- [x] non-root image build 및 migration rehearsal
 
-#### 확정한 runtime/architecture
+검증: source `f99686981da7efb8802635ae2bde5b0f781433ad`에 대해 `Verify Portfolio` run `32848946968`의 모든 job 성공.
 
-- [x] app host: 개인 Synology NAS
-- [x] model runtime: 승인된 Office GPU 서버의 native Ollama
-- [x] Office 공개 포트폴리오 추론 사용 승인 확인
-- [x] Office Ollama `0.13.5`, `gemma3:12b`, API reachability 확인
-- [x] Office Docker 미설치 확인; Docker 설치를 전제조건에서 제거
-- [x] Synology Docker `24.0.2`, `x86_64` 확인
-- [x] Synology 80/443은 DSM이 사용 중임을 runtime에서 확인
-- [x] 공개 TLS 구조를 `DSM Reverse Proxy/TLS -> NAS loopback Nginx edge`로 확정
-- [x] app의 직접 egress를 제거하고 `model-tunnel`만 outbound network를 갖도록 Compose 분리
-- [x] PostgreSQL, app, model-tunnel은 host port를 publish하지 않는 구조로 변경
-- [x] 과거 Office Docker model-host/Caddy 자산 제거
-- [x] production `model-tunnel`을 exact Office ED25519 host key algorithm으로 pin하고 최신 CI regression 성공
+사용자 작업: 없음.
 
-현재 target 구조:
+### P20. OpsMate NAS 배포 준비 — `verified`
+
+목표 구조:
 
 ```text
 Internet
@@ -69,82 +61,100 @@ Internet
   -> Spring Boot
        -> PostgreSQL internal only
        -> model_link internal only
-            -> non-root SSH tunnel
-                 -> Office SSH
-                 -> 127.0.0.1:11434 native Ollama
+            -> non-root restricted SSH tunnel
+                 -> approved native Ollama
 ```
 
-`58889`는 public HTTPS source/router 후보 포트이며 실제 DSM/router 설정 완료 전 검증된 public port가 아니다.
+검증된 항목:
 
-#### P20 실행 상태
+- [x] Synology Docker/x86_64 runtime 확인
+- [x] DSM 80/443 기존 점유를 고려해 loopback Nginx edge 구조 확정
+- [x] destination-restricted SSH key/host-key pin 경계 준비
+- [x] immutable linux/amd64 app/tunnel image 발행 및 pull verification
+- [x] exact immutable image를 Synology에서 실제 pull/stage
+- [x] NAS-local runtime input 권한 `600`
+- [x] PostgreSQL persistent volume 보존
+- [x] 이전 승인 release에서 DB credential continuity 유지
+- [x] 준비 완료 후 running container `0`, final `CLOSED`
 
-- [x] 최신 DSM/Nginx/tunnel 구조 전체 CI 성공: PR `#12`, `Verify Portfolio` run `32659673514`
-- [x] OpsMate 전용 SSH key를 Synology에 생성하고 private key를 NAS-local secret으로만 보관
-- [x] Office `authorized_keys`에 `restrict`, `port-forwarding`, `permitopen="127.0.0.1:11434"`, `command="/bin/false"` 제한 key 등록 및 확인
-- [x] exact Office ED25519 host key를 NAS-local known_hosts로 배치
-- [ ] 실제 production Alpine `model-tunnel` container -> Office `/api/version` E2E 성공
-- [ ] app/tunnel linux/amd64 immutable GHCR image full digest를 NAS에서 실제 확인
-- [ ] 두 GHCR container package의 anonymous pull 허용
-- [ ] Synology에서 두 GHCR full digest 실제 pull 성공
-- [ ] NAS-local `deploy/.env`/DB secret 준비
-- [ ] 실제 공개 전 OpsMate stack `CLOSED` 상태 확인
-- [ ] DSM Reverse Proxy/TLS source와 router ingress 구성
+검증: runtime preparation run `32849378114`, 상세는 NAS internal E2E evidence 문서 참조.
 
-#### 최신 runtime evidence
+사용자 작업: 없음.
 
-- `device-control`의 dedicated tunnel bootstrap에서 NAS key와 known_hosts, Office restricted authorized key가 실제 target에 설치·검증됐다.
-- portfolio PR `#12`에서 production tunnel에 `HostKeyAlgorithms=ssh-ed25519` pin을 적용했고 run `32659673514`가 성공했다.
-- `device-control`에 exact portfolio source SHA만 받는 bounded NAS container preflight를 추가했고 CI를 통과했다.
-- NAS preflight run `32660575997`에서 비대화형 SSH PATH 문제를 확인한 뒤 기존 Synology runtime의 Container Manager Docker 경로를 재사용하도록 수정했다.
-- 재실행 run `32660707257`은 Docker daemon까지 정상 진입하고 `e2e_stage=image-pull`에 도달했지만 `ghcr.io/son1004007/opsmate-local:<source-sha>` anonymous pull이 `denied`되어 container 실행 전에 중단됐다.
-- 따라서 현재 blocker는 NAS Docker나 Office tunnel credential이 아니라 GHCR package access/visibility gate다.
+### P25. 내부 network/security/lifecycle E2E — `verified`
 
-보안 원칙:
+`2026-08-25` bounded internal verifier에서 다음을 실제 target에서 확인했다.
 
-- Office Ollama `11434`를 인터넷에 공개하지 않는다.
-- OpsMate tunnel `11434`도 NAS host에 publish하지 않는다.
-- 전용 SSH key는 shell/agent/X11/임의 forwarding 용도로 사용하지 않고 Ollama loopback destination에만 제한한다.
-- app은 `http://model-tunnel:11434`만 allowlist한다.
-- 실제 SSH key, known_hosts 원문, DB password와 host credential은 공개 저장소에 넣지 않는다.
-- NAS에 장기 GHCR PAT를 저장하지 않는 방향을 우선한다. 공개 포트폴리오 소스에서 재현 가능한 container image만 anonymous pull 대상으로 사용한다.
+- [x] stack start
+- [x] host-port policy
+- [x] Docker network policy
+- [x] loopback Nginx edge/security headers 및 `/actuator/**` 차단
+- [x] app/edge direct egress 차단
+- [x] PostgreSQL/app/model-tunnel host port 미노출
+- [x] Secure XSRF/JSESSIONID session 흐름
+- [x] 실제 restricted tunnel -> `gemma3:12b` model path
+- [x] persona flow와 durable draft 생성
+- [x] cross-workspace isolation
+- [x] Nginx rate limit `429`
+- [x] credential/log scan
+- [x] normal close + synthetic workspace purge
+- [x] strict CLOSED verifier
+- [x] same-digest reopen
+- [x] emergency close rehearsal
+- [x] final normal close
+- [x] final `runtime_policy_flags=YES_YES`
+- [x] final `CLOSED`
 
-현재 사용자 작업: GitHub Packages에서 `opsmate-local`과 `opsmate-model-tunnel` 두 Container package의 visibility를 확인하고 **Public**으로 변경한다. GitHub Container Registry의 public package는 anonymous pull이 가능하며, GitHub 정책상 public으로 바꾼 package는 다시 private으로 되돌릴 수 없으므로 이 변경은 사용자 UI에서 명시적으로 수행한다. 완료 후 같은 exact source SHA preflight를 즉시 재실행한다.
+검증: device-control bounded runtime run `32849533407`; 공개 가능한 요약은 [`NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)에 기록.
 
-완료 조건: NAS↔Office restricted production-container model connection, immutable image digests, NAS-local runtime input과 public ingress 직전 closed preflight가 실제 target에서 성공한다.
+사용자 작업: 없음.
 
-### P30. 외부 네트워크·보안 gate — `pending`
+### P30. DSM public HTTPS ingress + 외부 gate — `blocked-user`
 
-목표: 공개 app만 외부에서 접근 가능하고 DB/model/admin 경계는 닫혀 있음을 증명한다.
+목표: 공개 app만 인터넷에서 접근 가능하게 하고 DB/model/admin 경계가 외부에 노출되지 않음을 증명한다.
 
-- [ ] DSM HTTPS 인증서/public origin 확인
-- [ ] 외부 전체 persona smoke
-- [ ] 서로 다른 두 세션 cross-workspace 격리
-- [ ] DB 외부 비노출 확인
-- [ ] model endpoint 외부 비노출 확인
-- [ ] app direct egress 부재/tunnel-only model path runtime 확인
-- [ ] Nginx 익명 요청 rate limit `429` 확인
-- [ ] 공개 로그에 credential/민감 endpoint가 남지 않는지 확인
+현재 남은 설정:
 
-사용자 작업: DSM/router UI나 물리 외부망 확인처럼 연결된 도구로 수행할 수 없는 단계만 요청한다.
+- [ ] DSM Reverse Proxy/TLS source 생성
+- [ ] router에서 선택한 public HTTPS port를 NAS로 forwarding
+- [ ] 공개 origin 확정
 
-완료 조건: 외부에서 app은 정상 사용 가능하고 내부 의존성은 노출되지 않으며 rate/egress 통제가 검증된다.
+현재 설계 후보:
 
-### P40. close/reopen lifecycle rehearsal — `pending`
+```text
+public HTTPS: <Synology DDNS hostname>:58889
+DSM reverse proxy destination: http://127.0.0.1:18083
+```
 
-목표: 공개 데모를 안전하게 닫고 동일 artifact로 다시 열 수 있음을 실제로 검증한다.
+`58889`는 설정 전까지 검증된 공개 포트가 아니다. DSM source의 인증서는 실제 DDNS hostname과 일치해야 한다.
 
-- [ ] normal close: edge -> app -> model-tunnel -> synthetic purge -> DB
-- [ ] environment-independent emergency close
-- [ ] closed verifier: Compose state + loopback/public live marker 부재
-- [ ] same app/tunnel image digest reopen
-- [ ] public smoke 재검증
-- [ ] 최종 상태를 `CLOSED`로 유지
+사용자 설정 후 자동으로 수행할 검증:
 
-Office native Ollama 자체는 공유 runtime이므로 OpsMate lifecycle이 임의 종료하지 않는다. OpsMate 모델 접근 경계는 restricted SSH tunnel 수명주기로 통제한다.
+- [ ] exact reviewed release OPEN
+- [ ] Internet/LTE 외부 HTTPS smoke
+- [ ] root/live marker와 security headers
+- [ ] 실제 모델 기반 전체 persona flow
+- [ ] 외부 두 세션 cross-workspace 격리
+- [ ] PostgreSQL 외부 비노출
+- [ ] model/Ollama 외부 비노출
+- [ ] public `/api/**`/`/actuator/**` 경계
+- [ ] public rate limit `429`
+- [ ] 공개 로그 credential/민감정보 scan
 
-사용자 작업: 없음. 단, target이 사람 승인을 강제하는 보안 정책을 사용하면 그 승인만 요청한다.
+완료 조건: 외부에서 app만 정상 사용 가능하고 내부 의존성은 노출되지 않으며 rate/session/egress 경계가 검증된다.
 
-완료 조건: 닫기·비상 종료·동일 digest 재개가 실제 target에서 성공하고 최종적으로 닫힌 상태가 확인된다.
+### P40. public close/reopen lifecycle — `pending`
+
+내부 lifecycle은 P25에서 이미 `verified`다. 여기서는 public origin까지 포함한 마지막 확인만 수행한다.
+
+- [ ] public OPEN smoke
+- [ ] normal close 후 public live marker 부재
+- [ ] same digest reopen 후 public smoke
+- [ ] emergency close 후 public live marker 부재
+- [ ] 마지막 normal close/purge
+- [ ] 최종 `CLOSED`
+
+사용자 작업: 없음. 단, DSM/router가 별도 사람 승인을 강제하는 경우 그 승인만 요청한다.
 
 ### P50. 두 번째 Java/Spring 사례 공개 — `pending`
 
@@ -152,35 +162,28 @@ Office native Ollama 자체는 공유 runtime이므로 OpsMate lifecycle이 임�
 - [ ] authorized evidence에서 본인 기여·공개 경계 재확인
 - [ ] 합성 도메인으로 독립 구현
 - [ ] 정상·실패·경계 테스트
-- [ ] 공개 문서와 코드 검수
-- [ ] Pages 게시
+- [ ] 공개 문서·코드 검수 및 Pages 게시
 
-사용자 작업: 회사 내부 사실 중 저장소/기존 authorized evidence로 확정할 수 없는 항목이 실제로 필요한 경우에만 사실 확인을 요청한다.
+사용자 작업: 기존 authorized evidence로 확정할 수 없는 내부 사실이 반드시 필요한 경우에만 요청한다.
 
 ### P60. 포트폴리오 유지관리 — `pending`
 
-- [ ] Pages 링크와 배포 상태 정기 확인
-- [ ] 물리 모바일 화면 최종 검수
+- [ ] Pages 링크/배포 상태 정기 확인
+- [ ] 물리 모바일 최종 UX 검수
 - [ ] 회사 GitHub evidence 월말 갱신
-- [ ] 완료·미검증 badge와 테스트 수 동기화
+- [ ] 완료·미검증 badge와 테스트/증거 동기화
 
 ## 현재 사용자에게 필요한 작업
 
-현재 즉시 필요한 사용자 작업은 **GitHub Container Registry package 2개의 visibility를 Public으로 변경하는 것**이다.
+내부 배포와 lifecycle gate는 모두 통과했다. **현재 사용자 작업은 DSM Reverse Proxy/TLS와 router public ingress 설정뿐이다.**
 
-대상:
-
-- `opsmate-local`
-- `opsmate-model-tunnel`
-
-이 단계가 완료되면 ChatGPT/device-control이 동일 source SHA로 anonymous pull, RepoDigest 추출, production tunnel container E2E를 다시 수행한다. 이후 DSM Reverse Proxy/router 설정이 실제 blocker가 될 때까지 NAS runtime 준비는 자동화 경로로 계속 진행한다.
+설정이 완료되면 ChatGPT/device-control이 exact reviewed release를 열고 외부 smoke, DB/model 비노출, rate/session 경계, public close/reopen을 이어서 검증한다.
 
 ## 완료 판정
 
-전체 포트폴리오를 단순히 `완료`라고 부르지 않고 다음을 분리한다.
-
 1. GitHub Pages 포트폴리오: `published`
-2. OpsMate 코드/컴포넌트: `implemented` + 최신 CI regression 성공
-3. 실제 모델 adapter E2E: `verified` 범위 명시
-4. public application/network/lifecycle: 해당 gate 완료 전까지 `pending`/`tested-component`
-5. 회사 업무 사례: 원본 검토와 독립 공개 샘플 검증 상태를 분리
+2. OpsMate 코드/CI: `implemented` + latest regression `verified`
+3. 실제 모델 adapter E2E: `verified`
+4. NAS internal deployment/network/security/lifecycle boundary: `verified`
+5. public Internet application: P30/P40 완료 전까지 별도 `pending`
+6. 회사 업무 사례: 원본 검토와 독립 공개 샘플 상태를 분리
