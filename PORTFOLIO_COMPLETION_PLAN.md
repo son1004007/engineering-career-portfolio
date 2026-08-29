@@ -102,7 +102,7 @@ CI context-path 관측은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat 
 
 사용자 작업: 없음.
 
-### P60. 네 번째 Java/Spring 사례 `CS-JAVA-06` — `in-progress`
+### P60. 네 번째 Java/Spring 사례 `CS-JAVA-06` — `verified`
 
 주제: **여러 화면에 흩어진 기준값과 사용자 식별 규칙을 한 흐름으로 정합화한 과정**
 
@@ -112,19 +112,28 @@ CI context-path 관측은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat 
 - [x] 정상·실패·경계 회귀 테스트 설계
 - [x] Java 21 + Spring Boot 3.5.16 독립 `member snapshot` 샘플 구현
 - [x] 11개 MockMvc 회귀 테스트 성공
-- [x] PR run `33275860098`의 `Business-rule consistency` job 성공
-- [x] 같은 run의 전체 portfolio 8개 job 성공
-- [x] public-portfolio 공개 텍스트/링크/상태 검사 성공
-- [ ] `sample-verified` 상태 동기화 후 최신 전체 PR regression 성공
-- [ ] main merge
-- [ ] main Pages build/deploy
-- [ ] 실제 게시 증거 반영 후 `published`
+- [x] 최초 PR run `33275860098`: 신규 sample job 및 전체 8개 job 성공
+- [x] 상태 동기화 후 final PR run `33276143715`: 전체 8개 job 성공
+- [x] main merge commit `733db7c614af5613216773b3b1fc6b3567e0b84c`
+- [x] main Pages run `33276278894`: 8개 verify job + build + deploy 성공
+- [x] 상태: `published`
 
-현재 공개 상태는 `sample-verified`입니다. 실제 회사 SSO/session E2E, 회사 Mapper SQL/운영 DB 결과, 운영 데이터 전체 정합성, 조직 전체 업무 규칙 설계 책임, 운영 성능/SLA는 검증하지 않는다.
+실제 회사 SSO/session E2E, 회사 Mapper SQL/운영 DB 결과, 운영 데이터 전체 정합성, 조직 전체 업무 규칙 설계 책임, 운영 성능/SLA는 검증하지 않는다.
 
 사용자 작업: 없음.
 
-### P70. 포트폴리오 유지관리 — `pending`
+### P70. 다음 Java/Spring 사례 선택 — `pending`
+
+선택 기준:
+
+1. 인증·SQL·WAR 배포·업무 규칙과 다른 backend dimension을 추가할 것
+2. 본인 귀속과 공개 경계를 재확인할 수 있을 것
+3. 회사 코드와 독립된 합성 샘플로 정상·실패·경계 테스트가 가능할 것
+4. 확인되지 않은 운영 성과를 필요로 하지 않을 것
+
+`CS-JAVA-11` 통계 분석 UI는 데이터 처리/시각화 관점을 추가할 수 있는 `source-reviewed` 후보입니다. 다음 사례로 채택하기 전 직접 기여 경계와 통계 검증 범위를 다시 확인합니다.
+
+### P80. 포트폴리오 유지관리 — `pending`
 
 - [ ] Pages 링크/배포 상태 정기 확인
 - [ ] 물리 모바일 최종 UX 검수
@@ -135,7 +144,7 @@ CI context-path 관측은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat 
 
 현재 즉시 필요한 사용자 작업은 없다.
 
-OpsMate workload는 `CLOSED` 상태를 유지한다. 현재 active work는 `CS-JAVA-06`의 publication gate다.
+OpsMate workload는 `CLOSED` 상태를 유지한다. `CS-JAVA-02`, `CS-JAVA-03`, `CS-JAVA-06` publication gate는 완료되었으며 다음 단계는 신규 사례 선택과 유지관리다.
 
 ## 완료 판정
 
@@ -145,5 +154,5 @@ OpsMate workload는 `CLOSED` 상태를 유지한다. 현재 active work는 `CS-J
 4. 첫 Java/Spring 인증 사례: `sample-verified`
 5. 두 번째 MyBatis 사례: `published`
 6. 세 번째 WAR deployment 사례: `published`
-7. 네 번째 업무 규칙 정합성 사례: `sample-verified`, Pages publication pending
+7. 네 번째 업무 규칙 정합성 사례: `published`
 8. 회사 업무 사례: 권한 있는 원본 검토와 독립 공개 샘플 검증 상태를 분리
