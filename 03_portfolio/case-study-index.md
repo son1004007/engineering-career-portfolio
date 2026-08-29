@@ -1,6 +1,6 @@
 # Case Study Index
 
-- 최종 갱신일: `2026-08-29`
+- 최종 갱신일: `2026-08-30`
 - 목적: 기존 개인·회사 작업에서 게시물 후보를 추출하고, 원본 증거 확인과 공개용 재구현 상태를 분리해 관리
 - 전략: [`portfolio-strategy.md`](portfolio-strategy.md)
 - 회사 근거 규칙: [`../evidence/company-github/README.md`](../evidence/company-github/README.md)
@@ -8,10 +8,11 @@
 ## 현재 실행 대상
 
 - `CS-JAVA-06` — 여러 화면에 흩어진 기준값과 사용자 식별 규칙을 한 흐름으로 정합화한 과정
-- 선택 이유: 인증(`CS-JAVA-01`), SQL 조회(`CS-JAVA-02`), 배포 경계(`CS-JAVA-03`)와 겹치지 않고 Controller-Service-Mapper 전반의 업무 규칙 정합성과 회귀 테스트 역량을 보강한다.
-- 기존 상태는 `source-reviewed`다. 독립 구현 전에 권한 있는 비공개 원본에서 본인 귀속과 실제 결함/수정 경계를 다시 확인한다.
-- 공개 구현은 주문·회원 같은 합성 도메인으로 재구성하고 회사 코드·테이블·식별자·데이터는 복사하지 않는다.
-- 다음 gate: 본인 귀속과 공개 경계 재확인 -> 정상/실패/경계 요구사항 및 회귀 테스트 설계 -> 독립 Spring 샘플 구현.
+- 권한 있는 비공개 원본에서 본인 author/committer 변경으로 canonical 사용자 식별자 우선, legacy fallback, 기간 선택이 없는 화면의 latest-only 정책, 사용자 전용 Mapper 경로와 null-safe 최신 기준 처리 범위를 재확인했다.
+- 회사 클래스명·endpoint·field·SQL·schema·실제 데이터는 복사하지 않고 `member snapshot` 합성 도메인으로 독립 Spring 샘플을 구현했다.
+- 공개 샘플은 session identity resolver, Service의 `LATEST_ONLY`/`EXPLICIT_OR_LATEST` 정책, 명시적 Mapper query와 fail-closed 오류 경계를 11개 회귀 테스트 대상으로 고정했다.
+- 현재 상태는 `sample-implemented`이며 CI 성공 전에는 `sample-verified`로 올리지 않는다.
+- 다음 gate: 신규 `Business-rule consistency` Java job + 전체 portfolio regression 성공 -> `sample-verified` -> main merge/Pages deploy 후 `published` 판정.
 
 ## 상태 정의
 
@@ -35,7 +36,7 @@
 | `CS-JAVA-04` | Java 업무 화면과 Python 분석 결과 재적재를 연결한 데이터 서비스 | `WORK-DATA-01`, `E2`, `implemented` | `candidate` | 가상 분석 결과와 DB를 사용하는 Java/Python 연계 샘플 | 개인 기여 코드, 트랜잭션 경계와 운영 반영 범위 재확인 |
 | `CS-JAVA-11` | [Java/Spring 통계 품질 분석 화면에서 CSV·Excel 데이터와 Xbar-R 시각화를 연결한 과정](case-studies/statistical-analysis-ui.md) | `WORK-DATA-03`, `E2`, 추가 업무 계정 소유와 비공개 코드 일부 기여 확인 | `source-reviewed` | 합성 측정값과 공개 수식으로 업로드·집계·차트 흐름을 독립 구현 | 직접 기여 범위를 화면·데이터 처리 단위로 제한하고 통계 정확도 테스트 설계 |
 | `CS-JAVA-05` | 엔터프라이즈 웹·API·DB 연동의 장애와 운영 개선 사례 | `WORK-PLATFORM-01`, `E2`, `implemented` | `candidate` | 도메인을 일반화한 API 연동·재시도·추적 샘플 | 하나의 구체적 문제로 범위 축소 및 본인 기여 재확인 |
-| `CS-JAVA-06` | [여러 화면에 흩어진 기준값과 사용자 식별 규칙을 한 흐름으로 정합화한 과정](case-studies/business-rule-consistency.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 | `source-reviewed`, **active** | 주문·회원 같은 합성 도메인으로 Controller-Service-Mapper 규칙과 회귀 테스트 재현 | 본인 귀속·실제 결함 범위를 재확인하고 중복되지 않는 회귀 시나리오 확정 |
+| `CS-JAVA-06` | [여러 화면에 흩어진 기준값과 사용자 식별 규칙을 한 흐름으로 정합화한 과정](case-studies/business-rule-consistency.md) | `WORK-EDU-01`, `E2`, 권한 있는 비공개 원본에서 본인 귀속 변경 재확인 + 독립 합성 샘플 구현 | `sample-implemented`, **active** | [합성 Spring Boot member-snapshot 샘플](../02_projects/case-study-samples/business-rule-consistency/README.md): canonical session identity, latest-only policy, explicit Mapper boundary, fail-closed errors | 신규 Java CI와 전체 regression 성공 후 `sample-verified` |
 
 ### 공개 전 별도 보안 검토가 필요한 개인 코드 후보
 
@@ -48,7 +49,7 @@
 | `CS-JAVA-09` | 확장자와 파일 시그니처를 함께 검사하는 업로드 검증 | Multipart 처리, allowlist, magic number, 설정 외부화 | `hold` | 크기·단축 입력·MIME 불일치·악성 fixture 테스트 추가 |
 | `CS-JAVA-10` | DB 버전 차이로 깨진 목록 페이징을 호환 구조로 복구한 과정 | MyBatis, pagination, 레거시 DB 호환성 | `hold` | Testcontainers 기반 버전별 재현과 실행계획 비교 |
 
-`CS-JAVA-02`와 `CS-JAVA-03`은 회사 코드와 독립된 공개 샘플 검증 및 main Pages deploy까지 완료해 `published`입니다. `CS-JAVA-01`은 공개 샘플이 검증된 상태를 유지합니다. 나머지 `source-reviewed` 사례는 공개 재현 코드와 테스트가 생기기 전 완료 상태로 올리지 않습니다.
+`CS-JAVA-02`와 `CS-JAVA-03`은 회사 코드와 독립된 공개 샘플 검증 및 main Pages deploy까지 완료해 `published`입니다. `CS-JAVA-01`은 공개 샘플이 검증된 상태를 유지합니다. `CS-JAVA-06`은 독립 샘플 구현까지 완료했지만 최근 CI 성공 전이므로 `sample-implemented`입니다. 나머지 `source-reviewed` 사례는 공개 재현 코드와 테스트가 생기기 전 완료 상태로 올리지 않습니다.
 
 ## Priority 2. AI 응용과 검증
 
