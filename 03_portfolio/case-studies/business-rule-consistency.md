@@ -2,7 +2,7 @@
 title: 분산된 업무 규칙을 한 흐름으로 정합화하기
 description: Controller, Service와 Mapper에 흩어진 기준값·사용자 식별 규칙을 회귀 가능한 구조로 정리한 비식별 사례
 permalink: /cases/business-rule-consistency/
-status: sample-implemented
+status: sample-verified
 ---
 
 # 분산된 업무 규칙을 한 흐름으로 정합화하기
@@ -72,7 +72,9 @@ findBySubjectAndSnapshot(subjectId, SnapshotKey)
 
 ## 자동 회귀 검증
 
-현재 합성 샘플에는 11개 자동 테스트가 포함되어 있습니다.
+합성 샘플의 11개 자동 테스트가 PR run `33275860098`의 `Business-rule consistency` job에서 `./mvnw -q clean verify`로 PASS했습니다. 같은 run의 Jekyll, 공개 텍스트 검사, 기존 Spring Security/MyBatis/WAR/OpsMate와 container/runbook을 포함한 **전체 8개 job도 모두 PASS**했습니다.
+
+검증 범위:
 
 - canonical session identity 우선
 - canonical 부재 시 legacy fallback
@@ -86,7 +88,7 @@ findBySubjectAndSnapshot(subjectId, SnapshotKey)
 - 요청 parameter로 session subject를 덮어쓸 수 없음
 - latest snapshot이 없는 subject `404`
 
-GitHub Actions 연결 후 `./mvnw -q clean verify`가 성공하기 전에는 `sample-verified`로 올리지 않습니다.
+현재 상태는 `sample-verified`입니다. main merge와 GitHub Pages build/deploy가 성공한 뒤에만 `published`로 올립니다.
 
 ## 대안과 trade-off
 
