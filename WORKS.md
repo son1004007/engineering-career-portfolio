@@ -1,6 +1,6 @@
 # Portfolio Work Ledger
 
-- 기준일: `2026-08-29`
+- 기준일: `2026-08-30`
 - 목적: 포트폴리오 작성부터 GitHub Pages 공개, OpsMate bounded public deployment 검증, Java/Spring 사례 공개까지 작업·의존성·증거를 추적
 - 원칙: 문서·코드·테스트·공개 안전성 검토가 함께 끝나기 전에는 완료로 표시하지 않음
 - 공통 검수표: [`03_portfolio/review-checklist.md`](03_portfolio/review-checklist.md)
@@ -32,7 +32,7 @@
 | `W09` | OpsMate 공개 데모와 재현 가능한 운영 검증 | immutable release, private DB/model path, public HTTPS E2E, lifecycle evidence | internal + public network/security/lifecycle bounded E2E와 final CLOSED | `verified` |
 | `W10` | 두 번째 Java/Spring 사례 공개 | MyBatis 기간 조회 독립 샘플, 12개 테스트, 사례 게시물 | source review + sample CI + 전체 regression + Pages deploy | `published` |
 | `W11` | 세 번째 Java/Spring 사례 공개 | WAR/context-path/profile/health/rollback 독립 샘플, 10개 테스트, 사례 게시물 | source review + sample CI + 전체 regression + Pages deploy | `published` |
-| `W12` | 네 번째 Java/Spring 사례 공개 | `CS-JAVA-06` 업무 규칙 정합성 독립 샘플 | source re-review + 독립 구현 + 정상·실패·경계 테스트 + Pages 게시 | `in-progress` |
+| `W12` | 네 번째 Java/Spring 사례 공개 | `CS-JAVA-06` 업무 규칙 정합성 독립 샘플, 11개 테스트, 사례 게시물 | source re-review + 독립 구현 + sample CI + 전체 regression + Pages deploy | `in-progress` |
 
 ## 의존성
 
@@ -52,6 +52,7 @@ W00 -> W01 -> W02
 - Spring Security 인증 브리지는 회사 코드와 독립된 합성 샘플로 24개 자동 테스트 성공 근거를 유지합니다.
 - 회사 업무는 원본 비공개 코드를 복사하지 않고 비식별 claim과 독립 재현 상태를 분리합니다.
 - OpsMate public evidence 반영 main Pages run `33250726427`의 verify matrix, Jekyll build와 deploy가 모두 성공 (`2026-08-29`).
+- Java 사례 publication-state 동기화 main Pages run `33252607907`도 7개 verify job + build + deploy가 모두 성공했습니다.
 
 ### W09 — OpsMate Local
 
@@ -112,16 +113,33 @@ W00 -> W01 -> W02
 
 ### W12 — `CS-JAVA-06` 업무 규칙 정합성 — `in-progress`
 
-현재 active work입니다.
+권한 있는 비공개 원본에서 본인 author/committer 변경을 다시 확인하고, 회사 코드와 독립된 Java 21 / Spring Boot 3.5.16 합성 `member snapshot` 샘플로 재현했습니다.
 
-1. 권한 있는 비공개 원본에서 본인 귀속과 실제 결함/수정 범위를 다시 확인합니다.
-2. 인증·SQL·배포 사례와 중복되지 않는 Controller-Service-Mapper 규칙 경계를 확정합니다.
-3. 회사 코드와 독립된 주문·회원 합성 도메인으로 정상·실패·경계 테스트부터 설계합니다.
-4. 독립 Spring 샘플을 구현하고 최근 CI 성공 뒤 사례 글을 공개합니다.
+확인·재현한 경계:
+
+- canonical session identity 우선, canonical 부재 시에만 legacy fallback
+- identity 부재 시 `401` fail-closed
+- 기간 선택이 없는 화면의 `LATEST_ONLY` 정책
+- 기간 선택이 가능한 흐름의 `EXPLICIT_OR_LATEST` 정책
+- Service가 확정한 `subjectId + SnapshotKey`만 Mapper에 전달
+- 최신/명시 snapshot 부재 시 `404`, 불완전/잘못된 기간은 `400`
+- 요청 parameter가 session identity를 덮어쓸 수 없는 경계
+
+검증:
+
+- 자동 회귀 테스트 11개
+- PR run `33275860098`의 `Business-rule consistency` job: PASS
+- 같은 run의 Jekyll, public portfolio, Spring Security, MyBatis, WAR, OpsMate Local, OpsMate container/runbook을 포함한 **8개 job 전체 PASS**
+- 공개 문서에는 회사 클래스명, endpoint, field, SQL, schema, 테스트 계정, 실제 데이터와 내부 식별자를 복사하지 않음
+
+현재 상태는 `sample-verified`입니다. 남은 W12 gate는 **상태 동기화 후 최신 전체 PR regression → main merge → GitHub Pages build/deploy → `published`**입니다.
+
+실제 회사 시스템 전체 SSO/session, Mapper SQL/운영 DB, 운영 데이터 전체 정합성, 조직 전체 업무 규칙 설계 책임, 운영 성능/SLA는 검증하거나 주장하지 않습니다.
 
 ## 다음 실행 순서
 
-1. 이 publication-state 변경의 전체 portfolio regression과 Pages deploy를 통과시킵니다.
-2. `CS-JAVA-06` authorized source re-review를 수행합니다.
-3. 공개 요구사항/회귀 테스트를 확정한 뒤 독립 Spring 샘플을 구현합니다.
-4. `evidence/company-github/monthly/`를 월말 갱신하고 Pages/링크를 유지관리합니다.
+1. `sample-verified` 상태 동기화가 반영된 최신 PR 전체 8개 regression을 통과시킵니다.
+2. PR #35를 main에 merge합니다.
+3. main GitHub Pages verify/build/deploy를 확인합니다.
+4. 실제 Pages 게시 증거를 반영해 W12를 `published`로 닫습니다.
+5. `evidence/company-github/monthly/`를 월말 갱신하고 Pages/링크를 유지관리합니다.
