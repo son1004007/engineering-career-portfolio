@@ -116,17 +116,11 @@ class PublicPortfolioTest(unittest.TestCase):
         )
         self.assertIn("@media (max-width: 52rem)", css)
         self.assertIn("@media (max-width: 32rem)", css)
+        self.assertRegex(css, r"\.site-nav\s*\{[^}]*overflow-x:\s*auto;")
+        self.assertRegex(css, r"\.prose pre\s*\{[^}]*overflow-x:\s*auto;")
         self.assertRegex(
             css,
-            r"\.site-nav\s*\{[^}]*overflow-x:\s*auto;",
-        )
-        self.assertRegex(
-            css,
-            r"\.prose pre\s*\{[^}]*overflow-x:\s*auto;",
-        )
-        self.assertRegex(
-            css,
-            r"@media \(max-width: 32rem\).*?\.prose table\s*\{[^}]*overflow-x:\s*auto;",
+            r"(?s)@media \(max-width: 32rem\).*?\.prose table\s*\{[^}]*overflow-x:\s*auto;",
         )
         self.assertIn("{% when 'published' %}", badge)
         self.assertIn("게시·검증 완료", badge)
