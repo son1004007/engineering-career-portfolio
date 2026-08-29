@@ -10,33 +10,61 @@
 
 ## 확정된 포트폴리오 전략
 
-이 저장소의 포트폴리오는 두 트랙으로 구성합니다.
+이 저장소는 두 트랙으로 구성합니다.
 
-1. 신규 대표 프로젝트 `OpsMate Local`은 온프레미스 AI Agent를 기업 업무 트랜잭션에 안전하게 연결하는 역량을 증명합니다.
-2. 기존 업무 사례 게시물은 Java/Spring, DB/SQL, 인증, 배포와 운영의 실무 깊이를 증명합니다.
+1. `OpsMate Local`: 온프레미스 AI Agent를 기업 업무 트랜잭션에 안전하게 연결하는 대표 프로젝트
+2. Java/Spring 실무 사례: 인증, DB/SQL, 배포, 운영 등 백엔드 실무 깊이를 회사 코드와 독립된 공개 샘플로 재현
 
 핵심 정체성은 ML 모델 연구자가 아니라 **Java/Spring 엔터프라이즈 백엔드 경험을 중심으로 AI Agent 기능을 통합하는 백엔드·플랫폼 엔지니어**입니다.
 
-`OpsMate Local`은 `implemented`, `tested-component`이며, **실제 모델 adapter, Synology 내부 배포/network/security/lifecycle, public Internet deployment/network/security/lifecycle의 명시된 bounded boundary는 각각 `verified`**입니다. 구매 요청·승인·발주 수직 기능에 공개 Thymeleaf session UI, workspace 격리·TTL, model single-flight·quota·동시 실행 제한, PostgreSQL/Flyway 역할 분리와 open·close·reopen 자산을 구현했습니다.
+## OpsMate Local 상태
 
-`2026-08-23` 사설 GPU runtime의 Ollama `gemma3:12b`로 실제 모델 E2E 9/9와 관측 p95 21,076ms(`<= 30,000ms` gate)를 확인했습니다. `2026-08-25`에는 exact source와 immutable image digest를 Synology에 준비한 뒤 restricted SSH tunnel을 포함한 전체 내부 runtime E2E를 수행해 stack/port/network/edge gate, Secure-cookie session, 실제 모델 persona flow, cross-workspace isolation, rate limit, credential-log scan, normal close, same-digest reopen, emergency close와 최종 `CLOSED`를 확인했습니다.
+`OpsMate Local`은 `implemented`, `tested-component`이며 다음 명시된 bounded boundary는 `verified`입니다.
 
-`2026-08-29`에는 DSM TLS ingress를 통한 실제 Internet HTTPS 경로에서 exact reviewed release를 열어 실제 모델 기반 draft -> submit -> approve -> order -> audit -> cleanup을 수행했고, 두 외부 session workspace 격리, URL session rewriting 부재, DB/model/loopback 포트 비노출, app direct egress 차단, 외부 rate limit `429`, log scan을 확인했습니다. 이어 normal close, 동일 digest reopen 후 public smoke 재통과, emergency close, recovery normal close와 최종 `CLOSED`까지 검증했습니다.
+- `2026-08-23`: Ollama `gemma3:12b` 실제 모델 E2E 9/9, 관측 p95 `21,076ms` (`<= 30,000ms` gate)
+- `2026-08-25`: Synology exact immutable release 내부 stack/network/session/model/rate/log/lifecycle E2E
+- `2026-08-29`: DSM TLS ingress를 통한 실제 Internet HTTPS persona flow, 외부 두 session isolation, URL session rewriting 부재, DB/model/loopback 비노출, app direct egress 차단, public `429`, log scan, normal close, same-digest reopen, emergency close, recovery normal close와 final `CLOSED`
+- public evidence 반영 main Pages run `33250726427`: verify matrix, Jekyll build와 Pages deploy 성공
 
 모델이 없거나 잘못된 출력을 반환하면 모델 의존 초안 생성은 저장 전에 `fail-closed`로 중단되고 외부 유료 API로 자동 우회하지 않습니다. 이미 제출된 요청의 승인·반려·발주는 모델 가용성과 분리되어 있습니다.
 
-이 증거는 **bounded deployment E2E**이며 24x7 가용성, SLA, 장기 부하, 대규모 실제 사용자 운영을 증명하지 않습니다. 상세 증거는 [`02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md), [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md), [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)에 분리해 기록합니다.
+이 증거는 bounded deployment E2E이며 24x7 가용성, SLA, 장기 부하, 대규모 실제 사용자 운영을 증명하지 않습니다.
 
-OpsMate의 현재 목표 gate는 완료됐고 다음 우선순위는 [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md)의 `source-reviewed` Java/Spring 사례를 독립 재구현해 공개하는 것입니다. 실행 순서는 [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)를 따릅니다.
+상세:
 
-기존 회사 업무는 원본 소스나 내부 식별자를 공개하지 않습니다. 게시물은 원본에서 본인 귀속과 구현 범위를 검증한 뒤 비식별 서술과 독립 재구현 코드로 만듭니다.
+- [`02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)
+- [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
+- [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
+
+## Java/Spring 공개 사례 상태
+
+### CS-JAVA-01 — Spring Security 인증 브리지
+
+- 상태: `sample-verified`
+- 권한 있는 비공개 원본에서 본인 귀속 인증 통합 범위를 확인
+- 회사 코드와 독립된 합성 Spring Security 샘플 구현
+- 24개 자동 테스트 성공
+
+### CS-JAVA-02 — MyBatis 기간 조회 정합성
+
+- 상태: `sample-verified`; Pages publication gate 진행 중
+- 권한 있는 비공개 원본에서 본인 귀속 SQL 개선 범위를 재확인
+- 확인된 원칙: 여러 연도 기간의 복합 `OR`을 상호 배타적 구간으로 분해해 `UNION ALL`로 결합하고, indexed year/month column에 적용되던 숫자 변환을 제거
+- 공개 구현: [`02_projects/case-study-samples/mybatis-query-correctness/`](02_projects/case-study-samples/mybatis-query-correctness/README.md)
+- Java 21 + Spring Boot 3.5.16 + MyBatis + H2 합성 데이터
+- same/cross-year 경계, tenant isolation, count/page 일치, deterministic pagination, invalid input, composite index와 `BoundSql` SQL shape 검증
+- 12개 자동 테스트 성공; PR run `33251026033`의 `MyBatis query correctness` job PASS
+- 실제 Oracle optimizer index 선택과 운영 성능 수치는 검증/주장하지 않음
+
+기존 회사 업무는 원본 소스나 내부 식별자를 공개하지 않습니다. 게시물은 원본에서 본인 귀속과 구현 범위를 확인한 뒤 비식별 서술과 독립 재구현 코드로 만듭니다.
 
 ## 이 저장소로 할 수 있는 판단
 
 - 공개 프로필에 기재된 기술 방향 파악
-- 저장된 코드와 테스트 파일의 존재 확인
+- 저장된 코드와 테스트 파일의 존재 및 최근 검증 상태 확인
 - 개인 포트폴리오 프로젝트의 구현 범위와 검증된 boundary 확인
-- 백엔드·데이터·AI 응용·보안 관점의 조합이 목표 직무와 어떤 관련이 있는지 검토
+- Java/Spring 인증·SQL 정합성 사례가 독립 샘플에서 어떻게 재현됐는지 확인
+- 백엔드·데이터·AI 응용·보안 관점의 조합 검토
 
 ## 이 저장소만으로 하면 안 되는 판단
 
@@ -44,6 +72,7 @@ OpsMate의 현재 목표 gate는 완료됐고 다음 우선순위는 [`03_portfo
 - 특정 기술의 숙련도나 대규모 운영 경험 확정
 - 회사·팀 전체 성과를 개인 성과로 해석
 - bounded E2E를 장기 production 운영 또는 SLA로 확대 해석
+- H2 합성 샘플을 실제 Oracle 실행계획/성능 증거로 확대 해석
 - 특정 회사 입사, 연봉, 근무환경, 오퍼 수락 판단
 
 ## 읽기 순서
@@ -80,17 +109,17 @@ OpsMate의 현재 목표 gate는 완료됐고 다음 우선순위는 [`03_portfo
 
 | 항목 | 상태 | 판단 |
 |---|---|---|
-| `OpsMate Local` | `implemented`, `tested-component`; real-model adapter, NAS internal boundary, public Internet deployment/lifecycle boundary `verified` | 실제 `gemma3:12b` E2E, immutable Synology 배포, private DB/model network, 외부 HTTPS persona flow, session isolation, 429, non-exposure, close/reopen/emergency close까지 bounded E2E 성공. 장기 SLA/부하는 미검증 |
-| Java/Spring 사례 5건 | `sample-verified` 1건, `source-reviewed` 4건 | 회사 비공개 원본에서 본인 귀속과 코드 범위를 확인. 인증 통합 사례는 회사 코드와 독립된 공개 샘플 24개 테스트 성공 |
-| `ai-rag-api` | `implemented`, `tested-file-present` | API·서비스·저장소 코드와 단위 테스트 파일 존재. 현재 점검에서는 최근 테스트 성공 미확인 |
-| `backend-platform-template` | `partial` | 앱·설정·테스트 파일은 있으나 현재 구조에 누락 모듈이 있음 |
+| `OpsMate Local` | `implemented`, `tested-component`; real-model, NAS internal, public Internet bounded boundary `verified` | 실제 모델, immutable Synology 배포, private DB/model, 외부 HTTPS/session/rate/non-exposure와 lifecycle 검증. 24x7 SLA/장기 부하는 미검증 |
+| Spring Security 인증 사례 | `sample-verified` | 회사 코드와 독립된 합성 샘플 24개 테스트 성공 |
+| MyBatis 기간 조회 사례 | `sample-verified`; publication pending | 회사 코드와 독립된 합성 Spring Boot/MyBatis/H2 샘플 12개 테스트 성공. Oracle 운영 성능은 미검증 |
+| 나머지 Java/Spring 사례 | `source-reviewed` 또는 `candidate` | 독립 공개 재현과 최근 테스트 전에는 완료로 표현하지 않음 |
+| `ai-rag-api` | `implemented`, `tested-file-present` | 코드·테스트 파일은 있으나 최근 성공 실행 미확인 |
+| `backend-platform-template` | `partial` | 현재 구조에 누락 모듈이 있음 |
 | `security-audit-log` | `partial` | API route만 있고 참조 service, 앱 진입점, 테스트가 없음 |
-| 개인 공개 `text2sql` 샘플 | `planned` | 이 저장소 안에는 별도 프로젝트 디렉터리가 없음 |
-| 회사 Text2SQL/NL2SQL 업무 | `private-work-code-verified`, `tested-component` | 비공개 회사 Git의 FastAPI 코드, 모델 adapter, SQL 실행, benchmark 결과와 본인 귀속 커밋 확인 |
+| 회사 Text2SQL/NL2SQL 업무 | `private-work-code-verified`, `tested-component` | 비공개 회사 Git에서 본인 귀속 구성요소와 benchmark evidence 확인 |
 | 회사 Agentic AI Runtime 업무 | `private-work-code-verified`, `tested-component` | workspace, artifact, provenance, storage와 테스트의 본인 구현 범위 확인 |
-| 그 밖의 실무 경력·기술 | `self-described`, 일부 `E2` | 회사 commit metadata와 work evidence를 프로젝트별로 계속 교차 확인 |
 
-상세 상태와 갱신 기준은 [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)에 있습니다.
+상세 상태는 [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 기준으로 합니다.
 
 ## 안전한 해석
 
@@ -98,6 +127,7 @@ OpsMate의 현재 목표 gate는 완료됐고 다음 우선순위는 [`03_portfo
 
 ```text
 Java/Spring 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
+MyBatis 기간 조회를 정합성·tenant isolation·count/page·pagination·SQL shape 관점에서 검증하는 방식
 AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계에 넣는 설계와 구현
 실제 open-weight model 구조화 출력을 서버 검증·저장까지 연결한 E2E
 immutable artifact를 Synology에 배포하고 private DB/model network와 restricted SSH tunnel을 검증한 경험
@@ -105,13 +135,13 @@ Internet HTTPS 경로에서 실제 모델 업무 흐름, session isolation, rate
 Text2SQL/NL2SQL API, SQL 검증과 다중 모델 benchmark 업무
 Agentic AI Runtime의 작업 격리와 산출물 추적 구성요소 구현
 비공개 업무 근거를 비식별 claim과 독립 공개 재현 상태로 분리하는 방식
-문서 중심의 구조화와 커리어 포지셔닝
 ```
 
 다음은 이 저장소만으로 확정할 수 없습니다.
 
 ```text
 Java/Spring 실무의 전체 수준과 아직 재현하지 않은 나머지 사례의 구현 완료
+MyBatis 샘플의 실제 Oracle 실행계획과 운영 성능
 프로덕션 트래픽과 운영 규모
 Kafka/Redis/Kubernetes 실전 운영
 RAG 품질·보안·관측성·비용 최적화
