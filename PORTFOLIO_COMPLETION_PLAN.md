@@ -1,13 +1,13 @@
 # Portfolio Completion Plan
 
 - 기준일: `2026-08-29`
-- 목적: 공개 포트폴리오와 `OpsMate Local`의 검증 상태를 실제 실행 증거와 동기화하고 다음 Java/Spring 사례 공개를 진행한다.
-- 원칙: 문서상 완료가 아니라 exact source, immutable image digest, CI, bounded runtime E2E를 근거로 상태를 올린다.
+- 목적: 공개 포트폴리오의 검증 상태를 실제 실행 증거와 동기화하고 Java/Spring 사례 공개를 순차적으로 완료한다.
+- 원칙: 문서상 완료가 아니라 source review, 독립 구현, 최근 CI와 필요한 runtime/publication evidence를 근거로 상태를 올린다.
 - 전역 기준: `son1004007/ai-agent-workflow-playbook/CONTROL.md`
 - 실행 ledger: [`WORKS.md`](WORKS.md)
 - 장기 backlog: [`TASKS.md`](TASKS.md)
-- 내부 배포 증거: [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
-- public 배포 증거: [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
+- OpsMate internal 증거: [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
+- OpsMate public 증거: [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
 
 ## 상태
 
@@ -29,13 +29,14 @@
 
 ## 실행 순서
 
-### P00. 상태 문서 동기화 — `in-progress`
+### P00. OpsMate 상태 문서 동기화 — `verified`
 
 - [x] `2026-08-23` 실제 모델 E2E 기록
 - [x] `2026-08-25` Synology internal deployment/network/security/lifecycle E2E 기록
-- [x] `2026-08-29` public Internet deployment/network/lifecycle E2E 증거 확보
-- [x] `AI_CONTEXT.md`, `WORKS.md`, `TASKS.md`, `evidence-index.md`, case-study queue를 public E2E 상태와 동기화
-- [ ] 최신 public evidence/state 문서의 portfolio CI와 Pages deploy 성공 확인
+- [x] `2026-08-29` public Internet deployment/network/lifecycle E2E 기록
+- [x] AI context, work/task ledger, evidence index와 public evidence 문서 동기화
+- [x] PR regression 성공
+- [x] main Pages run `33250726427`의 verify matrix, Jekyll build와 deploy 성공
 
 사용자 작업: 없음.
 
@@ -48,7 +49,7 @@
 - [x] shell/Compose/Nginx/container/runbook 검증
 - [x] non-root image build 및 migration rehearsal
 
-검증 기준 release의 `Verify Portfolio` run `32848946968` 전체 성공. 이후 내부 E2E 상태 문서 반영 main Pages run `32851086949`도 성공했다.
+OpsMate public evidence가 반영된 main commit에서도 Pages run `33250726427` 전체 성공.
 
 사용자 작업: 없음.
 
@@ -65,81 +66,76 @@
 
 검증: runtime preparation run `32849378114`.
 
-사용자 작업: 없음.
+### P25. OpsMate 내부 network/security/lifecycle E2E — `verified`
 
-### P25. 내부 network/security/lifecycle E2E — `verified`
+검증: private bounded runtime run `32849533407`.
 
-`2026-08-25` bounded internal verifier에서 다음을 실제 target에서 확인했다.
-
-- [x] stack/host-port/Docker-network/edge-security gate
+- [x] stack/host-port/Docker-network/edge security
 - [x] app/edge direct egress 차단
-- [x] PostgreSQL/app/model-tunnel host port 미노출
-- [x] Secure XSRF/JSESSIONID 및 COOKIE-only session tracking
-- [x] restricted tunnel -> 실제 `gemma3:12b` model path
-- [x] persona flow, durable draft, cross-workspace isolation
-- [x] Nginx rate limit `429`, credential/log scan
-- [x] normal close + synthetic workspace purge + strict CLOSED
-- [x] same-digest reopen
-- [x] emergency close + recovery normal close
+- [x] DB/app/model-tunnel host port 미노출
+- [x] Secure cookie session과 restricted actual-model path
+- [x] persona/durable draft/cross-workspace isolation
+- [x] rate limit/credential-log scan
+- [x] normal close/same-digest reopen/emergency close/recovery close
 - [x] final policy flags `YES_YES`, final `CLOSED`
 
-검증: private `device-control` bounded runtime run `32849533407`.
+### P30. OpsMate public HTTPS/network/security E2E — `verified`
 
-사용자 작업: 없음.
+검증: private bounded public runtime run `33241004788`.
 
-### P30. public HTTPS/network/security E2E — `verified`
-
-`2026-08-29` 실제 Internet 경로에서 다음을 확인했다.
-
-- [x] DSM Reverse Proxy/TLS + router ingress를 통한 HTTPS origin
-- [x] root/live marker 및 public `/api/**` denial, `/actuator/**` 차단
-- [x] 실제 모델 기반 draft -> submit -> approve -> order -> audit -> cleanup
-- [x] 외부 두 session cross-workspace isolation
-- [x] URL `;jsessionid` rewriting 부재
+- [x] 실제 Internet HTTPS origin
+- [x] public API/actuator boundary
+- [x] 실제 모델 전체 persona workflow
+- [x] external two-session isolation
+- [x] URL session rewriting 부재
 - [x] app direct Internet egress 차단
-- [x] PostgreSQL/model/loopback edge 직접 외부 TCP 비노출
-- [x] public Nginx bounded burst: allowed `24`, HTTP `429` `36`, transport failure `0`
-- [x] container credential/private-key/Bearer marker log scan
+- [x] DB/model/loopback edge 외부 직접 비노출
+- [x] bounded rate burst: allowed `24`, HTTP `429` `36`, transport failure `0`
+- [x] credential/private-key/Bearer marker log scan
 
-검증: private `device-control` final public runtime run `33241004788`.
-
-사용자 작업: 없음.
-
-### P40. public close/reopen lifecycle — `verified`
-
-동일 public runtime run에서 다음 lifecycle을 검증했다.
+### P40. OpsMate public close/reopen lifecycle — `verified`
 
 - [x] public OPEN smoke
-- [x] normal close + synthetic workspace purge
-- [x] public live marker 부재 + strict `CLOSED`
-- [x] same app/tunnel digest reopen
-- [x] reopen 후 public HTTPS + 실제 모델 persona smoke 재통과
-- [x] emergency close
-- [x] public live marker 부재 + strict `CLOSED`
+- [x] normal close + purge + strict CLOSED
+- [x] same immutable digest reopen + real-model public smoke
+- [x] emergency close + public live marker 부재
 - [x] recovery normal close/purge
 - [x] running container `0`, PostgreSQL volume 보존
-- [x] final `runtime_policy_flags=YES_YES`
-- [x] final `CLOSED`
+- [x] final `runtime_policy_flags=YES_YES`, final `CLOSED`
 
-이 검증은 bounded deployment/lifecycle 증거이며 24x7 SLA, 장기 부하 또는 production traffic 규모를 의미하지 않는다.
+이 증거는 bounded E2E이며 24x7 SLA, 장기 부하 또는 production traffic 규모를 의미하지 않는다.
+
+### P50. 두 번째 Java/Spring 사례 `CS-JAVA-02` — `in-progress`
+
+주제: **MyBatis 기간 조회의 정합성과 인덱스 친화 조건을 함께 설계하기**
+
+- [x] 후보 선택
+- [x] authorized source에서 본인 귀속 SQL 개선 범위 재확인
+- [x] 공개 금지 경계 확정: 회사 SQL/schema/data/내부 식별자 비복사
+- [x] 독립 합성 요구사항·테스트 설계
+- [x] Java 21 + Spring Boot 3.5.16 + MyBatis + H2 독립 샘플 구현
+- [x] same/cross-year, tenant isolation, count/page, deterministic pagination, invalid input 테스트
+- [x] synthetic composite index 및 BoundSql SQL-shape 검증
+- [x] 12개 테스트 `./mvnw -q clean verify` 성공 — PR run `33251026033`의 MyBatis job
+- [x] 사례 게시물·README·ARCHITECTURE·SETUP·VERIFICATION 작성
+- [ ] 최신 전체 PR regression 성공
+- [ ] main merge
+- [ ] GitHub Pages build/deploy 및 공개 case/sample 링크 확인
+
+Oracle optimizer의 index 선택과 운영 성능 수치는 공개 검증하지 않았으므로 주장하지 않는다.
 
 사용자 작업: 없음.
 
-### P50. 두 번째 Java/Spring 사례 공개 — `in-progress`
+### P55. 다음 Java/Spring 사례 — `pending`
 
-OpsMate 목표 gate가 완료됐으므로 현재 작업 우선순위는 여기다.
+`CS-JAVA-02`가 Pages에 게시된 뒤 다음 `source-reviewed` 후보를 선택한다.
 
-- [x] `CS-JAVA-02` — MyBatis·Oracle 업무 조회 정합성/성능 지향 사례 선택
-- [ ] authorized evidence에서 본인 기여·공개 경계 재확인
-- [ ] 회사 원본과 독립된 합성 요구사항·테스트 설계
-- [ ] 합성 도메인으로 독립 구현
-- [ ] 정상·실패·경계 테스트
-- [ ] 공개 문서·코드 검수
-- [ ] Pages 게시 및 링크 확인
+선택 기준:
 
-공개 샘플에서는 `filter/count/page` 정합성, deterministic ordering, index-friendly range predicate를 중심으로 재현한다. Oracle 고유 실행계획이나 운영 성능 수치는 공개 재현 또는 권한 있는 재확인 전까지 주장하지 않는다.
-
-사용자 작업: 기존 authorized evidence로 확정할 수 없는 내부 사실이 반드시 필요한 경우에만 요청한다.
+1. 인증과 SQL 사례와 다른 backend dimension을 추가할 것
+2. 본인 귀속과 공개 경계를 재확인할 수 있을 것
+3. 회사 코드와 독립된 합성 샘플로 정상·실패·경계 테스트가 가능할 것
+4. 확인되지 않은 운영 성과를 필요로 하지 않을 것
 
 ### P60. 포트폴리오 유지관리 — `pending`
 
@@ -152,14 +148,13 @@ OpsMate 목표 gate가 완료됐으므로 현재 작업 우선순위는 여기�
 
 현재 즉시 필요한 사용자 작업은 없다.
 
-OpsMate 검증 종료 후 application workload는 의도대로 `CLOSED`이며 PostgreSQL persistent volume은 보존돼 있다. 현재 active work는 `CS-JAVA-02`의 독립 공개 재구현이다.
+OpsMate workload는 `CLOSED` 상태를 유지하고 있으며 현재 active work는 `CS-JAVA-02`의 publication gate다.
 
 ## 완료 판정
 
 1. GitHub Pages 포트폴리오: `published`
-2. OpsMate 코드/CI: `implemented` + regression `verified`
-3. 실제 모델 adapter E2E: `verified`
-4. NAS internal deployment/network/security/lifecycle boundary: `verified`
-5. public Internet deployment/network/security/lifecycle boundary: `verified` (bounded E2E)
-6. 24x7 운영/SLA/장기 부하: `not claimed`
-7. 회사 업무 사례: 원본 검토와 독립 공개 샘플 검증 상태를 분리
+2. OpsMate code/regression + real-model/internal/public bounded E2E: `verified`
+3. OpsMate 24x7 운영/SLA/장기 부하: `not claimed`
+4. 첫 Java/Spring 인증 사례: `sample-verified`
+5. 두 번째 MyBatis 사례: sample CI `verified`, Pages publication pending
+6. 회사 업무 사례: 권한 있는 원본 검토와 독립 공개 샘플 검증 상태를 분리
