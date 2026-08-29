@@ -1,5 +1,7 @@
 # Verification
 
+## 독립 샘플 검증
+
 - 실행일: `2026-08-03` (`Asia/Seoul`)
 - 운영체제: Windows 10, amd64
 - Java: Microsoft OpenJDK `21.0.5`
@@ -8,6 +10,17 @@
 - 명령: `.\mvnw.cmd -q clean verify`
 - 결과: `BUILD SUCCESS`
 - 테스트: `24` 실행, 실패 `0`, 오류 `0`, 건너뜀 `0`
+
+## 현재 CI·게시 증거
+
+- GitHub Actions Java matrix에 `Spring Security auth bridge`가 포함됨
+- CI 명령: `./mvnw -q clean verify` on Temurin Java 21
+- main Pages run `33276912458`: `verify / Spring Security auth bridge` PASS
+- 같은 run의 public portfolio 검사와 Jekyll site build PASS
+- 같은 run의 Pages artifact build와 deploy PASS
+- publication 기준 main commit: `c74655a2e7aacfa0d05f41bc594598a0c0f73296`
+
+이 publication evidence는 공개 샘플·문서·Pages 배포의 정합성을 확인합니다. 실제 회사 인증 시스템 또는 외부 IdP 운영 검증을 의미하지 않습니다.
 
 ## 검증된 범위
 
