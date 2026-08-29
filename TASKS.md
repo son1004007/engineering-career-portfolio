@@ -34,7 +34,16 @@ The active execution ledger, dependencies and verification evidence are maintain
 - status/evidence Pages publication run `33250726427`: success
 - bounded E2E only; do not claim 24x7 SLA, long-duration load or production traffic scale
 
-### 2. CS-JAVA-02 MyBatis query correctness publication — COMPLETE
+### 2. CS-JAVA-01 Spring Security auth bridge publication — COMPLETE
+- authorized source review and personal contribution boundary: confirmed
+- independent Java 21 / Spring Boot 3.5.16 sample: 24 tests PASS
+- verified boundaries: DB/SSO authentication convergence, local RBAC, session rotation, CSRF lifecycle, issuer/audience/keyId/signature, nonce replay and fail-closed configuration
+- publication evidence main commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`
+- main Pages run `33276912458`: Spring Security regression + public/Jekyll + build + deploy PASS
+- status: `published`
+- actual external IdP, production DB, distributed session, large-scale load and SLA remain unverified and must not be claimed
+
+### 3. CS-JAVA-02 MyBatis query correctness publication — COMPLETE
 - authorized source re-review: complete
 - independent Spring Boot/MyBatis/H2 sample: 12 tests PASS
 - final PR regression run `33251272174`: PASS
@@ -42,7 +51,7 @@ The active execution ledger, dependencies and verification evidence are maintain
 - status: `published`
 - actual Oracle execution plan and production performance numbers remain unverified and must not be claimed
 
-### 3. CS-JAVA-03 WAR deployment portability publication — COMPLETE
+### 4. CS-JAVA-03 WAR deployment portability publication — COMPLETE
 - authorized source re-review: WAR deploy workflow/runbook, context-path, profile/config contribution boundary reconfirmed
 - independent Java 21 / Spring Boot 3.5.16 WAR sample: 10 tests PASS
 - sample boundaries: external-container initializer, non-root context path, deploy-profile fail-closed, backup/replace/health/rollback
@@ -51,7 +60,7 @@ The active execution ledger, dependencies and verification evidence are maintain
 - status: `published`
 - real external Tomcat rolling deployment, session drain, zero-downtime and production SLA remain unverified and must not be claimed
 
-### 4. CS-JAVA-06 business-rule consistency publication — COMPLETE
+### 5. CS-JAVA-06 business-rule consistency publication — COMPLETE
 - authorized private source attribution and exact defect/fix boundary: reconfirmed
 - public disclosure boundary: company class names, endpoints, fields, SQL, schema, test accounts, real data and internal identifiers excluded
 - independent Java 21 / Spring Boot 3.5.16 synthetic `member snapshot` sample: implemented
@@ -64,19 +73,21 @@ The active execution ledger, dependencies and verification evidence are maintain
 - status: `published`
 - actual company SSO/session E2E, Mapper SQL/production DB results, organization-wide rule ownership and production SLA remain unverified and must not be claimed
 
-### 5. next Java/Spring case selection
-- choose only after source attribution and public disclosure boundary can be reconfirmed
+### 6. optional next Java/Spring case selection
+- no additional Java/Spring case is required for the current core portfolio completion gate
+- select another case only when a target role reveals a clear evidence gap
 - prefer a backend dimension distinct from authentication, SQL correctness, WAR deployment and business-rule consistency
-- `CS-JAVA-11` statistical analysis UI is a source-reviewed candidate if data-processing/visualization depth is useful
+- `CS-JAVA-11` statistical analysis UI remains a source-reviewed option if data-processing/visualization depth becomes useful
 - do not promote a candidate until independent code, normal/failure/boundary tests and current CI evidence exist
 
-### 6. portfolio publication maintenance
-- check Pages deployment and public links after material changes
+### 7. portfolio publication maintenance
+- keep Pages deployment and public links healthy after material changes
+- mobile baseline is guarded by viewport + responsive breakpoint + horizontal overflow regression tests
 - keep status badges, test counts and limitations synchronized
-- perform physical mobile UX verification when practical
+- physical handset visual spot-check is optional maintenance, not a release blocker
 - refresh sanitized company GitHub evidence at the defined review interval
 
-### 7. older sample disposition
+### 8. older sample disposition
 - keep `ai-rag-api`, `backend-platform-template`, and `security-audit-log` as supporting work only
 - repair a sample only when it strengthens the approved two-track strategy
 - otherwise mark it partial or archive it without presenting it as a flagship
