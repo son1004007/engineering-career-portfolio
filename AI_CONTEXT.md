@@ -73,15 +73,17 @@
 
 ### CS-JAVA-06 — 업무 규칙 정합성
 
-- 상태: `sample-verified`, **publication gate active**
+- 상태: `published`
 - 권한 있는 비공개 원본에서 본인 author/committer 변경과 사용자 식별·최신 기준·조회 경로·null-safe 처리 범위를 재확인
 - 공개 구현: [`02_projects/case-study-samples/business-rule-consistency/`](02_projects/case-study-samples/business-rule-consistency/README.md)
 - Java 21 + Spring Boot 3.5.16 합성 `member snapshot` 도메인
 - canonical session identity 우선, legacy fallback 제한, `LATEST_ONLY`/`EXPLICIT_OR_LATEST`, 명시적 Mapper 입력, 400/401/404 fail-closed 경계 재현
 - 11개 MockMvc 자동 테스트
-- PR run `33275860098`: `Business-rule consistency` job 및 전체 8개 portfolio job PASS
+- 최초 PR run `33275860098`: 신규 sample job 및 전체 8개 portfolio job PASS
+- final PR run `33276143715`: 상태 동기화 후 전체 8개 portfolio job PASS
+- main merge commit `733db7c614af5613216773b3b1fc6b3567e0b84c`
+- main Pages run `33276278894`: 8개 verify job + Pages build + deploy PASS
 - 회사 클래스명, endpoint, field, SQL, schema, 테스트 계정, 실제 데이터와 내부 식별자는 공개하지 않음
-- main merge/Pages deploy 전이므로 아직 `published`로 표현하지 않음
 
 기존 회사 업무는 원본 소스나 내부 식별자를 공개하지 않습니다. 게시물은 원본에서 본인 귀속과 구현 범위를 확인한 뒤 비식별 서술과 독립 재구현 코드로 만듭니다.
 
@@ -143,7 +145,7 @@
 | Spring Security 인증 사례 | `sample-verified` | 회사 코드와 독립된 합성 샘플 24개 테스트 성공 |
 | MyBatis 기간 조회 사례 | `published` | 합성 Spring Boot/MyBatis/H2 샘플 12개 테스트와 main Pages run `33251362190` 성공. Oracle 운영 성능은 미검증 |
 | WAR 배포 이식성 사례 | `published` | 합성 Spring Boot WAR 샘플 10개 테스트, PR regression `33252086213`, main Pages `33252148733` 성공. 실제 외부 Tomcat 운영은 미검증 |
-| 업무 규칙 정합성 사례 | `sample-verified`; publication pending | 합성 Spring Boot 샘플 11개 테스트 및 PR run `33275860098` 전체 8개 job 성공. 실제 회사 시스템 전체 정합성은 미검증 |
+| 업무 규칙 정합성 사례 | `published` | 합성 Spring Boot 샘플 11개 테스트, final PR `33276143715`, main Pages `33276278894` 성공. 실제 회사 시스템 전체 정합성은 미검증 |
 | `ai-rag-api` | `implemented`, `tested-file-present` | 코드·테스트 파일은 있으나 최근 성공 실행 미확인 |
 | `backend-platform-template` | `partial` | 현재 구조에 누락 모듈이 있음 |
 | `security-audit-log` | `partial` | API route만 있고 참조 service, 앱 진입점, 테스트가 없음 |
