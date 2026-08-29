@@ -66,7 +66,7 @@ permalink: /
           <li>승인된 요청만 발주</li>
           <li>감사 이벤트 기록</li>
         </ol>
-        <p class="status-note"><strong>현재 범위:</strong> 공개 session UI, workspace 격리, PostgreSQL 역할 분리와 model guard는 54개 컴포넌트 테스트로 확인했습니다. 닫기·다시 열기 자산은 구현했지만 승인된 실제 모델 E2E와 외부 배포 rehearsal은 아직 미검증입니다.</p>
+        <p class="status-note"><strong>검증 범위:</strong> 실제 `gemma3:12b` 모델 E2E, Synology 내부 배포·네트워크·보안·수명주기, Internet HTTPS 경로의 session 격리·rate limit·비노출·close/reopen을 bounded E2E로 확인했습니다. 최종 workload는 `CLOSED`이며 24x7 SLA, 장기 부하와 production traffic 규모는 주장하지 않습니다.</p>
       </div>
     </article>
   </div>
@@ -83,7 +83,7 @@ permalink: /
     </div>
 
     <div class="card-grid">
-      {% include case-card.html id="CS-JAVA-01" status="sample-verified" title="DB 로그인과 레거시 SSO 권한 통합" description="서로 다른 인증 경로를 하나의 사용자·권한·세션 정책으로 통합하고, 독립 샘플의 24개 테스트로 확인했습니다." focus="Spring Security, RBAC, 세션·CSRF, assertion 검증" href="/cases/spring-security-auth-bridge/" %}
+      {% include case-card.html id="CS-JAVA-01" status="published" title="DB 로그인과 레거시 SSO 권한 통합" description="서로 다른 인증 경로를 하나의 사용자·권한·세션 정책으로 통합하고, 독립 샘플의 24개 테스트와 Pages 배포로 확인했습니다." focus="Spring Security, RBAC, 세션·CSRF, assertion 검증" href="/cases/spring-security-auth-bridge/" %}
 
       <article class="case-card">
         <div class="case-card__topline"><span class="status-badge status-badge--source-reviewed">실무 경험을 일반화한 사례</span></div>
