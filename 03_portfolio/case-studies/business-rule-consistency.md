@@ -2,7 +2,7 @@
 title: 분산된 업무 규칙을 한 흐름으로 정합화하기
 description: Controller, Service와 Mapper에 흩어진 기준값·사용자 식별 규칙을 회귀 가능한 구조로 정리한 비식별 사례
 permalink: /cases/business-rule-consistency/
-status: sample-verified
+status: published
 ---
 
 # 분산된 업무 규칙을 한 흐름으로 정합화하기
@@ -70,9 +70,11 @@ findBySubjectAndSnapshot(subjectId, SnapshotKey)
 
 최신 snapshot이 없거나 명시한 snapshot에 데이터가 없으면 임의 다른 기간으로 넘어가지 않습니다. 공개 샘플은 `404 Snapshot unavailable`로 종료합니다. 인증 주체가 없으면 `401`, 불완전하거나 잘못된 기간은 `400`입니다.
 
-## 자동 회귀 검증
+## 자동 회귀 검증과 게시 증거
 
-합성 샘플의 11개 자동 테스트가 PR run `33275860098`의 `Business-rule consistency` job에서 `./mvnw -q clean verify`로 PASS했습니다. 같은 run의 Jekyll, 공개 텍스트 검사, 기존 Spring Security/MyBatis/WAR/OpsMate와 container/runbook을 포함한 **전체 8개 job도 모두 PASS**했습니다.
+합성 샘플의 11개 자동 테스트가 PR run `33275860098`과 상태 동기화 후 최종 PR run `33276143715`의 `Business-rule consistency` job에서 PASS했습니다. 최종 PR run에서는 Jekyll, 공개 텍스트 검사, 기존 Spring Security/MyBatis/WAR/OpsMate와 container/runbook을 포함한 **전체 8개 job도 모두 PASS**했습니다.
+
+main merge commit `733db7c614af5613216773b3b1fc6b3567e0b84c`의 GitHub Pages run `33276278894`에서 다시 **8개 verify job + Pages build + deploy가 모두 PASS**했습니다. 따라서 이 사례의 상태는 `published`입니다.
 
 검증 범위:
 
@@ -87,8 +89,6 @@ findBySubjectAndSnapshot(subjectId, SnapshotKey)
 - 존재하지 않는 snapshot `404`
 - 요청 parameter로 session subject를 덮어쓸 수 없음
 - latest snapshot이 없는 subject `404`
-
-현재 상태는 `sample-verified`입니다. main merge와 GitHub Pages build/deploy가 성공한 뒤에만 `published`로 올립니다.
 
 ## 대안과 trade-off
 
@@ -106,4 +106,4 @@ legacy fallback 자체도 영구 구조로 권장되는 것은 아닙니다. 마
 - 조직 전체의 업무 규칙 설계 책임
 - 운영 트래픽 규모·성능·SLA
 
-이 사례가 증명하려는 범위는 **본인 귀속으로 확인된 사용자 식별·기준 시점·조회 경로 정합화 원칙을 회사 원본과 독립된 Spring 샘플과 회귀 테스트로 재현하는 것**입니다.
+이 사례가 증명하려는 범위는 **본인 귀속으로 확인된 사용자 식별·기준 시점·조회 경로 정합화 원칙을 회사 원본과 독립된 Spring 샘플과 회귀 테스트로 재현하고 공개 Pages 배포까지 검증한 것**입니다.

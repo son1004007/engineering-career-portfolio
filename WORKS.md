@@ -32,7 +32,7 @@
 | `W09` | OpsMate 공개 데모와 재현 가능한 운영 검증 | immutable release, private DB/model path, public HTTPS E2E, lifecycle evidence | internal + public network/security/lifecycle bounded E2E와 final CLOSED | `verified` |
 | `W10` | 두 번째 Java/Spring 사례 공개 | MyBatis 기간 조회 독립 샘플, 12개 테스트, 사례 게시물 | source review + sample CI + 전체 regression + Pages deploy | `published` |
 | `W11` | 세 번째 Java/Spring 사례 공개 | WAR/context-path/profile/health/rollback 독립 샘플, 10개 테스트, 사례 게시물 | source review + sample CI + 전체 regression + Pages deploy | `published` |
-| `W12` | 네 번째 Java/Spring 사례 공개 | `CS-JAVA-06` 업무 규칙 정합성 독립 샘플, 11개 테스트, 사례 게시물 | source re-review + 독립 구현 + sample CI + 전체 regression + Pages deploy | `in-progress` |
+| `W12` | 네 번째 Java/Spring 사례 공개 | `CS-JAVA-06` 업무 규칙 정합성 독립 샘플, 11개 테스트, 사례 게시물 | source re-review + 독립 구현 + sample CI + 전체 regression + Pages deploy | `published` |
 
 ## 의존성
 
@@ -52,7 +52,7 @@ W00 -> W01 -> W02
 - Spring Security 인증 브리지는 회사 코드와 독립된 합성 샘플로 24개 자동 테스트 성공 근거를 유지합니다.
 - 회사 업무는 원본 비공개 코드를 복사하지 않고 비식별 claim과 독립 재현 상태를 분리합니다.
 - OpsMate public evidence 반영 main Pages run `33250726427`의 verify matrix, Jekyll build와 deploy가 모두 성공 (`2026-08-29`).
-- Java 사례 publication-state 동기화 main Pages run `33252607907`도 7개 verify job + build + deploy가 모두 성공했습니다.
+- Java 사례 publication-state 동기화 main Pages run `33252607907`도 verify/build/deploy가 성공했습니다.
 
 ### W09 — OpsMate Local
 
@@ -64,82 +64,49 @@ W00 -> W01 -> W02
 - public Internet bounded E2E run `33241004788`: HTTPS persona flow, two-session isolation, API/actuator boundary, egress/non-exposure, `429`, log scan, normal/reopen/emergency/recovery lifecycle PASS
 - final running workload container `0`, PostgreSQL persistent volume preserved, `runtime_policy_flags=YES_YES`, `CLOSED`
 
-상세:
-
-- [`02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)
-- [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
-- [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
-
 이 결과는 bounded E2E이며 24x7 SLA, 장기 부하, 대규모 실제 사용자 운영을 뜻하지 않습니다.
 
 ### W10 — `CS-JAVA-02` MyBatis 기간 조회 — `published`
 
-권한 있는 비공개 원본에서 본인 귀속 SQL 개선 범위를 재확인하고 회사 SQL/schema/data/식별자를 복사하지 않은 합성 Spring Boot/MyBatis/H2 샘플을 구현했습니다.
-
-- 기간 복합 `OR`을 상호 배타적 시작/중간/종료 구간으로 분해하고 `UNION ALL`로 결합하는 원칙 재현
-- indexed year/month column 숫자 변환 제거 원칙 재현
-- same/cross-year 경계, tenant isolation, count/page 공통 filter, deterministic pagination, invalid input, composite index와 BoundSql shape 검증
-- 자동 테스트 12개
-- PR sample run `33251026033`: PASS
-- 최종 PR regression run `33251272174`: 6개 job 전체 PASS
-- main commit `a1a58a469056073165b110ab2dc61f83c7d0ad20`
+- 독립 Spring Boot/MyBatis/H2 합성 샘플, 12개 자동 테스트
+- final PR regression run `33251272174`: PASS
 - main Pages run `33251362190`: verify/build/deploy PASS
-
-실제 Oracle optimizer의 index 선택과 운영 성능 수치는 검증하지 않았으므로 주장하지 않습니다.
+- Oracle optimizer index 선택과 운영 성능 수치는 미검증
 
 ### W11 — `CS-JAVA-03` WAR 배포 이식성 — `published`
 
-권한 있는 비공개 원본에서 본인 귀속 WAR deploy workflow/runbook, context-path 보정, profile/config 외부화 범위를 재확인했습니다. 회사 WAR/JSP/workflow/호스트/경로/인증정보는 공개 샘플에 복사하지 않았습니다.
-
-독립 Java 21 / Spring Boot 3.5.16 WAR 샘플은 다음을 재현합니다.
-
-- `<packaging>war</packaging>` + provided Tomcat
-- 외부 Servlet Container용 `SpringBootServletInitializer`
-- non-root `/demo` context path에서 runtime-relative entry/health
-- `deploy` profile 필수 외부 값 누락 시 fail-closed
-- candidate WAR backup/replace/health gate/rollback
-- unsafe application name 거부
-- 자동 테스트 10개
-
-검증:
-
-- 최초 sample run `33252018737`: WAR job PASS
-- 최종 PR regression run `33252086213`: WAR, MyBatis, Spring Security, OpsMate, Jekyll, public portfolio, container/runbook 7개 job 전체 PASS
+- 독립 Java 21 / Spring Boot 3.5.16 WAR 샘플, 10개 자동 테스트
+- final PR regression run `33252086213`: 전체 PASS
 - main commit `63abaa49e05a366d6007902edd184a83df6bc7e9`
-- main Pages run `33252148733`: 동일 7개 verify job + Pages build + deploy PASS
-- context-path CI 관측 환경: Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat `10.1.55`
+- main Pages run `33252148733`: verify/build/deploy PASS
+- 실제 외부 운영 Tomcat rolling deployment, session drain, zero-downtime, SLA는 미검증
 
-실제 외부 운영 Tomcat rolling deployment, session drain, zero-downtime, 운영 SLA는 검증하지 않았습니다.
-
-### W12 — `CS-JAVA-06` 업무 규칙 정합성 — `in-progress`
+### W12 — `CS-JAVA-06` 업무 규칙 정합성 — `published`
 
 권한 있는 비공개 원본에서 본인 author/committer 변경을 다시 확인하고, 회사 코드와 독립된 Java 21 / Spring Boot 3.5.16 합성 `member snapshot` 샘플로 재현했습니다.
 
-확인·재현한 경계:
+검증된 경계:
 
 - canonical session identity 우선, canonical 부재 시에만 legacy fallback
 - identity 부재 시 `401` fail-closed
-- 기간 선택이 없는 화면의 `LATEST_ONLY` 정책
-- 기간 선택이 가능한 흐름의 `EXPLICIT_OR_LATEST` 정책
+- `LATEST_ONLY`와 `EXPLICIT_OR_LATEST` snapshot policy
 - Service가 확정한 `subjectId + SnapshotKey`만 Mapper에 전달
-- 최신/명시 snapshot 부재 시 `404`, 불완전/잘못된 기간은 `400`
+- 잘못된/불완전한 기간 `400`, snapshot 부재 `404`
 - 요청 parameter가 session identity를 덮어쓸 수 없는 경계
 
-검증:
+증거:
 
 - 자동 회귀 테스트 11개
-- PR run `33275860098`의 `Business-rule consistency` job: PASS
-- 같은 run의 Jekyll, public portfolio, Spring Security, MyBatis, WAR, OpsMate Local, OpsMate container/runbook을 포함한 **8개 job 전체 PASS**
+- 최초 PR run `33275860098`: 신규 sample job + 전체 8개 job PASS
+- 상태 동기화 후 final PR run `33276143715`: 전체 8개 job PASS
+- main merge commit `733db7c614af5613216773b3b1fc6b3567e0b84c`
+- main Pages run `33276278894`: **8개 verify job + Pages build + deploy PASS**
 - 공개 문서에는 회사 클래스명, endpoint, field, SQL, schema, 테스트 계정, 실제 데이터와 내부 식별자를 복사하지 않음
-
-현재 상태는 `sample-verified`입니다. 남은 W12 gate는 **상태 동기화 후 최신 전체 PR regression → main merge → GitHub Pages build/deploy → `published`**입니다.
 
 실제 회사 시스템 전체 SSO/session, Mapper SQL/운영 DB, 운영 데이터 전체 정합성, 조직 전체 업무 규칙 설계 책임, 운영 성능/SLA는 검증하거나 주장하지 않습니다.
 
 ## 다음 실행 순서
 
-1. `sample-verified` 상태 동기화가 반영된 최신 PR 전체 8개 regression을 통과시킵니다.
-2. PR #35를 main에 merge합니다.
-3. main GitHub Pages verify/build/deploy를 확인합니다.
-4. 실제 Pages 게시 증거를 반영해 W12를 `published`로 닫습니다.
-5. `evidence/company-github/monthly/`를 월말 갱신하고 Pages/링크를 유지관리합니다.
+1. W12 publication-state 동기화 PR을 검증·merge해 상태 문서를 실제 Pages 증거와 일치시킵니다.
+2. 이후 신규 Java/Spring 사례는 기존 인증·SQL·배포·업무 규칙과 다른 backend dimension을 우선합니다.
+3. `evidence/company-github/monthly/`를 월말 갱신하고 Pages/링크를 유지관리합니다.

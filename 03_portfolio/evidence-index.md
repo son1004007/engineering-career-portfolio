@@ -30,7 +30,9 @@
 - MyBatis `CS-JAVA-02` main Pages run `33251362190`: verify/build/deploy 성공 (`2026-08-29`)
 - WAR `CS-JAVA-03` main Pages run `33252148733`: 7개 verify job + build + deploy 성공 (`2026-08-29`)
 - Java publication-state sync main Pages run `33252607907`: 7개 verify job + build + deploy 성공
-- `CS-JAVA-06`은 PR sample/regression 검증까지 성공했으며 main Pages publication은 아직 pending
+- 업무 규칙 정합성 `CS-JAVA-06` final PR regression run `33276143715`: 8개 job 전체 성공
+- `CS-JAVA-06` main commit `733db7c614af5613216773b3b1fc6b3567e0b84c`
+- `CS-JAVA-06` main Pages run `33276278894`: 8개 verify job + build + deploy 성공 (`2026-08-30`)
 - 물리 모바일 최종 UX 검수는 유지관리 gate로 남음
 
 ## 프로젝트 상태
@@ -41,8 +43,8 @@
 | [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 합성 사용자·issuer·audience 바인딩 SSO 샘플. 실제 회사 시스템 검증을 뜻하지 않음 |
 | [MyBatis 기간 조회 정합성](../02_projects/case-study-samples/mybatis-query-correctness/README.md) | 독립 Spring Boot/MyBatis/H2 샘플 있음 | 12개 성공; final PR regression `33251272174` | [사례 게시물](case-studies/mybatis-query-correctness.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33251362190` 성공. Oracle 실행계획·운영 성능 수치는 미검증 |
 | [WAR 배포 이식성](../02_projects/case-study-samples/war-deployment-portability/README.md) | 독립 Spring Boot WAR 샘플 있음 | 10개 성공; final PR regression `33252086213` | [사례 게시물](case-studies/war-deployment-portability.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33252148733` 성공. 실제 외부 Tomcat rolling/zero-downtime/SLA는 미검증 |
-| [업무 규칙 정합성](../02_projects/case-study-samples/business-rule-consistency/README.md) | 독립 Spring Boot 합성 샘플 있음 | 11개 성공; PR regression `33275860098` 전체 8개 job 성공 | [사례 게시물](case-studies/business-rule-consistency.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | canonical identity/latest-only/Mapper ownership/fail-closed 경계를 검증. 실제 회사 시스템 전체 정합성과 main Pages publication은 미검증 |
-| [Java/Spring 사례 후보](case-study-index.md) | 권한 있는 원본에서 일부 확인 | 공개 독립 샘플 4건 검증, 그중 2건 publication gate 완료 | 후보 인덱스 있음 | `CS-JAVA-06` publication active; `published` 2건, `sample-verified` 2건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
+| [업무 규칙 정합성](../02_projects/case-study-samples/business-rule-consistency/README.md) | 독립 Spring Boot 합성 샘플 있음 | 11개 성공; final PR regression `33276143715` 전체 8개 job 성공 | [사례 게시물](case-studies/business-rule-consistency.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33276278894` 성공. canonical identity/latest-only/Mapper ownership/fail-closed 경계를 검증했으며 실제 회사 시스템 전체 정합성은 미검증 |
+| [Java/Spring 사례 후보](case-study-index.md) | 권한 있는 원본에서 일부 확인 | 공개 독립 샘플 4건 검증, 그중 3건 publication gate 완료 | 후보 인덱스 있음 | `published` 3건, `sample-verified` 1건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
 | [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
 | [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 주요 구성요소 누락 |
 | [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | 참조 service, 앱 진입점, 저장 모델, tests 보완 필요 |
@@ -161,8 +163,10 @@
 - 잘못된/불완전한 기간 `400`, snapshot 부재 `404`
 - request parameter로 session identity를 덮어쓸 수 없음
 - 11개 MockMvc 자동 테스트
-- PR run `33275860098`의 `Business-rule consistency` job PASS
-- 같은 run의 Jekyll/public portfolio/Spring Security/MyBatis/WAR/OpsMate/container-runbook 포함 전체 8개 job PASS
+- sample/regression run `33275860098`: `Business-rule consistency` job과 전체 8개 portfolio job PASS
+- final PR regression run `33276143715`: public/Jekyll/Spring Security/MyBatis/WAR/Business-rule/OpsMate/container-runbook 8개 job 전체 PASS
+- main commit `733db7c614af5613216773b3b1fc6b3567e0b84c`
+- main Pages run `33276278894`: 8개 verify + build + deploy PASS
 
 검증하지 않은 것: 실제 회사 SSO/session E2E, 회사 Mapper SQL/운영 DB 결과, 운영 데이터 전체 정합성, 조직 전체 업무 규칙 설계 책임, 운영 트래픽/SLA.
 
@@ -198,13 +202,13 @@
 | Linux/Docker/Jenkins 운영 반영 | `self-described` | 배포·환경 구성·장애 분석 경험을 경력 문서에 기재 | 운영 범위, 책임, 자동화, 장애·개선 결과 |
 | 보안 경력과 자격 | `self-described` | 보안·통제 관점을 가진 백엔드 전환형 프로필 | 재직 연표, 자격 유효 상태, 실제 담당 업무 |
 
-## 현재 active 공개 재현 작업
+## 최근 완료된 공개 재현 작업
 
-`CS-JAVA-06` — 업무 규칙 정합성 publication gate가 active입니다.
+`CS-JAVA-06` — 업무 규칙 정합성 publication gate를 완료했습니다.
 
-- 현재 상태: `sample-verified`
-- sample evidence: 11개 테스트 + PR run `33275860098` 전체 8개 job PASS
-- 남은 gate: `sample-verified` 상태 동기화의 최신 전체 PR regression -> main merge -> Pages build/deploy -> `published`
+- 현재 상태: `published`
+- sample evidence: 11개 테스트 + final PR regression run `33276143715` 전체 8개 job PASS
+- publication evidence: main commit `733db7c614af5613216773b3b1fc6b3567e0b84c`, main Pages run `33276278894`의 8개 verify + build + deploy PASS
 - 금지: 회사 코드·테이블·식별자·데이터 복사, 실제 회사 전체 정합성이나 팀 전체 결과를 개인 성과로 확대
 
 ## 현재 판단
