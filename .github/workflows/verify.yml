@@ -50,6 +50,8 @@ jobs:
             project: 02_projects/case-study-samples/spring-security-auth-bridge
           - name: MyBatis query correctness
             project: 02_projects/case-study-samples/mybatis-query-correctness
+          - name: WAR deployment portability
+            project: 02_projects/case-study-samples/war-deployment-portability
           - name: OpsMate Local
             project: 02_projects/opsmate-local
     defaults:

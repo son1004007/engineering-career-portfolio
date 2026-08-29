@@ -2,7 +2,7 @@
 title: MyBatis 기간 조회의 정합성과 인덱스 친화 조건을 함께 설계하기
 description: 복수 연도 월 범위를 누락·중복 없이 조회하면서 indexed column 변환을 피한 Java/Spring·MyBatis 사례
 permalink: /cases/mybatis-query-correctness/
-status: sample-verified
+status: published
 ---
 
 # MyBatis 기간 조회의 정합성과 인덱스 친화 조건을 함께 설계하기
@@ -91,7 +91,7 @@ Java 21, Spring Boot 3.5.16, MyBatis Spring Boot Starter 3.0.5와 H2 합성 DB�
 - cross-year SQL은 정확히 세 구간으로 구성됨
 - indexed year/month column 변환 함수와 기간 `OR` 부재
 
-PR 검증에서 `./mvnw -q clean verify`가 성공했습니다. 이 테스트는 회사 시스템을 검증하는 것이 아니라 **독립 공개 샘플의 동작과 SQL 형태**를 검증합니다.
+PR 검증에서 `./mvnw -q clean verify`가 성공했습니다. 이어 main GitHub Pages run `33251362190`의 전체 regression, Jekyll build와 Pages deploy가 성공해 공개 게시 상태까지 확인했습니다. 이 테스트는 회사 시스템을 검증하는 것이 아니라 **독립 공개 샘플의 동작과 SQL 형태**를 검증합니다.
 
 ## trade-off
 
@@ -113,4 +113,4 @@ PR 검증에서 `./mvnw -q clean verify`가 성공했습니다. 이 테스트는
 - 전체 업무 SQL의 성능 개선
 - 운영 트래픽 규모에서의 latency·throughput
 
-이 사례가 증명하는 범위는 **본인 귀속 설계 변경의 원칙을 비식별화하고, 회사 코드와 독립된 Java/Spring·MyBatis 샘플로 정합성·경계·SQL 형태를 재검증한 것**입니다.
+이 사례가 증명하는 범위는 **본인 귀속 설계 변경의 원칙을 비식별화하고, 회사 코드와 독립된 Java/Spring·MyBatis 샘플로 정합성·경계·SQL 형태를 재검증해 공개 Pages까지 게시한 것**입니다.
