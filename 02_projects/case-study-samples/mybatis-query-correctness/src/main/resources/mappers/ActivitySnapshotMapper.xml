@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.songisuk.portfolio.querycase.repository.ActivitySnapshotMapper">
+
+    <resultMap id="activitySnapshotMap" type="com.songisuk.portfolio.querycase.domain.ActivitySnapshot">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="snapshotYear" column="snapshot_year"/>
+        <result property="snapshotMonth" column="snapshot_month"/>
+        <result property="itemKey" column="item_key"/>
+        <result property="status" column="status"/>
+        <result property="score" column="score"/>
+    </resultMap>
+
+    <!--
+      The branches are mutually exclusive. Year/month values are normalized before
+      the mapper call so indexed columns stay bare instead of being wrapped in a
+      conversion function.
+    -->
+    <sql id="rangeRows">
+        <choose>
+            <when test="startYear == endYear">
+                SELECT id, tenant_id, snapshot_year, snapshot_month, item_key, status, score
+                FROM activity_snapshot
+                WHERE tenant_id = #{tenantId}
+                  AND snapshot_year = #{startYear}
+                  AND snapshot_month BETWEEN #{startMonth} AND #{endMonth}
+            </when>
+            <otherwise>
+                SELECT id, tenant_id, snapshot_year, snapshot_month, item_key, status, score
+                FROM activity_snapshot
+                WHERE tenant_id = #{tenantId}
+                  AND snapshot_year = #{startYear}
+                  AND snapshot_month &gt;= #{startMonth}
+
+                UNION ALL
+
+                SELECT id, tenant_id, snapshot_year, snapshot_month, item_key, status, score
+                FROM activity_snapshot
+                WHERE tenant_id = #{tenantId}
+                  AND snapshot_year &gt; #{startYear}
+                  AND snapshot_year &lt; #{endYear}
+
+                UNION ALL
+
+                SELECT id, tenant_id, snapshot_year, snapshot_month, item_key, status, score
+                FROM activity_snapshot
+                WHERE tenant_id = #{tenantId}
+                  AND snapshot_year = #{endYear}
+                  AND snapshot_month &lt;= #{endMonth}
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="findPage" resultMap="activitySnapshotMap">
+        SELECT id, tenant_id, snapshot_year, snapshot_month, item_key, status, score
+        FROM (
+            <include refid="rangeRows"/>
+        ) range_rows
+        ORDER BY snapshot_year DESC, snapshot_month DESC, id ASC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*)
+        FROM (
+            <include refid="rangeRows"/>
+        ) range_rows
+    </select>
+</mapper>
