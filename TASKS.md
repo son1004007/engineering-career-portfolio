@@ -23,21 +23,22 @@ The active execution ledger, dependencies and verification evidence are maintain
 - run the publication scan and evidence tests before push
 - before leaving the employer, create a final departure snapshot
 
-### 1. OpsMate Local public ingress and external verification
-- preserve the verified `2026-08-23` real-model evidence and `2026-08-25` NAS internal deployment/lifecycle E2E evidence
-- use only the reviewed source and immutable app/tunnel image digests recorded in [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
-- do not repeat internal stack/network/session/model/lifecycle gates unless the release changes
-- configure DSM Reverse Proxy/TLS and router public ingress
-- open the exact reviewed release only after public ingress is ready
-- verify Internet/LTE public application smoke, two-session workspace isolation, public rate limiting and security boundaries
-- verify PostgreSQL and model endpoint remain externally unreachable
-- perform public-origin normal close, same-digest reopen, emergency close, final normal close and leave runtime `CLOSED`
-- no paid API fallback
+### 1. OpsMate Local bounded public deployment verification — COMPLETE
+- real-model adapter E2E: verified (`2026-08-23`)
+- Synology internal deployment/network/security/lifecycle E2E: verified (`2026-08-25`)
+- DSM TLS/public Internet application/network/security/lifecycle E2E: verified (`2026-08-29`)
+- public two-session workspace isolation, rate limiting, API/actuator boundary, DB/model/loopback non-exposure and credential-log scan: verified
+- normal close, same-digest reopen, emergency close and recovery normal close: verified
+- final runtime state: `CLOSED`, running workload container `0`, PostgreSQL persistent volume preserved
+- evidence: [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
+- bounded E2E only; do not claim 24x7 SLA, long-duration load or production traffic scale
 
-### 2. next Java/Spring case study publication
-- select the next `source-reviewed` case from `03_portfolio/case-study-index.md`
-- reconfirm personal attribution and disclosure boundary in the authorized source
-- implement an independent sample with synthetic data
+### 2. next Java/Spring case study publication — ACTIVE
+- selected candidate: `CS-JAVA-02` — MyBatis/Oracle query correctness and performance-oriented query design
+- preserve existing `source-reviewed` evidence; reconfirm attribution/disclosure boundary before making new company-work claims
+- implement an independent sample with synthetic schema/data; do not copy company code, SQL, identifiers or data
+- focus the public sample on filter/count/page consistency, deterministic ordering, index-friendly range predicates and regression tests
+- if Oracle-specific execution-plan evidence cannot be reproduced publicly, label it as an unverified production-specific boundary rather than inventing performance numbers
 - add normal, failure and boundary tests and publish only after a recent successful run
 
 ### 3. portfolio publication maintenance

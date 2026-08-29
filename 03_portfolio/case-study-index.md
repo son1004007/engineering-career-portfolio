@@ -1,9 +1,17 @@
 # Case Study Index
 
-- 최종 갱신일: `2026-08-03`
+- 최종 갱신일: `2026-08-29`
 - 목적: 기존 개인·회사 작업에서 게시물 후보를 추출하고, 원본 증거 확인과 공개용 재구현 상태를 분리해 관리
 - 전략: [`portfolio-strategy.md`](portfolio-strategy.md)
 - 회사 근거 규칙: [`../evidence/company-github/README.md`](../evidence/company-github/README.md)
+
+## 현재 실행 대상
+
+- `CS-JAVA-02` — MyBatis·Oracle 업무 조회의 정합성과 성능을 함께 고친 과정
+- 선택 이유: 첫 공개 사례인 Spring Security 인증 통합과 중복되지 않으면서 Java/Spring 백엔드의 SQL·데이터 접근 계층 깊이를 보강한다.
+- 공개 구현 원칙: 회사 SQL·스키마·식별자·데이터는 복사하지 않고 합성 도메인으로 `filter/count/page` 정합성, 결정적 정렬, index-friendly range predicate와 회귀 테스트를 재현한다.
+- 성능 표현 원칙: 공개 샘플에서 재현한 결과만 수치화한다. 실제 Oracle 실행계획이나 운영 성능 수치는 권한 있는 원본에서 다시 확인되지 않는 한 주장하지 않는다.
+- 다음 gate: 기존 `source-reviewed` 근거를 유지하되 새 회사-work claim을 만들기 전 본인 귀속·공개 경계를 재확인하고, 독립 샘플의 요구사항/테스트부터 작성한다.
 
 ## 상태 정의
 
@@ -22,7 +30,7 @@
 | ID | 게시물 후보 | 근거 | 현재 상태 | 공개 코드 방식 | 다음 확인 |
 |---|---|---|---|---|---|
 | `CS-JAVA-01` | [레거시 SSO와 DB 계정 인증을 Spring Security로 통합한 과정](case-studies/spring-security-auth-bridge.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 + 공개 샘플 24개 테스트 성공 | `sample-verified` | [가상 사용자 저장소, issuer·audience 바인딩 SSO adapter와 RBAC 독립 샘플](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 공개 블로그 배포 후 링크·렌더링 확인 |
-| `CS-JAVA-02` | [MyBatis·Oracle 업무 조회의 정합성과 성능을 함께 고친 과정](case-studies/mybatis-query-correctness.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 | `source-reviewed` | 합성 스키마로 조건 정합성, 인덱스 사용성, 쿼리 전후 비교 재현 | 공개 가능한 실행계획과 회귀 테스트 설계 |
+| `CS-JAVA-02` | [MyBatis·Oracle 업무 조회의 정합성과 성능을 함께 고친 과정](case-studies/mybatis-query-correctness.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 | `source-reviewed`, **active** | 합성 스키마로 조건 정합성, 인덱스 친화 범위 조건, count/page 일치와 쿼리 전후 구조 재현 | 독립 요구사항·회귀 테스트 작성 후 공개 샘플 구현; Oracle 고유 성능 수치는 별도 검증 전 사용 금지 |
 | `CS-JAVA-03` | [WAR 기반 Spring MVC/JSP 서비스를 환경 독립적으로 배포한 과정](case-studies/war-deployment-portability.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 | `source-reviewed` | Tomcat, context path, profile, health와 rollback을 포함한 독립 샘플 | 내부 인프라 제거 후 배포·경로 회귀 시나리오 작성 |
 | `CS-JAVA-04` | Java 업무 화면과 Python 분석 결과 재적재를 연결한 데이터 서비스 | `WORK-DATA-01`, `E2`, `implemented` | `candidate` | 가상 분석 결과와 DB를 사용하는 Java/Python 연계 샘플 | 개인 기여 코드, 트랜잭션 경계와 운영 반영 범위 재확인 |
 | `CS-JAVA-11` | [Java/Spring 통계 품질 분석 화면에서 CSV·Excel 데이터와 Xbar-R 시각화를 연결한 과정](case-studies/statistical-analysis-ui.md) | `WORK-DATA-03`, `E2`, 추가 업무 계정 소유와 비공개 코드 일부 기여 확인 | `source-reviewed` | 합성 측정값과 공개 수식으로 업로드·집계·차트 흐름을 독립 구현 | 직접 기여 범위를 화면·데이터 처리 단위로 제한하고 통계 정확도 테스트 설계 |
