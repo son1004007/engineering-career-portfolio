@@ -1,6 +1,6 @@
 # Portfolio Evidence Index
 
-- 최종 점검일: `2026-08-25`
+- 최종 점검일: `2026-08-29`
 - 목적: 프로필 주장, 구현 코드, 테스트, 계획을 구분해 과장 없는 기술 검토를 가능하게 함
 
 ## 상태 정의
@@ -22,21 +22,23 @@
 
 - 공개 URL: [GitHub Pages 포트폴리오](https://son1004007.github.io/engineering-career-portfolio/)
 - 최초 전체 공개본 검증일: `2026-08-03`
-- 당시 원격 결과: [Pages Actions run 30782896966](https://github.com/son1004007/engineering-career-portfolio/actions/runs/30782896966)의 Jekyll build, Java 프로젝트와 공개 저장소 검사·deploy 성공
-- 최신 OpsMate source `f99686981da7efb8802635ae2bde5b0f781433ad` 기준 repository regression run `32848946968`: OpsMate, Spring Security sample, public portfolio, Jekyll, container/runbook job 모두 성공 (`2026-08-25`)
-- 물리 모바일 최종 UX 검수와 OpsMate public Internet ingress는 별도 gate로 남음
+- 당시 Pages Actions run `30782896966`: Jekyll build, Java 프로젝트와 공개 저장소 검사·deploy 성공
+- OpsMate reviewed runtime source `f99686981da7efb8802635ae2bde5b0f781433ad` 기준 repository regression run `32848946968`: OpsMate, Spring Security sample, public portfolio, Jekyll, container/runbook job 모두 성공 (`2026-08-25`)
+- 내부 E2E 문서 반영 main Pages run `32851086949`: 성공 (`2026-08-25`)
+- `2026-08-29` OpsMate public Internet bounded E2E까지 성공했으며 이 문서 변경의 최신 CI/Pages 결과는 merge 후 별도로 기록함
+- 물리 모바일 최종 UX 검수는 유지관리 gate로 남음
 
 ## 프로젝트 상태
 
 | 프로젝트 | 코드 | 테스트 | 문서 | 현재 상태 | 확인 사항 |
 |---|---:|---:|---:|---|---|
-| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL, restricted tunnel, 배포/lifecycle 자산 있음 | 실제 `gemma3:12b` 9/9 E2E. `2026-08-25` exact immutable release의 Synology internal stack/network/session/model/lifecycle E2E 성공 | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK·REAL_MODEL_E2E_EVIDENCE·NAS_INTERNAL_E2E_EVIDENCE | `implemented`, `tested-component`; real-model adapter 및 NAS internal deployment/lifecycle boundary `verified` | DSM Reverse Proxy/TLS, Internet/LTE public smoke, external DB/model non-exposure와 public-origin lifecycle은 미검증 |
+| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL, restricted tunnel, 배포/lifecycle 자산 있음 | 실제 `gemma3:12b` 9/9 E2E + Synology internal E2E + public Internet network/security/lifecycle bounded E2E 성공 | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK·REAL_MODEL_E2E_EVIDENCE·NAS_INTERNAL_E2E_EVIDENCE·PUBLIC_DEPLOYMENT_E2E_EVIDENCE | `implemented`, `tested-component`; real-model adapter, NAS internal boundary, public deployment/network/security/lifecycle boundary `verified` | 24x7 SLA, 장기 부하, 대규모 실제 사용자 운영은 검증/주장하지 않음. 검증 종료 후 workload `CLOSED` |
 | [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 회사 원본이 아닌 합성 사용자·issuer·audience 바인딩 SSO 샘플. 운영 시스템 검증을 뜻하지 않음 |
-| [Java/Spring 사례 후보](case-study-index.md) | 회사 원본에서 확인 | 공개 샘플 1건만 있음 | 후보 인덱스 있음 | `sample-verified` 1건, `source-reviewed` 4건, 나머지 `candidate` 또는 `hold` | 원본 코드를 공개할 수 없으며 각 독립 재현 코드와 테스트가 생기기 전 `published` 표현 금지 |
-| [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행을 확인하지 않음. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
+| [Java/Spring 사례 후보](case-study-index.md) | 회사 원본에서 확인 | 공개 샘플 1건만 있음 | 후보 인덱스 있음 | `CS-JAVA-02` active; `sample-verified` 1건, `source-reviewed` 다수 | 원본 코드를 공개할 수 없으며 독립 재현 코드와 테스트가 생기기 전 `published` 표현 금지 |
+| [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
 | [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 인증·모니터링·PostgreSQL·Redis 구현도 현재 파일 목록에서 확인되지 않음 |
 | [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | route가 존재하지 않는 `app.service.audit_service`를 import. 앱 진입점, 저장 모델, service, tests 보완 필요 |
-| 개인 공개 `text2sql` 샘플 | 없음 | 없음 | 상위 문서의 계획만 있음 | `planned` | 회사 실무 Text2SQL과 혼동 금지. 공개 샘플 프로젝트 디렉터리는 아직 없음 |
+| 개인 공개 `text2sql` 샘플 | 없음 | 없음 | 상위 문서의 계획만 있음 | `planned` | 회사 실무 Text2SQL과 혼동 금지 |
 | `security-backend-platform` | 없음 | 없음 | 상위 문서의 예시만 있음 | `planned` | 별도 프로젝트로 완료되기 전 기술 근거로 사용 금지 |
 
 ## OpsMate 실제 모델 E2E 증거
@@ -48,35 +50,50 @@
 - 합성 구매 요청 9건 중 9건 성공
 - 실제 `/api/chat` 구조화 출력, JSON 역직렬화와 서버 측 category·policy 검증 통과
 - 요청·감사 이벤트 저장 건수 각각 9건
-- 관측 p95 `21,076ms`
-- gate `p95 <= 30,000ms`
+- 관측 p95 `21,076ms`, gate `p95 <= 30,000ms`
 - Maven exit code `0`
 
-상세 환경·명령·한계는 [`../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)를 기준으로 합니다.
+상세: [`../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md)
 
 ## OpsMate NAS internal deployment/lifecycle E2E 증거
 
-`2026-08-25` exact release source `f99686981da7efb8802635ae2bde5b0f781433ad`로 immutable application/model-tunnel image를 발행·pull verification한 뒤 Synology runtime에서 bounded E2E를 수행했습니다.
-
-검증된 경계:
+`2026-08-25` exact release source `f99686981da7efb8802635ae2bde5b0f781433ad`와 immutable application/model-tunnel image를 Synology runtime에서 bounded E2E로 검증했습니다.
 
 - exact immutable image pull/stage
-- NAS runtime input permission `600`, PostgreSQL persistent volume 보존
-- restricted SSH tunnel을 통한 실제 `gemma3:12b` model path
-- stack/host-port/Docker-network/Nginx edge security gate
+- runtime input permission `600`, PostgreSQL persistent volume 보존
+- restricted SSH tunnel -> 실제 `gemma3:12b` model path
+- stack/host-port/Docker-network/Nginx edge security
 - app/edge direct egress blocked
 - app/DB/model-tunnel host port 없음
-- Secure XSRF/JSESSIONID session 및 COOKIE-only tracking
+- Secure XSRF/JSESSIONID, COOKIE-only tracking
 - persona flow, durable draft, cross-workspace isolation
 - edge rate-limit `429`, credential/log scan
-- normal close와 synthetic workspace purge
-- strict CLOSED verifier와 ephemeral tunnel-secret material 제거
-- same immutable digest reopen
-- emergency close rehearsal
-- final normal close
-- final policy flags `YES_YES`, final state `CLOSED`
+- normal close, strict CLOSED, same-digest reopen, emergency close, recovery normal close
+- final `runtime_policy_flags=YES_YES`, final `CLOSED`
 
-공개 가능한 source/digest/검증 범위와 남은 한계는 [`../02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)를 기준으로 합니다. 이 증거는 내부 deployment/network/security/lifecycle 경계의 검증이며 public Internet ingress 검증을 의미하지 않습니다.
+상세: [`../02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
+
+## OpsMate public Internet deployment/lifecycle E2E 증거
+
+`2026-08-29` private `device-control` bounded runtime run `33241004788`에서 실제 Internet HTTPS origin을 포함한 최종 외부 gate를 수행했습니다.
+
+- DSM Reverse Proxy/TLS + router ingress를 통한 public HTTPS root/live marker: PASS
+- public `/api/**` denial, `/actuator/**` 차단: PASS
+- 실제 모델 기반 draft -> submit -> approve -> order -> audit -> cleanup: PASS
+- 외부 두 session cross-workspace isolation: PASS
+- URL `;jsessionid` rewriting: absent
+- app direct Internet egress: blocked
+- 외부 PostgreSQL/model/loopback edge 직접 TCP 노출: closed
+- bounded rate burst 60건: allowed `24`, HTTP `429` `36`, transport failure `0`
+- credential/private-key/Bearer marker log scan: PASS
+- normal close 후 public live marker absent, running container `0`, PostgreSQL volume preserved, strict `CLOSED`
+- same immutable digest reopen 후 public HTTPS + 실제 모델 smoke 재통과
+- emergency close 후 public live marker absent, strict `CLOSED`
+- recovery normal close/purge 후 final `runtime_policy_flags=YES_YES`, final `CLOSED`
+
+상세: [`../02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
+
+이 증거는 bounded deployment/network/security/lifecycle 검증입니다. 24x7 SLA, 장기 부하, DDoS/WAF 전문 방어, production traffic 규모를 의미하지 않습니다.
 
 ## 회사 GitHub 실무 근거
 
@@ -91,20 +108,31 @@
 | `WORK-PLATFORM-01` | 데이터 서비스 웹/API/DB 연계와 운영 개선의 지속적 작성 커밋 | `implemented`, `E2` | 프로젝트별 역할과 outcome은 추가 대조 필요 |
 | `WORK-DATA-01` | 운영 데이터 서비스와 분석 배치 및 ModelOps 개선 | `implemented`, `E2` | 자동 테스트와 성능 개선 수치로 확대 금지 |
 | `WORK-DATA-02` | 재현 가능한 데이터 분석 pipeline, CLI, SQL runner와 검증 테스트 | `tested-component`, `E3` | 독립 재실행 및 CI 성공은 미확인 |
-| `WORK-EDU-01` | 데이터 플랫폼 기능 개선과 제한형 배포 자동화 | `implemented`, `E2` | tests와 운영 성과는 별도 확인 |
+| `WORK-DATA-03` | Java/Spring 통계 품질 분석 화면의 데이터 처리와 시각화 일부 | `implemented`, `E2` | 직접 기여 일부만 사용; 전체 통계 시스템·정확도·운영 성과로 확대 금지 |
+| `WORK-EDU-01` | 데이터 플랫폼 인증, 분석 화면/필터, 제한형 배포·검증·health/rollback 기반 | `implemented`, `E2` | 전체 플랫폼 단독 구현 또는 자동화 운영 성과로 확대 금지 |
 | `WORK-INTEGRATION-01` | 문서 파싱, dry-run, DB 확인과 CSV export 도구 | `implemented`, `E2` | 전체 운영 pipeline 완료로 확대 금지 |
+| `WORK-OPS-01` | Linux 원격 개발환경, 배포 자동화, Git 운영 규칙과 실행 가이드 | `implemented`, `E2` | 조직 전체 표준 수립 또는 운영 책임자로 확대 금지 |
 
 ## 공개 프로필 주장
 
 | 주장 | 현재 분류 | 안전한 표현 | 추가 근거 |
 |---|---|---|---|
 | Java/Spring 백엔드 개발 경험 | `self-described` | Java/Spring 기반 업무·데이터 서비스 개발 경험을 경력 문서에 기재 | 회사·프로젝트 기간, 역할, 코드·산출물 색인 |
-| Python/FastAPI API 구현 | `self-described` + 개인 코드 `implemented` | 실무 자기기술과 FastAPI 포트폴리오 코드가 각각 존재 | 실무 범위와 개인 샘플을 분리한 근거 |
+| Python/FastAPI API 구현 | `self-described` + 개인 코드 `implemented` | 실무 자기기술과 FastAPI 포트폴리오 코드가 각각 존재 | 실무 범위와 개인 샘플 분리 |
 | 데이터 분석 결과 서비스화 | `self-described` | 분석 결과를 웹/API로 연결한 경험을 경력 문서에 기재 | 프로젝트별 역할, 기간, 운영 반영, 성과 |
-| Text2SQL/NL2SQL/LLM PoC | `private-work-code-verified`, `E3`; RAG 개인 샘플 `implemented` | FastAPI 기반 Text2SQL/NL2SQL 구현과 다중 모델 benchmark 경험. RAG 개인 샘플은 별도 표시 | 운영 반영 범위와 장기 성과는 별도 확인 |
+| Text2SQL/NL2SQL/LLM PoC | `private-work-code-verified`, `E3`; RAG 개인 샘플 `implemented` | FastAPI 기반 Text2SQL/NL2SQL 구현과 다중 모델 benchmark 경험 | 운영 반영 범위와 장기 성과는 별도 확인 |
 | Agentic AI Runtime | `private-work-code-verified`, `E3` for components | 작업 격리와 artifact/provenance 추적 구성요소 및 테스트 구현 | 전체 플랫폼 완성 또는 LLMOps lead로 표현 금지 |
 | Linux/Docker/Jenkins 운영 반영 | `self-described` | 배포·환경 구성·장애 분석 경험을 경력 문서에 기재 | 운영 범위, 책임, 자동화, 장애·개선 결과 |
 | 보안 경력과 자격 | `self-described` | 보안·통제 관점을 가진 백엔드 전환형 프로필 | 재직 연표, 자격 유효 상태, 실제 담당 업무 |
+
+## 현재 active 공개 재현 작업
+
+`CS-JAVA-02`를 두 번째 Java/Spring 사례로 선택했습니다.
+
+- 기존 상태: `source-reviewed`
+- 공개 재현 범위: MyBatis 기반 합성 조회 서비스의 filter/count/page 정합성, deterministic ordering, index-friendly range predicate, 실패/경계 회귀 테스트
+- 금지: 회사 SQL·스키마·식별자·데이터 복사, 확인되지 않은 Oracle 운영 성능 수치 사용
+- Oracle-specific 실행계획/성능은 공개 재현이 없으면 별도 미검증 boundary로 남김
 
 ## 현재 판단
 
@@ -113,7 +141,7 @@
 - Java/Spring Security 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
 - AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두고 workspace·모델 호출량·DB 권한·서비스 수명주기까지 통제하는 설계와 구현
 - 실제 오픈웨이트 모델 구조화 출력을 Spring 서버 검증·저장 경계까지 연결한 E2E
-- immutable deployment artifact, private DB/model network, restricted tunnel, normal/emergency close와 same-digest reopen을 실제 Synology internal runtime에서 검증한 증거
+- immutable deployment artifact, private DB/model network, restricted tunnel, public HTTPS ingress, rate/session/egress boundary와 normal/emergency lifecycle을 실제 Synology target에서 bounded E2E로 검증한 증거
 - 목표하는 엔지니어 정체성과 Java/Python/AI 응용 기술 조합
 - 비공개 업무 근거를 비식별 claim과 공개 재현 상태로 나누는 검수 방식
 - 문서화와 구조화 능력
@@ -122,9 +150,8 @@
 
 - 프로덕션 수준 백엔드·플랫폼 숙련도 전체 증명
 - 대규모 트래픽·분산 시스템·클라우드 네이티브 운영 증명
-- OpsMate public application의 실제 Internet 배포와 장기 안정성 증명
-- public origin에서의 외부 DB/model 비노출 및 lifecycle 증명
-- 프로젝트별 정량 성과와 본인 기여 범위 증명
+- OpsMate의 24x7 Internet 운영, SLA, 장기 부하와 production traffic 규모 증명
+- 프로젝트별 정량 성과와 본인 기여 범위 전체 증명
 - 모든 README에 적힌 기능의 실제 구현 증명
 
 ## 갱신 규칙
@@ -142,7 +169,7 @@ tested-file-present -> verified:
 최근 테스트 명령, 성공 결과, 환경·버전 기록
 ```
 
-전체 서비스가 여러 외부 gate를 가지면 컴포넌트별 `verified`와 전체 상태를 분리합니다. 예를 들어 internal deployment/lifecycle E2E가 성공해도 public Internet ingress가 남아 있으면 프로젝트 전체는 `tested-component`를 유지합니다.
+전체 서비스가 여러 외부 gate를 가지면 컴포넌트별 `verified`와 전체 상태를 분리합니다. bounded public deployment E2E가 성공해도 24x7 SLA나 장기 부하까지 자동으로 확장하지 않습니다.
 
 경력 주장에는 가능한 경우 다음을 연결합니다.
 
