@@ -9,6 +9,9 @@
   {% when 'sample-verified' %}
     {% assign badge_label = '독립 구현·테스트 완료' %}
     {% assign badge_symbol = '✓' %}
+  {% when 'published' %}
+    {% assign badge_label = '게시·검증 완료' %}
+    {% assign badge_symbol = '✓' %}
   {% when 'tested-component' %}
     {% assign badge_label = '핵심 흐름 테스트 완료' %}
     {% assign badge_symbol = '△' %}
