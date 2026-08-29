@@ -35,8 +35,7 @@
 - [x] `2026-08-25` Synology internal deployment/network/security/lifecycle E2E 기록
 - [x] `2026-08-29` public Internet deployment/network/lifecycle E2E 기록
 - [x] AI context, work/task ledger, evidence index와 public evidence 문서 동기화
-- [x] PR regression 성공
-- [x] main Pages run `33250726427`의 verify matrix, Jekyll build와 deploy 성공
+- [x] main Pages run `33250726427` verify/build/deploy 성공
 
 사용자 작업: 없음.
 
@@ -49,95 +48,85 @@
 - [x] shell/Compose/Nginx/container/runbook 검증
 - [x] non-root image build 및 migration rehearsal
 
-OpsMate public evidence가 반영된 main commit에서도 Pages run `33250726427` 전체 성공.
-
 사용자 작업: 없음.
 
-### P20. OpsMate NAS 배포 준비 — `verified`
+### P20-P40. OpsMate deployment/network/security/lifecycle — `verified`
 
-- [x] Synology Docker/x86_64 runtime
-- [x] loopback Nginx edge 구조
-- [x] destination-restricted SSH key/host-key pin 경계
-- [x] immutable linux/amd64 app/tunnel image 발행 및 pull verification
-- [x] exact immutable image Synology pull/stage
-- [x] NAS-local runtime input permission `600`
-- [x] PostgreSQL persistent volume 보존과 DB credential continuity
-- [x] 준비 종료 후 running container `0`, final `CLOSED`
-
-검증: runtime preparation run `32849378114`.
-
-### P25. OpsMate 내부 network/security/lifecycle E2E — `verified`
-
-검증: private bounded runtime run `32849533407`.
-
-- [x] stack/host-port/Docker-network/edge security
-- [x] app/edge direct egress 차단
-- [x] DB/app/model-tunnel host port 미노출
-- [x] Secure cookie session과 restricted actual-model path
-- [x] persona/durable draft/cross-workspace isolation
-- [x] rate limit/credential-log scan
-- [x] normal close/same-digest reopen/emergency close/recovery close
-- [x] final policy flags `YES_YES`, final `CLOSED`
-
-### P30. OpsMate public HTTPS/network/security E2E — `verified`
-
-검증: private bounded public runtime run `33241004788`.
-
-- [x] 실제 Internet HTTPS origin
-- [x] public API/actuator boundary
-- [x] 실제 모델 전체 persona workflow
-- [x] external two-session isolation
-- [x] URL session rewriting 부재
-- [x] app direct Internet egress 차단
-- [x] DB/model/loopback edge 외부 직접 비노출
-- [x] bounded rate burst: allowed `24`, HTTP `429` `36`, transport failure `0`
-- [x] credential/private-key/Bearer marker log scan
-
-### P40. OpsMate public close/reopen lifecycle — `verified`
-
-- [x] public OPEN smoke
-- [x] normal close + purge + strict CLOSED
-- [x] same immutable digest reopen + real-model public smoke
-- [x] emergency close + public live marker 부재
-- [x] recovery normal close/purge
-- [x] running container `0`, PostgreSQL volume 보존
-- [x] final `runtime_policy_flags=YES_YES`, final `CLOSED`
+- NAS runtime preparation run `32849378114`: PASS
+- internal bounded E2E run `32849533407`: PASS
+- public Internet bounded E2E run `33241004788`: PASS
+- final `runtime_policy_flags=YES_YES`, running workload container `0`, PostgreSQL volume preserved, final `CLOSED`
 
 이 증거는 bounded E2E이며 24x7 SLA, 장기 부하 또는 production traffic 규모를 의미하지 않는다.
 
-### P50. 두 번째 Java/Spring 사례 `CS-JAVA-02` — `in-progress`
+사용자 작업: 없음.
+
+### P50. 두 번째 Java/Spring 사례 `CS-JAVA-02` — `verified`
 
 주제: **MyBatis 기간 조회의 정합성과 인덱스 친화 조건을 함께 설계하기**
 
-- [x] 후보 선택
 - [x] authorized source에서 본인 귀속 SQL 개선 범위 재확인
-- [x] 공개 금지 경계 확정: 회사 SQL/schema/data/내부 식별자 비복사
-- [x] 독립 합성 요구사항·테스트 설계
+- [x] 회사 SQL/schema/data/내부 식별자 비복사 경계 확정
 - [x] Java 21 + Spring Boot 3.5.16 + MyBatis + H2 독립 샘플 구현
 - [x] same/cross-year, tenant isolation, count/page, deterministic pagination, invalid input 테스트
-- [x] synthetic composite index 및 BoundSql SQL-shape 검증
-- [x] 12개 테스트 `./mvnw -q clean verify` 성공 — PR run `33251026033`의 MyBatis job
-- [x] 사례 게시물·README·ARCHITECTURE·SETUP·VERIFICATION 작성
-- [ ] 최신 전체 PR regression 성공
-- [ ] main merge
-- [ ] GitHub Pages build/deploy 및 공개 case/sample 링크 확인
+- [x] composite index 및 BoundSql SQL-shape 검증
+- [x] 12개 자동 테스트
+- [x] final PR regression run `33251272174` 성공
+- [x] main commit `a1a58a469056073165b110ab2dc61f83c7d0ad20`
+- [x] main Pages run `33251362190` verify/build/deploy 성공
+- [x] 상태: `published`
 
-Oracle optimizer의 index 선택과 운영 성능 수치는 공개 검증하지 않았으므로 주장하지 않는다.
+Oracle optimizer index 선택과 운영 성능 수치는 공개 검증하지 않았으므로 주장하지 않는다.
 
 사용자 작업: 없음.
 
-### P55. 다음 Java/Spring 사례 — `pending`
+### P55. 세 번째 Java/Spring 사례 `CS-JAVA-03` — `verified`
 
-`CS-JAVA-02`가 Pages에 게시된 뒤 다음 `source-reviewed` 후보를 선택한다.
+주제: **WAR 기반 Spring 서비스의 배포 이식성**
 
-선택 기준:
+- [x] authorized source에서 WAR deploy workflow/runbook, context-path, profile/config 본인 귀속 범위 재확인
+- [x] 회사 WAR/JSP/workflow/서버 식별자/배포 경로/인증정보 비복사 경계 확정
+- [x] Java 21 + Spring Boot 3.5.16 독립 WAR 샘플 구현
+- [x] external-container initializer / provided Tomcat 구조
+- [x] non-root context path entry/health
+- [x] deploy profile 외부 값 누락 fail-closed
+- [x] backup -> replace -> health -> rollback rehearsal
+- [x] unsafe application name 거부
+- [x] 10개 자동 테스트
+- [x] final PR regression run `33252086213`: 7개 job 전체 성공
+- [x] main commit `63abaa49e05a366d6007902edd184a83df6bc7e9`
+- [x] main Pages run `33252148733`: 7개 verify job + build + deploy 성공
+- [x] 상태: `published`
 
-1. 인증과 SQL 사례와 다른 backend dimension을 추가할 것
-2. 본인 귀속과 공개 경계를 재확인할 수 있을 것
-3. 회사 코드와 독립된 합성 샘플로 정상·실패·경계 테스트가 가능할 것
-4. 확인되지 않은 운영 성과를 필요로 하지 않을 것
+CI context-path 관측은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat `10.1.55`에서 수행됐다. 실제 외부 운영 Tomcat rolling deployment, session drain, zero-downtime와 SLA는 검증하지 않았다.
 
-### P60. 포트폴리오 유지관리 — `pending`
+사용자 작업: 없음.
+
+### P60. 네 번째 Java/Spring 사례 `CS-JAVA-06` — `in-progress`
+
+주제: **여러 화면에 흩어진 기준값과 사용자 식별 규칙을 한 흐름으로 정합화한 과정**
+
+선택 이유:
+
+1. 인증, SQL query shape, deployment portability와 다른 application/domain-rule dimension을 추가한다.
+2. 기존 상태가 `source-reviewed`라 authorized source에서 재확인이 가능하다.
+3. Controller-Service-Mapper 규칙을 주문·회원 합성 도메인으로 독립 재구현할 수 있다.
+4. 정상·실패·경계 회귀 테스트를 운영 성과 주장 없이 검증할 수 있다.
+
+실행 gate:
+
+- [ ] authorized source에서 본인 귀속과 실제 결함/수정 경계 재확인
+- [ ] 공개 금지 정보와 합성 도메인 경계 확정
+- [ ] canonical business rule, user identity, persistence filter 요구사항 정의
+- [ ] 정상/실패/경계 회귀 테스트 설계
+- [ ] 독립 Spring 샘플 구현
+- [ ] sample CI와 전체 portfolio regression
+- [ ] 사례 문서 공개 안전성 검수
+- [ ] main Pages build/deploy
+
+사용자 작업: 기존 authorized evidence만으로 확정할 수 없는 내부 사실이 반드시 필요한 경우에만 요청한다.
+
+### P70. 포트폴리오 유지관리 — `pending`
 
 - [ ] Pages 링크/배포 상태 정기 확인
 - [ ] 물리 모바일 최종 UX 검수
@@ -148,7 +137,7 @@ Oracle optimizer의 index 선택과 운영 성능 수치는 공개 검증하지 
 
 현재 즉시 필요한 사용자 작업은 없다.
 
-OpsMate workload는 `CLOSED` 상태를 유지하고 있으며 현재 active work는 `CS-JAVA-02`의 publication gate다.
+OpsMate workload는 `CLOSED` 상태를 유지한다. 현재 active work는 `CS-JAVA-06` authorized source re-review다.
 
 ## 완료 판정
 
@@ -156,5 +145,7 @@ OpsMate workload는 `CLOSED` 상태를 유지하고 있으며 현재 active work
 2. OpsMate code/regression + real-model/internal/public bounded E2E: `verified`
 3. OpsMate 24x7 운영/SLA/장기 부하: `not claimed`
 4. 첫 Java/Spring 인증 사례: `sample-verified`
-5. 두 번째 MyBatis 사례: sample CI `verified`, Pages publication pending
-6. 회사 업무 사례: 권한 있는 원본 검토와 독립 공개 샘플 검증 상태를 분리
+5. 두 번째 MyBatis 사례: `published`
+6. 세 번째 WAR deployment 사례: `published`
+7. 네 번째 업무 규칙 정합성 사례: `source-reviewed`, active reproduction pending
+8. 회사 업무 사례: 권한 있는 원본 검토와 독립 공개 샘플 검증 상태를 분리
