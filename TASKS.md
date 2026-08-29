@@ -51,24 +51,32 @@ The active execution ledger, dependencies and verification evidence are maintain
 - status: `published`
 - real external Tomcat rolling deployment, session drain, zero-downtime and production SLA remain unverified and must not be claimed
 
-### 4. CS-JAVA-06 business-rule consistency publication — ACTIVE
+### 4. CS-JAVA-06 business-rule consistency publication — COMPLETE
 - authorized private source attribution and exact defect/fix boundary: reconfirmed
 - public disclosure boundary: company class names, endpoints, fields, SQL, schema, test accounts, real data and internal identifiers excluded
 - independent Java 21 / Spring Boot 3.5.16 synthetic `member snapshot` sample: implemented
 - 11 MockMvc regression tests: PASS
 - verified boundaries: canonical session identity, limited legacy fallback, latest-only policy, explicit-or-latest policy, Mapper input ownership, 400/401/404 fail-closed behavior, request identity override prevention
-- PR run `33275860098`: `Business-rule consistency` job PASS and all 8 portfolio jobs PASS
-- status: `sample-verified`
-- remaining gate: sample-verified state sync -> latest whole-portfolio regression -> merge -> main Pages build/deploy -> `published`
+- initial PR run `33275860098`: `Business-rule consistency` job and all 8 portfolio jobs PASS
+- final PR run `33276143715`: all 8 portfolio jobs PASS after evidence/state synchronization
+- main merge commit: `733db7c614af5613216773b3b1fc6b3567e0b84c`
+- main Pages run `33276278894`: 8 verify jobs + build + deploy PASS
+- status: `published`
 - actual company SSO/session E2E, Mapper SQL/production DB results, organization-wide rule ownership and production SLA remain unverified and must not be claimed
 
-### 5. portfolio publication maintenance
+### 5. next Java/Spring case selection
+- choose only after source attribution and public disclosure boundary can be reconfirmed
+- prefer a backend dimension distinct from authentication, SQL correctness, WAR deployment and business-rule consistency
+- `CS-JAVA-11` statistical analysis UI is a source-reviewed candidate if data-processing/visualization depth is useful
+- do not promote a candidate until independent code, normal/failure/boundary tests and current CI evidence exist
+
+### 6. portfolio publication maintenance
 - check Pages deployment and public links after material changes
 - keep status badges, test counts and limitations synchronized
 - perform physical mobile UX verification when practical
 - refresh sanitized company GitHub evidence at the defined review interval
 
-### 6. older sample disposition
+### 7. older sample disposition
 - keep `ai-rag-api`, `backend-platform-template`, and `security-audit-log` as supporting work only
 - repair a sample only when it strengthens the approved two-track strategy
 - otherwise mark it partial or archive it without presenting it as a flagship
