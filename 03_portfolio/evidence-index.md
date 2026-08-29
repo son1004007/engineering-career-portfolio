@@ -13,6 +13,7 @@
 | `tested-component` | 명시된 구성요소의 테스트 산출물은 확인했으나 전체 시스템 검증은 아님 |
 | `source-reviewed` | 권한 있는 비공개 원본에서 본인 귀속과 구현 범위를 확인했으나 공개 재현 검증은 아직 없음 |
 | `sample-verified` | 회사 코드와 독립된 공개 샘플의 최근 테스트 성공을 기록했으나 실제 회사 시스템 검증은 아님 |
+| `published` | 독립 샘플·문서 검증 후 main GitHub Pages build/deploy까지 성공 |
 | `partial` | 일부 코드·문서만 있고 실행에 필요한 구성요소가 빠짐 |
 | `planned` | 문서나 작업 목록에만 존재 |
 | `self-described` | 프로필·경력 문서의 자기기술. 다른 근거로 확인 필요 |
@@ -25,20 +26,23 @@
 - 당시 Pages Actions run `30782896966`: Jekyll build, Java 프로젝트와 공개 저장소 검사·deploy 성공
 - OpsMate reviewed runtime source `f99686981da7efb8802635ae2bde5b0f781433ad` 기준 repository regression run `32848946968`: 성공 (`2026-08-25`)
 - 내부 E2E 문서 반영 main Pages run `32851086949`: 성공 (`2026-08-25`)
-- OpsMate public deployment E2E 문서 반영 main Pages run `33250726427`: verify matrix, Jekyll build와 Pages deploy 모두 성공 (`2026-08-29`)
+- OpsMate public deployment E2E 문서 반영 main Pages run `33250726427`: verify/build/deploy 성공 (`2026-08-29`)
+- MyBatis `CS-JAVA-02` main Pages run `33251362190`: verify/build/deploy 성공 (`2026-08-29`)
+- WAR `CS-JAVA-03` main Pages run `33252148733`: 7개 verify job + build + deploy 성공 (`2026-08-29`)
 - 물리 모바일 최종 UX 검수는 유지관리 gate로 남음
 
 ## 프로젝트 상태
 
 | 프로젝트 | 코드 | 테스트 | 문서 | 현재 상태 | 확인 사항 |
 |---|---:|---:|---:|---|---|
-| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL, restricted tunnel, 배포/lifecycle 자산 있음 | 실제 `gemma3:12b` 9/9 E2E + Synology internal E2E + public Internet network/security/lifecycle bounded E2E 성공 | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK·REAL_MODEL_E2E_EVIDENCE·NAS_INTERNAL_E2E_EVIDENCE·PUBLIC_DEPLOYMENT_E2E_EVIDENCE | `implemented`, `tested-component`; real-model adapter, NAS internal boundary, public deployment/network/security/lifecycle boundary `verified` | 24x7 SLA, 장기 부하, 대규모 실제 사용자 운영은 검증/주장하지 않음. 검증 종료 후 workload `CLOSED` |
+| [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL, restricted tunnel, 배포/lifecycle 자산 있음 | 실제 `gemma3:12b` 9/9 E2E + Synology internal E2E + public Internet bounded E2E 성공 | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK·3종 E2E evidence | `implemented`, `tested-component`; 명시된 real-model/NAS/public boundary `verified` | 24x7 SLA, 장기 부하, 대규모 실제 사용자 운영은 검증/주장하지 않음. workload `CLOSED` |
 | [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 합성 사용자·issuer·audience 바인딩 SSO 샘플. 실제 회사 시스템 검증을 뜻하지 않음 |
-| [MyBatis 기간 조회 정합성](../02_projects/case-study-samples/mybatis-query-correctness/README.md) | 독립 Spring Boot/MyBatis/H2 샘플 있음 | 12개 성공; PR run `33251026033`의 `MyBatis query correctness` job 성공 | [사례 게시물](case-studies/mybatis-query-correctness.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 권한 있는 비공개 원본에서 본인 귀속 SQL 개선 범위를 재확인한 뒤 설계 원리만 합성 재구현. Oracle 실행계획·운영 성능 수치는 미검증 |
-| [Java/Spring 사례 후보](case-study-index.md) | 회사 원본에서 확인 | 공개 독립 샘플 2건 검증 | 후보 인덱스 있음 | `sample-verified` 2건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
+| [MyBatis 기간 조회 정합성](../02_projects/case-study-samples/mybatis-query-correctness/README.md) | 독립 Spring Boot/MyBatis/H2 샘플 있음 | 12개 성공; final PR regression `33251272174` | [사례 게시물](case-studies/mybatis-query-correctness.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33251362190` 성공. Oracle 실행계획·운영 성능 수치는 미검증 |
+| [WAR 배포 이식성](../02_projects/case-study-samples/war-deployment-portability/README.md) | 독립 Spring Boot WAR 샘플 있음 | 10개 성공; final PR regression `33252086213` | [사례 게시물](case-studies/war-deployment-portability.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33252148733` 성공. 실제 외부 Tomcat rolling/zero-downtime/SLA는 미검증 |
+| [Java/Spring 사례 후보](case-study-index.md) | 권한 있는 원본에서 일부 확인 | 공개 독립 샘플 3건 검증, 그중 2건 publication gate 완료 | 후보 인덱스 있음 | `CS-JAVA-06` active; `published` 2건, `sample-verified` 1건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
 | [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
-| [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 인증·모니터링·PostgreSQL·Redis 구현도 현재 파일 목록에서 확인되지 않음 |
-| [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | route가 존재하지 않는 `app.service.audit_service`를 import. 앱 진입점, 저장 모델, service, tests 보완 필요 |
+| [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 주요 구성요소 누락 |
+| [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | 참조 service, 앱 진입점, 저장 모델, tests 보완 필요 |
 | 개인 공개 `text2sql` 샘플 | 없음 | 없음 | 상위 문서의 계획만 있음 | `planned` | 회사 실무 Text2SQL과 혼동 금지 |
 | `security-backend-platform` | 없음 | 없음 | 상위 문서의 예시만 있음 | `planned` | 별도 프로젝트로 완료되기 전 기술 근거로 사용 금지 |
 
@@ -78,56 +82,66 @@
 
 `2026-08-29` private `device-control` bounded runtime run `33241004788`에서 실제 Internet HTTPS origin을 포함한 최종 외부 gate를 수행했습니다.
 
-- DSM Reverse Proxy/TLS + router ingress를 통한 public HTTPS root/live marker: PASS
+- DSM Reverse Proxy/TLS + router ingress public HTTPS: PASS
 - public `/api/**` denial, `/actuator/**` 차단: PASS
-- 실제 모델 기반 draft -> submit -> approve -> order -> audit -> cleanup: PASS
+- 실제 모델 draft -> submit -> approve -> order -> audit -> cleanup: PASS
 - 외부 두 session cross-workspace isolation: PASS
 - URL `;jsessionid` rewriting: absent
 - app direct Internet egress: blocked
 - 외부 PostgreSQL/model/loopback edge 직접 TCP 노출: closed
 - bounded rate burst 60건: allowed `24`, HTTP `429` `36`, transport failure `0`
 - credential/private-key/Bearer marker log scan: PASS
-- normal close 후 public live marker absent, running container `0`, PostgreSQL volume preserved, strict `CLOSED`
-- same immutable digest reopen 후 public HTTPS + 실제 모델 smoke 재통과
-- emergency close 후 public live marker absent, strict `CLOSED`
-- recovery normal close/purge 후 final `runtime_policy_flags=YES_YES`, final `CLOSED`
+- normal close, same immutable digest reopen, emergency close, recovery normal close: PASS
+- final `runtime_policy_flags=YES_YES`, running workload container `0`, PostgreSQL volume preserved, final `CLOSED`
 
 상세: [`../02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
 
 이 증거는 bounded deployment/network/security/lifecycle 검증입니다. 24x7 SLA, 장기 부하, DDoS/WAF 전문 방어, production traffic 규모를 의미하지 않습니다.
 
-## 두 번째 Java/Spring 공개 재현 증거
+## `CS-JAVA-02` MyBatis 공개 재현 증거
 
-`CS-JAVA-02`는 권한 있는 비공개 원본에서 다음 범위의 본인 귀속 변경을 재확인한 뒤 독립 구현했습니다.
-
-- 여러 연도 기간 조건의 복합 `OR`을 서로 겹치지 않는 시작/중간/종료 구간으로 분해
-- 구간을 `UNION ALL`로 결합
-- 검색·정렬 year/month column의 숫자 변환 제거
-
-공개 구현은 회사 SQL·schema·식별자·데이터를 사용하지 않습니다.
+권한 있는 비공개 원본에서 본인 귀속 SQL 개선 범위를 재확인한 뒤 회사 SQL·schema·식별자·데이터를 사용하지 않는 독립 샘플로 재현했습니다.
 
 검증된 공개 샘플 경계:
 
-- Java 21 + Spring Boot 3.5.16 + MyBatis Spring Boot Starter 3.0.5
-- H2 in-memory 합성 schema/data
-- 같은 연도 및 여러 연도 시작·종료 경계
+- Java 21 + Spring Boot 3.5.16 + MyBatis Spring Boot Starter 3.0.5 + H2
+- same-year/cross-year 시작·종료 경계
 - 누락·중복 부재와 tenant isolation
-- count/page 공통 filter semantics
-- deterministic pagination
-- invalid range/month/page/size/tenant validation
-- `(tenant_id, snapshot_year, snapshot_month)` 합성 복합 인덱스 존재
-- MyBatis `BoundSql`에서 same-year/cross-year SQL shape 확인
-- indexed year/month column 변환 함수 부재와 기간 `OR` 부재
-- `./mvnw -q clean verify` 성공, 12개 테스트
+- count/page 공통 filter semantics와 deterministic pagination
+- invalid input validation
+- `(tenant_id, snapshot_year, snapshot_month)` 합성 복합 인덱스
+- MyBatis `BoundSql` same/cross-year SQL shape
+- indexed year/month column 변환 함수 및 기간 `OR` 부재
+- 12개 자동 테스트
+- final PR regression run `33251272174`: PASS
+- main Pages run `33251362190`: verify/build/deploy PASS
 
-검증하지 않은 것:
-
-- 실제 Oracle optimizer의 index 선택
-- 회사 운영 실행계획 원문
-- elapsed time, CPU, logical read 개선률
-- production traffic 성능
+검증하지 않은 것: 실제 Oracle optimizer index 선택, 회사 실행계획 원문, 운영 elapsed/CPU/logical read 개선률, production traffic 성능.
 
 상세: [`../02_projects/case-study-samples/mybatis-query-correctness/VERIFICATION.md`](../02_projects/case-study-samples/mybatis-query-correctness/VERIFICATION.md)
+
+## `CS-JAVA-03` WAR 배포 이식성 공개 재현 증거
+
+권한 있는 비공개 원본에서 본인 귀속 WAR deploy workflow/runbook, context-path 보정, profile/config 외부화 범위를 재확인한 뒤 회사 WAR/JSP/workflow/호스트/배포 경로/인증정보를 사용하지 않는 독립 샘플로 재현했습니다.
+
+검증된 공개 샘플 경계:
+
+- Java 21 + Spring Boot 3.5.16
+- Maven `war` packaging + provided Tomcat
+- `SpringBootServletInitializer` 기반 external-container bootstrap
+- non-root `/demo` context path entry/health와 root hardcoding 부재
+- deploy profile 필수 외부 값 누락 시 fail-closed
+- candidate WAR backup -> staged replace -> health -> 실패 시 rollback
+- unsafe application name 거부
+- 10개 자동 테스트
+- final PR regression run `33252086213`: 7개 job 전체 PASS
+- main commit `63abaa49e05a366d6007902edd184a83df6bc7e9`
+- main Pages run `33252148733`: 7개 verify + build + deploy PASS
+- context-path CI 관측: Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat `10.1.55`
+
+검증하지 않은 것: 실제 외부 Tomcat 버전별 호환성 전체, rolling deployment, session drain, zero-downtime, 실제 TLS/SSO 통합, production traffic/SLA.
+
+상세: [`../02_projects/case-study-samples/war-deployment-portability/VERIFICATION.md`](../02_projects/case-study-samples/war-deployment-portability/VERIFICATION.md)
 
 ## 회사 GitHub 실무 근거
 
@@ -151,7 +165,7 @@
 
 | 주장 | 현재 분류 | 안전한 표현 | 추가 근거 |
 |---|---|---|---|
-| Java/Spring 백엔드 개발 경험 | `self-described` + 독립 샘플 `sample-verified` | Java/Spring 기반 업무·데이터 서비스 개발 경험과 공개 검증 샘플을 분리해 제시 | 회사·프로젝트 기간, 역할, 코드·산출물 색인 |
+| Java/Spring 백엔드 개발 경험 | `self-described` + 독립 공개 사례 | Java/Spring 기반 업무 경험과 독립 샘플 검증을 분리해 제시 | 회사·프로젝트 기간, 역할, 코드·산출물 색인 |
 | Python/FastAPI API 구현 | `self-described` + 개인 코드 `implemented` | 실무 자기기술과 FastAPI 포트폴리오 코드가 각각 존재 | 실무 범위와 개인 샘플 분리 |
 | 데이터 분석 결과 서비스화 | `self-described` | 분석 결과를 웹/API로 연결한 경험을 경력 문서에 기재 | 프로젝트별 역할, 기간, 운영 반영, 성과 |
 | Text2SQL/NL2SQL/LLM PoC | `private-work-code-verified`, `E3`; RAG 개인 샘플 `implemented` | FastAPI 기반 Text2SQL/NL2SQL 구현과 다중 모델 benchmark 경험 | 운영 반영 범위와 장기 성과는 별도 확인 |
@@ -161,12 +175,12 @@
 
 ## 현재 active 공개 재현 작업
 
-`CS-JAVA-02`는 독립 샘플 구현과 Maven 검증까지 완료해 `sample-verified`입니다.
+`CS-JAVA-06` — 업무 규칙 정합성을 다음 active Java/Spring 사례로 선택했습니다.
 
-- 검증: 12개 테스트, PR run `33251026033`의 `MyBatis query correctness` job 성공
-- 남은 gate: 전체 PR regression + main merge + GitHub Pages 게시·링크 확인
-- 금지: 회사 SQL·스키마·식별자·데이터 복사, 확인되지 않은 Oracle 운영 성능 수치 사용
-- Pages 게시 후 다음 `source-reviewed` Java/Spring 사례를 선택한다.
+- 현재 상태: `source-reviewed`
+- 다음 gate: 권한 있는 비공개 원본에서 본인 귀속과 실제 결함/수정 경계를 재확인
+- 공개 재현 방향: 주문·회원 합성 도메인의 Controller-Service-Mapper에서 canonical business rule, user identity와 persistence filter를 일관되게 적용
+- 금지: 회사 코드·테이블·식별자·데이터 복사, 팀 전체 결과를 개인 성과로 확대
 
 ## 현재 판단
 
@@ -174,12 +188,12 @@
 
 - Java/Spring Security 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
 - MyBatis 기간 조회를 결과 정합성, tenant isolation, count/page 일치, deterministic pagination과 index-friendly SQL shape로 검증하는 방식
+- WAR 서비스의 external-container bootstrap, non-root context path, 외부 config fail-closed와 health rollback을 검증하는 방식
 - AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두고 workspace·모델 호출량·DB 권한·서비스 수명주기까지 통제하는 설계와 구현
 - 실제 오픈웨이트 모델 구조화 출력을 Spring 서버 검증·저장 경계까지 연결한 E2E
-- immutable deployment artifact, private DB/model network, restricted tunnel, public HTTPS ingress, rate/session/egress boundary와 normal/emergency lifecycle을 실제 Synology target에서 bounded E2E로 검증한 증거
+- immutable deployment artifact, private DB/model network, restricted tunnel, public HTTPS ingress, rate/session/egress boundary와 normal/emergency lifecycle bounded E2E
 - 목표하는 엔지니어 정체성과 Java/Python/AI 응용 기술 조합
 - 비공개 업무 근거를 비식별 claim과 공개 재현 상태로 나누는 검수 방식
-- 문서화와 구조화 능력
 
 다음에는 아직 충분하지 않습니다.
 
@@ -187,25 +201,12 @@
 - 대규모 트래픽·분산 시스템·클라우드 네이티브 운영 증명
 - OpsMate의 24x7 Internet 운영, SLA, 장기 부하와 production traffic 규모 증명
 - MyBatis 샘플의 실제 Oracle 실행계획 또는 운영 성능 증명
+- WAR 샘플의 실제 외부 Tomcat zero-downtime/session-drain/SLA 증명
 - 프로젝트별 정량 성과와 본인 기여 범위 전체 증명
-- 모든 README에 적힌 기능의 실제 구현 증명
 
 ## 갱신 규칙
 
-프로젝트 상태를 올릴 때는 다음 근거를 함께 추가합니다.
-
-```text
-partial -> implemented:
-실행에 필요한 핵심 모듈과 진입점 추가
-
-implemented -> tested-file-present:
-핵심 경로 테스트 파일 추가
-
-tested-file-present -> verified:
-최근 테스트 명령, 성공 결과, 환경·버전 기록
-```
-
-전체 서비스가 여러 외부 gate를 가지면 컴포넌트별 `verified`와 전체 상태를 분리합니다. bounded public deployment E2E가 성공해도 24x7 SLA나 장기 부하까지 자동으로 확장하지 않습니다.
+프로젝트 상태를 올릴 때는 해당 boundary의 최근 명령/환경/성공 결과를 함께 기록합니다. bounded component 또는 deployment 검증을 더 넓은 production 운영·SLA 주장으로 자동 확장하지 않습니다.
 
 경력 주장에는 가능한 경우 다음을 연결합니다.
 
