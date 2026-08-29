@@ -2,7 +2,7 @@
 
 > 이 저장소 URL만 받은 AI는 이 문서, [`WORKS.md`](WORKS.md), [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md), [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md), [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다.
 
-- 기준일: `2026-08-29`
+- 기준일: `2026-08-30`
 - 공개 범위: `public`
 - 공개 사이트: [GitHub Pages 포트폴리오](https://son1004007.github.io/engineering-career-portfolio/)
 - 역할: 손기석의 기술 방향, 구현 샘플, 공개 가능한 경력·기술 근거
@@ -73,10 +73,15 @@
 
 ### CS-JAVA-06 — 업무 규칙 정합성
 
-- 상태: `source-reviewed`, **active**
-- 다음 작업: 권한 있는 비공개 원본에서 본인 귀속과 실제 결함/수정 경계를 다시 확인
-- 공개 방향: 주문·회원 합성 도메인으로 Controller-Service-Mapper의 canonical rule, user identity와 persistence filter 정합성을 재현
-- 인증·SQL query shape·배포 사례와 중복되지 않는 application/domain-rule 회귀 사례로 제한
+- 상태: `sample-verified`, **publication gate active**
+- 권한 있는 비공개 원본에서 본인 author/committer 변경과 사용자 식별·최신 기준·조회 경로·null-safe 처리 범위를 재확인
+- 공개 구현: [`02_projects/case-study-samples/business-rule-consistency/`](02_projects/case-study-samples/business-rule-consistency/README.md)
+- Java 21 + Spring Boot 3.5.16 합성 `member snapshot` 도메인
+- canonical session identity 우선, legacy fallback 제한, `LATEST_ONLY`/`EXPLICIT_OR_LATEST`, 명시적 Mapper 입력, 400/401/404 fail-closed 경계 재현
+- 11개 MockMvc 자동 테스트
+- PR run `33275860098`: `Business-rule consistency` job 및 전체 8개 portfolio job PASS
+- 회사 클래스명, endpoint, field, SQL, schema, 테스트 계정, 실제 데이터와 내부 식별자는 공개하지 않음
+- main merge/Pages deploy 전이므로 아직 `published`로 표현하지 않음
 
 기존 회사 업무는 원본 소스나 내부 식별자를 공개하지 않습니다. 게시물은 원본에서 본인 귀속과 구현 범위를 확인한 뒤 비식별 서술과 독립 재구현 코드로 만듭니다.
 
@@ -85,7 +90,7 @@
 - 공개 프로필에 기재된 기술 방향 파악
 - 저장된 코드와 테스트 파일의 존재 및 최근 검증 상태 확인
 - 개인 포트폴리오 프로젝트의 구현 범위와 검증된 boundary 확인
-- Java/Spring 인증·SQL 정합성·WAR 배포 경계 사례가 독립 샘플에서 어떻게 재현됐는지 확인
+- Java/Spring 인증·SQL 정합성·WAR 배포·업무 규칙 정합성 사례가 독립 샘플에서 어떻게 재현됐는지 확인
 - 백엔드·데이터·AI 응용·보안 관점의 조합 검토
 
 ## 이 저장소만으로 하면 안 되는 판단
@@ -96,6 +101,7 @@
 - bounded E2E를 장기 production 운영 또는 SLA로 확대 해석
 - H2 합성 샘플을 실제 Oracle 실행계획/성능 증거로 확대 해석
 - embedded Tomcat CI를 실제 외부 운영 Tomcat 무중단 배포 증거로 확대 해석
+- 업무 규칙 합성 샘플을 실제 회사 시스템 전체 정합성·운영 데이터 정확성 증거로 확대 해석
 - 특정 회사 입사, 연봉, 근무환경, 오퍼 수락 판단
 
 ## 읽기 순서
@@ -137,7 +143,7 @@
 | Spring Security 인증 사례 | `sample-verified` | 회사 코드와 독립된 합성 샘플 24개 테스트 성공 |
 | MyBatis 기간 조회 사례 | `published` | 합성 Spring Boot/MyBatis/H2 샘플 12개 테스트와 main Pages run `33251362190` 성공. Oracle 운영 성능은 미검증 |
 | WAR 배포 이식성 사례 | `published` | 합성 Spring Boot WAR 샘플 10개 테스트, PR regression `33252086213`, main Pages `33252148733` 성공. 실제 외부 Tomcat 운영은 미검증 |
-| 업무 규칙 정합성 사례 | `source-reviewed`, active | authorized source re-review와 독립 공개 재현 전에는 완료로 표현하지 않음 |
+| 업무 규칙 정합성 사례 | `sample-verified`; publication pending | 합성 Spring Boot 샘플 11개 테스트 및 PR run `33275860098` 전체 8개 job 성공. 실제 회사 시스템 전체 정합성은 미검증 |
 | `ai-rag-api` | `implemented`, `tested-file-present` | 코드·테스트 파일은 있으나 최근 성공 실행 미확인 |
 | `backend-platform-template` | `partial` | 현재 구조에 누락 모듈이 있음 |
 | `security-audit-log` | `partial` | API route만 있고 참조 service, 앱 진입점, 테스트가 없음 |
@@ -154,6 +160,7 @@
 Java/Spring 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
 MyBatis 기간 조회를 정합성·tenant isolation·count/page·pagination·SQL shape 관점에서 검증하는 방식
 WAR 서비스의 external-container bootstrap, non-root context path, 외부 config fail-closed, health rollback 경계를 독립 샘플로 검증하는 방식
+canonical session identity, 화면별 snapshot policy, Service-Mapper 책임을 독립 회귀 샘플로 검증하는 방식
 AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계에 넣는 설계와 구현
 실제 open-weight model 구조화 출력을 서버 검증·저장까지 연결한 E2E
 immutable artifact를 Synology에 배포하고 private DB/model network와 restricted SSH tunnel을 검증한 경험
@@ -169,6 +176,7 @@ Agentic AI Runtime의 작업 격리와 산출물 추적 구성요소 구현
 Java/Spring 실무의 전체 수준과 아직 재현하지 않은 나머지 사례의 구현 완료
 MyBatis 샘플의 실제 Oracle 실행계획과 운영 성능
 WAR 샘플의 실제 외부 Tomcat zero-downtime/session-drain/SLA
+업무 규칙 샘플의 실제 회사 SSO/session E2E, Mapper SQL/운영 DB 결과, 운영 데이터 전체 정합성
 프로덕션 트래픽과 운영 규모
 Kafka/Redis/Kubernetes 실전 운영
 RAG 품질·보안·관측성·비용 최적화
