@@ -2,7 +2,7 @@
 title: WAR 기반 Spring 서비스의 배포 이식성
 description: context path와 환경 차이로 발생하는 배포 결함을 profile, health와 rollback 관점에서 정리한 비식별 사례
 permalink: /cases/war-deployment-portability/
-status: sample-implemented
+status: published
 ---
 
 # WAR 기반 Spring 서비스의 배포 이식성
@@ -78,9 +78,9 @@ candidate WAR
 
 unsafe application name은 파일 교체 전에 거부합니다. 이 스크립트는 실제 조직의 배포 script를 복사한 것이 아니라 backup/replace/health/rollback 원칙만 합성 디렉터리에서 재현한 것입니다.
 
-## 검증 계획
+## 검증
 
-공개 샘플에는 다음 자동 검증이 포함되어 있습니다.
+공개 샘플은 10개 자동 테스트로 다음을 검증합니다.
 
 - WAR packaging과 provided Tomcat 구조
 - 외부 container용 `ServletInitializer`
@@ -91,7 +91,9 @@ unsafe application name은 파일 교체 전에 거부합니다. 이 스크립�
 - health 실패 시 previous WAR rollback
 - unsafe application name 거부
 
-GitHub Actions `Verify Portfolio` Java matrix에서 `./mvnw -q clean verify`를 실행하도록 연결했습니다. 현재 branch 구현 단계이므로 CI 성공 전에는 `sample-verified`나 `published`로 올리지 않습니다.
+PR 최종 regression run `33252086213`에서 `WAR deployment portability`를 포함한 7개 `Verify Portfolio` job이 모두 성공했습니다. 이어 main commit `63abaa49e05a366d6007902edd184a83df6bc7e9`의 Pages run `33252148733`에서 동일한 7개 verify job, Pages artifact build와 deploy가 모두 성공했습니다.
+
+WAR context-path 통합 테스트의 CI 관측 환경은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat `10.1.55`입니다. 이 테스트는 공개 샘플의 구조와 경계를 검증하며 실제 회사 시스템이나 외부 운영 Tomcat을 검증한 것은 아닙니다.
 
 ## trade-off
 
@@ -109,4 +111,4 @@ GitHub Actions `Verify Portfolio` Java matrix에서 `./mvnw -q clean verify`를 
 - 실제 인증서/TLS/SSO 통합 성공
 - 운영 트래픽 규모와 SLA
 
-이 사례가 목표로 하는 증거 범위는 **본인 귀속 배포·경로·환경 설정 개선 원칙을 비식별화하고, 회사 원본과 독립된 WAR/context-path/profile/health/rollback 샘플로 재검증하는 것**입니다.
+이 사례가 증명하는 범위는 **본인 귀속 배포·경로·환경 설정 개선 원칙을 비식별화하고, 회사 원본과 독립된 WAR/context-path/profile/health/rollback 샘플을 CI와 GitHub Pages publication gate까지 검증한 것**입니다.
