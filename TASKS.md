@@ -52,12 +52,15 @@ The active execution ledger, dependencies and verification evidence are maintain
 - real external Tomcat rolling deployment, session drain, zero-downtime and production SLA remain unverified and must not be claimed
 
 ### 4. CS-JAVA-06 business-rule consistency publication — ACTIVE
-- re-review authorized source attribution and the exact defect/fix boundary before making new company-work claims
-- keep this case distinct from authentication, SQL query shape and deployment portability
-- define a synthetic order/member domain that reproduces Controller-Service-Mapper rule consistency without company identifiers/data/code
-- design normal, failure and boundary regressions before implementation
-- verify one canonical rule source is used consistently across entry paths and persistence queries
-- publish only after sample CI, whole-portfolio regression and Pages deploy succeed
+- authorized private source attribution and exact defect/fix boundary: reconfirmed
+- public disclosure boundary: company class names, endpoints, fields, SQL, schema, test accounts, real data and internal identifiers excluded
+- independent Java 21 / Spring Boot 3.5.16 synthetic `member snapshot` sample: implemented
+- 11 MockMvc regression tests: PASS
+- verified boundaries: canonical session identity, limited legacy fallback, latest-only policy, explicit-or-latest policy, Mapper input ownership, 400/401/404 fail-closed behavior, request identity override prevention
+- PR run `33275860098`: `Business-rule consistency` job PASS and all 8 portfolio jobs PASS
+- status: `sample-verified`
+- remaining gate: sample-verified state sync -> latest whole-portfolio regression -> merge -> main Pages build/deploy -> `published`
+- actual company SSO/session E2E, Mapper SQL/production DB results, organization-wide rule ownership and production SLA remain unverified and must not be claimed
 
 ### 5. portfolio publication maintenance
 - check Pages deployment and public links after material changes

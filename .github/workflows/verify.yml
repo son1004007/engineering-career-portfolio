@@ -52,6 +52,8 @@ jobs:
             project: 02_projects/case-study-samples/mybatis-query-correctness
           - name: WAR deployment portability
             project: 02_projects/case-study-samples/war-deployment-portability
+          - name: Business-rule consistency
+            project: 02_projects/case-study-samples/business-rule-consistency
           - name: OpsMate Local
             project: 02_projects/opsmate-local
     defaults:

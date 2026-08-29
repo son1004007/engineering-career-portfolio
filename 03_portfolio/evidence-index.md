@@ -1,6 +1,6 @@
 # Portfolio Evidence Index
 
-- 최종 점검일: `2026-08-29`
+- 최종 점검일: `2026-08-30`
 - 목적: 프로필 주장, 구현 코드, 테스트, 계획을 구분해 과장 없는 기술 검토를 가능하게 함
 
 ## 상태 정의
@@ -29,6 +29,8 @@
 - OpsMate public deployment E2E 문서 반영 main Pages run `33250726427`: verify/build/deploy 성공 (`2026-08-29`)
 - MyBatis `CS-JAVA-02` main Pages run `33251362190`: verify/build/deploy 성공 (`2026-08-29`)
 - WAR `CS-JAVA-03` main Pages run `33252148733`: 7개 verify job + build + deploy 성공 (`2026-08-29`)
+- Java publication-state sync main Pages run `33252607907`: 7개 verify job + build + deploy 성공
+- `CS-JAVA-06`은 PR sample/regression 검증까지 성공했으며 main Pages publication은 아직 pending
 - 물리 모바일 최종 UX 검수는 유지관리 gate로 남음
 
 ## 프로젝트 상태
@@ -39,7 +41,8 @@
 | [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 합성 사용자·issuer·audience 바인딩 SSO 샘플. 실제 회사 시스템 검증을 뜻하지 않음 |
 | [MyBatis 기간 조회 정합성](../02_projects/case-study-samples/mybatis-query-correctness/README.md) | 독립 Spring Boot/MyBatis/H2 샘플 있음 | 12개 성공; final PR regression `33251272174` | [사례 게시물](case-studies/mybatis-query-correctness.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33251362190` 성공. Oracle 실행계획·운영 성능 수치는 미검증 |
 | [WAR 배포 이식성](../02_projects/case-study-samples/war-deployment-portability/README.md) | 독립 Spring Boot WAR 샘플 있음 | 10개 성공; final PR regression `33252086213` | [사례 게시물](case-studies/war-deployment-portability.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33252148733` 성공. 실제 외부 Tomcat rolling/zero-downtime/SLA는 미검증 |
-| [Java/Spring 사례 후보](case-study-index.md) | 권한 있는 원본에서 일부 확인 | 공개 독립 샘플 3건 검증, 그중 2건 publication gate 완료 | 후보 인덱스 있음 | `CS-JAVA-06` active; `published` 2건, `sample-verified` 1건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
+| [업무 규칙 정합성](../02_projects/case-study-samples/business-rule-consistency/README.md) | 독립 Spring Boot 합성 샘플 있음 | 11개 성공; PR regression `33275860098` 전체 8개 job 성공 | [사례 게시물](case-studies/business-rule-consistency.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | canonical identity/latest-only/Mapper ownership/fail-closed 경계를 검증. 실제 회사 시스템 전체 정합성과 main Pages publication은 미검증 |
+| [Java/Spring 사례 후보](case-study-index.md) | 권한 있는 원본에서 일부 확인 | 공개 독립 샘플 4건 검증, 그중 2건 publication gate 완료 | 후보 인덱스 있음 | `CS-JAVA-06` publication active; `published` 2건, `sample-verified` 2건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
 | [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
 | [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 주요 구성요소 누락 |
 | [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | 참조 service, 앱 진입점, 저장 모델, tests 보완 필요 |
@@ -143,6 +146,28 @@
 
 상세: [`../02_projects/case-study-samples/war-deployment-portability/VERIFICATION.md`](../02_projects/case-study-samples/war-deployment-portability/VERIFICATION.md)
 
+## `CS-JAVA-06` 업무 규칙 정합성 공개 재현 증거
+
+권한 있는 비공개 원본에서 본인 author/committer 변경과 사용자 식별, 화면별 최신 기준, 사용자 전용 조회 경로, null-safe 최신 기준 처리 범위를 재확인한 뒤 회사 원본과 독립된 합성 샘플로 재현했습니다.
+
+검증된 공개 샘플 경계:
+
+- Java 21 + Spring Boot 3.5.16
+- session canonical `subjectId` 우선과 canonical 부재 시 제한적 legacy fallback
+- 인증 주체 부재 `401` fail-closed
+- `LATEST_ONLY`에서 요청 year/month가 결과 기준을 바꾸지 않음
+- `EXPLICIT_OR_LATEST`에서 완전한 year/month만 명시 snapshot으로 허용
+- Service가 확정한 `subjectId + SnapshotKey`만 Mapper에 전달
+- 잘못된/불완전한 기간 `400`, snapshot 부재 `404`
+- request parameter로 session identity를 덮어쓸 수 없음
+- 11개 MockMvc 자동 테스트
+- PR run `33275860098`의 `Business-rule consistency` job PASS
+- 같은 run의 Jekyll/public portfolio/Spring Security/MyBatis/WAR/OpsMate/container-runbook 포함 전체 8개 job PASS
+
+검증하지 않은 것: 실제 회사 SSO/session E2E, 회사 Mapper SQL/운영 DB 결과, 운영 데이터 전체 정합성, 조직 전체 업무 규칙 설계 책임, 운영 트래픽/SLA.
+
+상세: [`../02_projects/case-study-samples/business-rule-consistency/VERIFICATION.md`](../02_projects/case-study-samples/business-rule-consistency/VERIFICATION.md)
+
 ## 회사 GitHub 실무 근거
 
 원본은 회사 소유 비공개 저장소이며 공개 저장소에는 코드와 내부 식별자를 복사하지 않습니다. 상세 공개 범위와 claim은 [`../evidence/company-github/README.md`](../evidence/company-github/README.md)에서 확인합니다.
@@ -175,12 +200,12 @@
 
 ## 현재 active 공개 재현 작업
 
-`CS-JAVA-06` — 업무 규칙 정합성을 다음 active Java/Spring 사례로 선택했습니다.
+`CS-JAVA-06` — 업무 규칙 정합성 publication gate가 active입니다.
 
-- 현재 상태: `source-reviewed`
-- 다음 gate: 권한 있는 비공개 원본에서 본인 귀속과 실제 결함/수정 경계를 재확인
-- 공개 재현 방향: 주문·회원 합성 도메인의 Controller-Service-Mapper에서 canonical business rule, user identity와 persistence filter를 일관되게 적용
-- 금지: 회사 코드·테이블·식별자·데이터 복사, 팀 전체 결과를 개인 성과로 확대
+- 현재 상태: `sample-verified`
+- sample evidence: 11개 테스트 + PR run `33275860098` 전체 8개 job PASS
+- 남은 gate: `sample-verified` 상태 동기화의 최신 전체 PR regression -> main merge -> Pages build/deploy -> `published`
+- 금지: 회사 코드·테이블·식별자·데이터 복사, 실제 회사 전체 정합성이나 팀 전체 결과를 개인 성과로 확대
 
 ## 현재 판단
 
@@ -189,6 +214,7 @@
 - Java/Spring Security 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
 - MyBatis 기간 조회를 결과 정합성, tenant isolation, count/page 일치, deterministic pagination과 index-friendly SQL shape로 검증하는 방식
 - WAR 서비스의 external-container bootstrap, non-root context path, 외부 config fail-closed와 health rollback을 검증하는 방식
+- canonical session identity, 화면별 snapshot policy, Service-Mapper responsibility와 fail-closed를 회귀 테스트로 고정하는 방식
 - AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두고 workspace·모델 호출량·DB 권한·서비스 수명주기까지 통제하는 설계와 구현
 - 실제 오픈웨이트 모델 구조화 출력을 Spring 서버 검증·저장 경계까지 연결한 E2E
 - immutable deployment artifact, private DB/model network, restricted tunnel, public HTTPS ingress, rate/session/egress boundary와 normal/emergency lifecycle bounded E2E
@@ -202,6 +228,7 @@
 - OpsMate의 24x7 Internet 운영, SLA, 장기 부하와 production traffic 규모 증명
 - MyBatis 샘플의 실제 Oracle 실행계획 또는 운영 성능 증명
 - WAR 샘플의 실제 외부 Tomcat zero-downtime/session-drain/SLA 증명
+- 업무 규칙 샘플의 실제 회사 SSO/session, Mapper SQL/운영 DB, 운영 데이터 전체 정합성 증명
 - 프로젝트별 정량 성과와 본인 기여 범위 전체 증명
 
 ## 갱신 규칙
