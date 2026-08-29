@@ -34,28 +34,38 @@ The active execution ledger, dependencies and verification evidence are maintain
 - status/evidence Pages publication run `33250726427`: success
 - bounded E2E only; do not claim 24x7 SLA, long-duration load or production traffic scale
 
-### 2. CS-JAVA-02 MyBatis query correctness publication — ACTIVE
-- authorized source re-review: complete; personal SQL-improvement attribution reconfirmed without exposing private source identifiers
-- independent synthetic Spring Boot/MyBatis/H2 sample: implemented
-- automatic tests: 12 passed in PR run `33251026033` (`MyBatis query correctness` job)
-- verified boundaries: same/cross-year range correctness, tenant isolation, count/page consistency, deterministic pagination, invalid input, composite index presence, BoundSql shape
-- company SQL/schema/data/identifiers are not copied
+### 2. CS-JAVA-02 MyBatis query correctness publication — COMPLETE
+- authorized source re-review: complete
+- independent Spring Boot/MyBatis/H2 sample: 12 tests PASS
+- final PR regression run `33251272174`: PASS
+- main Pages run `33251362190`: verify/build/deploy PASS
+- status: `published`
 - actual Oracle execution plan and production performance numbers remain unverified and must not be claimed
-- remaining gate: latest whole-portfolio regression -> merge -> GitHub Pages deploy -> public case/sample link check
 
-### 3. next Java/Spring case study selection
-- after CS-JAVA-02 is published, choose the next `source-reviewed` case
-- prefer a case that adds a distinct backend dimension rather than repeating authentication/query themes
-- reconfirm attribution and disclosure boundary before implementation
-- implement with synthetic data and normal/failure/boundary tests
+### 3. CS-JAVA-03 WAR deployment portability publication — COMPLETE
+- authorized source re-review: WAR deploy workflow/runbook, context-path, profile/config contribution boundary reconfirmed
+- independent Java 21 / Spring Boot 3.5.16 WAR sample: 10 tests PASS
+- sample boundaries: external-container initializer, non-root context path, deploy-profile fail-closed, backup/replace/health/rollback
+- final PR regression run `33252086213`: 7 jobs PASS
+- main Pages run `33252148733`: 7 verify jobs + build + deploy PASS
+- status: `published`
+- real external Tomcat rolling deployment, session drain, zero-downtime and production SLA remain unverified and must not be claimed
 
-### 4. portfolio publication maintenance
+### 4. CS-JAVA-06 business-rule consistency publication — ACTIVE
+- re-review authorized source attribution and the exact defect/fix boundary before making new company-work claims
+- keep this case distinct from authentication, SQL query shape and deployment portability
+- define a synthetic order/member domain that reproduces Controller-Service-Mapper rule consistency without company identifiers/data/code
+- design normal, failure and boundary regressions before implementation
+- verify one canonical rule source is used consistently across entry paths and persistence queries
+- publish only after sample CI, whole-portfolio regression and Pages deploy succeed
+
+### 5. portfolio publication maintenance
 - check Pages deployment and public links after material changes
 - keep status badges, test counts and limitations synchronized
 - perform physical mobile UX verification when practical
 - refresh sanitized company GitHub evidence at the defined review interval
 
-### 5. older sample disposition
+### 6. older sample disposition
 - keep `ai-rag-api`, `backend-platform-template`, and `security-audit-log` as supporting work only
 - repair a sample only when it strengthens the approved two-track strategy
 - otherwise mark it partial or archive it without presenting it as a flagship
@@ -70,4 +80,4 @@ A task is complete only when:
 - tests pass
 - documentation matches implementation
 - any external/runtime gate claimed as complete has bounded execution evidence
-- any publication claim has current Pages build/deploy and public-link evidence
+- any publication claim has current Pages build/deploy evidence
