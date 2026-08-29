@@ -34,6 +34,7 @@
 - [x] `2026-08-23` 실제 모델 E2E 기록
 - [x] `2026-08-25` Synology internal deployment/network/security/lifecycle E2E 기록
 - [x] `2026-08-29` public Internet deployment/network/lifecycle E2E 증거 확보
+- [x] `AI_CONTEXT.md`, `WORKS.md`, `TASKS.md`, `evidence-index.md`, case-study queue를 public E2E 상태와 동기화
 - [ ] 최신 public evidence/state 문서의 portfolio CI와 Pages deploy 성공 확인
 
 사용자 작업: 없음.
@@ -126,14 +127,17 @@
 
 ### P50. 두 번째 Java/Spring 사례 공개 — `in-progress`
 
-OpsMate의 목표 gate가 완료됐으므로 현재 작업 우선순위는 여기로 이동한다.
+OpsMate 목표 gate가 완료됐으므로 현재 작업 우선순위는 여기다.
 
-- [ ] `03_portfolio/case-study-index.md`의 `source-reviewed` 후보 중 우선 사례 선택
+- [x] `CS-JAVA-02` — MyBatis·Oracle 업무 조회 정합성/성능 지향 사례 선택
 - [ ] authorized evidence에서 본인 기여·공개 경계 재확인
+- [ ] 회사 원본과 독립된 합성 요구사항·테스트 설계
 - [ ] 합성 도메인으로 독립 구현
 - [ ] 정상·실패·경계 테스트
 - [ ] 공개 문서·코드 검수
 - [ ] Pages 게시 및 링크 확인
+
+공개 샘플에서는 `filter/count/page` 정합성, deterministic ordering, index-friendly range predicate를 중심으로 재현한다. Oracle 고유 실행계획이나 운영 성능 수치는 공개 재현 또는 권한 있는 재확인 전까지 주장하지 않는다.
 
 사용자 작업: 기존 authorized evidence로 확정할 수 없는 내부 사실이 반드시 필요한 경우에만 요청한다.
 
@@ -148,7 +152,7 @@ OpsMate의 목표 gate가 완료됐으므로 현재 작업 우선순위는 여�
 
 현재 즉시 필요한 사용자 작업은 없다.
 
-OpsMate 검증 종료 후 application workload는 의도대로 `CLOSED`이며 PostgreSQL persistent volume은 보존돼 있다. 다음 작업은 두 번째 Java/Spring 사례를 기존 authorized evidence에서 선택해 독립 재구현하는 것이다.
+OpsMate 검증 종료 후 application workload는 의도대로 `CLOSED`이며 PostgreSQL persistent volume은 보존돼 있다. 현재 active work는 `CS-JAVA-02`의 독립 공개 재구현이다.
 
 ## 완료 판정
 
