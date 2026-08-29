@@ -7,11 +7,13 @@
 
 ## 현재 실행 대상
 
-- `CS-JAVA-02` — MyBatis·Oracle 업무 조회의 정합성과 성능을 함께 고친 과정
-- 선택 이유: 첫 공개 사례인 Spring Security 인증 통합과 중복되지 않으면서 Java/Spring 백엔드의 SQL·데이터 접근 계층 깊이를 보강한다.
-- 공개 구현 원칙: 회사 SQL·스키마·식별자·데이터는 복사하지 않고 합성 도메인으로 `filter/count/page` 정합성, 결정적 정렬, index-friendly range predicate와 회귀 테스트를 재현한다.
-- 성능 표현 원칙: 공개 샘플에서 재현한 결과만 수치화한다. 실제 Oracle 실행계획이나 운영 성능 수치는 권한 있는 원본에서 다시 확인되지 않는 한 주장하지 않는다.
-- 다음 gate: 기존 `source-reviewed` 근거를 유지하되 새 회사-work claim을 만들기 전 본인 귀속·공개 경계를 재확인하고, 독립 샘플의 요구사항/테스트부터 작성한다.
+- `CS-JAVA-02` — MyBatis 기간 조회의 정합성과 인덱스 친화 조건을 함께 설계하기
+- 권한 있는 비공개 원본에서 본인 귀속 SQL 변경 범위를 재확인했다.
+- 회사 SQL·schema·식별자·데이터를 복사하지 않고 합성 Spring Boot/MyBatis/H2 샘플을 구현했다.
+- `filter/count/page` 정합성, 결정적 정렬, index-friendly range predicate와 입력 실패 경계를 자동 테스트로 검증했다.
+- MyBatis `BoundSql`에서 cross-year 구간이 상호 배타적 `UNION ALL`로 구성되고 indexed year/month column 변환과 기간 `OR`이 없는지 검증했다.
+- 공개 샘플 Maven CI는 성공했다. 실제 Oracle 실행계획과 운영 성능 수치는 여전히 별도 미검증 boundary다.
+- 다음 gate: 전체 PR regression과 GitHub Pages 게시·링크 확인 후 `published` 여부를 판정한다.
 
 ## 상태 정의
 
@@ -22,7 +24,7 @@
 | `redaction-reviewed` | 공개 금지 정보와 재구현 경계를 검토 |
 | `sample-implemented` | 회사 코드와 독립된 공개 샘플 코드 존재 |
 | `sample-verified` | 공개 샘플의 최근 테스트 성공 기록 존재 |
-| `published` | 게시물, 코드와 검증 근거가 서로 일치 |
+| `published` | 게시물, 코드와 검증 근거가 서로 일치하고 공개 Pages에서 확인됨 |
 | `hold` | 귀속, 보안 또는 구현 근거가 부족해 사용 보류 |
 
 ## Priority 1. Java/Spring 실무 깊이
@@ -30,7 +32,7 @@
 | ID | 게시물 후보 | 근거 | 현재 상태 | 공개 코드 방식 | 다음 확인 |
 |---|---|---|---|---|---|
 | `CS-JAVA-01` | [레거시 SSO와 DB 계정 인증을 Spring Security로 통합한 과정](case-studies/spring-security-auth-bridge.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 + 공개 샘플 24개 테스트 성공 | `sample-verified` | [가상 사용자 저장소, issuer·audience 바인딩 SSO adapter와 RBAC 독립 샘플](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 공개 블로그 배포 후 링크·렌더링 확인 |
-| `CS-JAVA-02` | [MyBatis·Oracle 업무 조회의 정합성과 성능을 함께 고친 과정](case-studies/mybatis-query-correctness.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 | `source-reviewed`, **active** | 합성 스키마로 조건 정합성, 인덱스 친화 범위 조건, count/page 일치와 쿼리 전후 구조 재현 | 독립 요구사항·회귀 테스트 작성 후 공개 샘플 구현; Oracle 고유 성능 수치는 별도 검증 전 사용 금지 |
+| `CS-JAVA-02` | [MyBatis 기간 조회의 정합성과 인덱스 친화 조건을 함께 설계하기](case-studies/mybatis-query-correctness.md) | `WORK-EDU-01`, `E2`, 권한 있는 비공개 원본에서 본인 귀속 SQL 개선 범위 재확인 + 공개 샘플 12개 테스트 성공 | `sample-verified`, **active** | [합성 Spring Boot/MyBatis/H2 샘플](../02_projects/case-study-samples/mybatis-query-correctness/README.md): 기간 구간 분해, count/page 공통 filter, 결정적 pagination, SQL shape 검증 | 전체 PR regression과 Pages 게시 확인; Oracle 실행계획·운영 성능 수치는 별도 증거 전 사용 금지 |
 | `CS-JAVA-03` | [WAR 기반 Spring MVC/JSP 서비스를 환경 독립적으로 배포한 과정](case-studies/war-deployment-portability.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 | `source-reviewed` | Tomcat, context path, profile, health와 rollback을 포함한 독립 샘플 | 내부 인프라 제거 후 배포·경로 회귀 시나리오 작성 |
 | `CS-JAVA-04` | Java 업무 화면과 Python 분석 결과 재적재를 연결한 데이터 서비스 | `WORK-DATA-01`, `E2`, `implemented` | `candidate` | 가상 분석 결과와 DB를 사용하는 Java/Python 연계 샘플 | 개인 기여 코드, 트랜잭션 경계와 운영 반영 범위 재확인 |
 | `CS-JAVA-11` | [Java/Spring 통계 품질 분석 화면에서 CSV·Excel 데이터와 Xbar-R 시각화를 연결한 과정](case-studies/statistical-analysis-ui.md) | `WORK-DATA-03`, `E2`, 추가 업무 계정 소유와 비공개 코드 일부 기여 확인 | `source-reviewed` | 합성 측정값과 공개 수식으로 업로드·집계·차트 흐름을 독립 구현 | 직접 기여 범위를 화면·데이터 처리 단위로 제한하고 통계 정확도 테스트 설계 |
@@ -48,7 +50,7 @@
 | `CS-JAVA-09` | 확장자와 파일 시그니처를 함께 검사하는 업로드 검증 | Multipart 처리, allowlist, magic number, 설정 외부화 | `hold` | 크기·단축 입력·MIME 불일치·악성 fixture 테스트 추가 |
 | `CS-JAVA-10` | DB 버전 차이로 깨진 목록 페이징을 호환 구조로 복구한 과정 | MyBatis, pagination, 레거시 DB 호환성 | `hold` | Testcontainers 기반 버전별 재현과 실행계획 비교 |
 
-다섯 사례 모두 원본 코드와 본인 귀속을 확인했습니다. 이 중 `CS-JAVA-01`은 회사 코드와 독립된 공개 샘플의 24개 테스트까지 성공해 `sample-verified`이며, 나머지 네 사례는 공개 재현 전이므로 `source-reviewed`입니다. GitHub Pages에서 글·코드·검증 링크를 확인하기 전에는 `published`로 표시하지 않습니다.
+`CS-JAVA-01`과 `CS-JAVA-02`는 회사 코드와 독립된 공개 샘플의 최근 테스트가 성공해 `sample-verified`입니다. 나머지 `source-reviewed` 사례는 공개 재현 코드와 테스트가 생기기 전 완료 상태로 올리지 않습니다. GitHub Pages에서 글·코드·검증 링크를 확인하기 전에는 `published`로 표시하지 않습니다.
 
 ## Priority 2. AI 응용과 검증
 
