@@ -7,10 +7,9 @@
 
 ## 현재 실행 대상
 
-- `CS-JAVA-06` publication은 완료되었습니다.
-- 권한 있는 비공개 원본에서 본인 author/committer 변경으로 canonical 사용자 식별자 우선, legacy fallback, 기간 선택이 없는 화면의 latest-only 정책, 사용자 전용 Mapper 경로와 null-safe 최신 기준 처리 범위를 재확인했습니다.
-- 회사 클래스명·endpoint·field·SQL·schema·실제 데이터는 복사하지 않고 `member snapshot` 합성 도메인으로 독립 Spring 샘플을 구현했습니다.
-- 11개 회귀 테스트, 최종 PR run `33276143715`의 전체 8개 job, main Pages run `33276278894`의 8개 verify + build + deploy가 모두 PASS했습니다.
+- `CS-JAVA-01`, `CS-JAVA-02`, `CS-JAVA-03`, `CS-JAVA-06`의 독립 공개 샘플은 모두 publication gate를 충족했습니다.
+- `CS-JAVA-01`은 24개 독립 테스트 성공과 main Pages run `33276912458`의 Spring Security regression, public/Jekyll 검사, Pages build/deploy 성공을 근거로 `published`로 확정했습니다.
+- 회사 코드와 데이터는 복사하지 않고 합성 도메인과 비식별 설계 경계만 공개합니다.
 - 다음 신규 사례는 별도 source review 후 선택하며, 현재 즉시 publication pending인 Java 사례는 없습니다.
 
 ## 상태 정의
@@ -29,7 +28,7 @@
 
 | ID | 게시물 후보 | 근거 | 현재 상태 | 공개 코드 방식 | 다음 확인 |
 |---|---|---|---|---|---|
-| `CS-JAVA-01` | [레거시 SSO와 DB 계정 인증을 Spring Security로 통합한 과정](case-studies/spring-security-auth-bridge.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 + 공개 샘플 24개 테스트 성공 | `sample-verified` | [가상 사용자 저장소, issuer·audience 바인딩 SSO adapter와 RBAC 독립 샘플](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 공개 블로그 배포 후 링크·렌더링 확인 |
+| `CS-JAVA-01` | [레거시 SSO와 DB 계정 인증을 Spring Security로 통합한 과정](case-studies/spring-security-auth-bridge.md) | `WORK-EDU-01`, `E2`, 회사 비공개 코드와 본인 귀속 확인 + 공개 샘플 24개 테스트 성공 + main Pages run `33276912458` deploy 성공 | `published` | [가상 사용자 저장소, issuer·audience 바인딩 SSO adapter와 RBAC 독립 샘플](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 실제 IdP/DB/분산 세션/운영 부하는 별도 증거 전 사용 금지 |
 | `CS-JAVA-02` | [MyBatis 기간 조회의 정합성과 인덱스 친화 조건을 함께 설계하기](case-studies/mybatis-query-correctness.md) | `WORK-EDU-01`, `E2`, 권한 있는 비공개 원본에서 본인 귀속 SQL 개선 범위 재확인 + 공개 샘플 12개 테스트 성공 + main Pages run `33251362190` deploy 성공 | `published` | [합성 Spring Boot/MyBatis/H2 샘플](../02_projects/case-study-samples/mybatis-query-correctness/README.md): 기간 구간 분해, count/page 공통 filter, 결정적 pagination, SQL shape 검증 | Oracle 실행계획·운영 성능 수치는 별도 증거 전 사용 금지 |
 | `CS-JAVA-03` | [WAR 기반 Spring 서비스를 환경 독립적으로 배포한 과정](case-studies/war-deployment-portability.md) | `WORK-EDU-01`, `E2`, 권한 있는 비공개 원본에서 본인 귀속 deploy/context-path/profile/config 변경 범위 재확인 + 공개 샘플 10개 테스트 + PR run `33252086213` 전체 regression + main Pages run `33252148733` deploy 성공 | `published` | [합성 Spring Boot WAR 샘플](../02_projects/case-study-samples/war-deployment-portability/README.md): external container initializer, non-root context path, deploy profile fail-closed, health/rollback | 실제 외부 Tomcat rolling deployment·session drain·zero-downtime·SLA는 미검증 |
 | `CS-JAVA-04` | Java 업무 화면과 Python 분석 결과 재적재를 연결한 데이터 서비스 | `WORK-DATA-01`, `E2`, `implemented` | `candidate` | 가상 분석 결과와 DB를 사용하는 Java/Python 연계 샘플 | 개인 기여 코드, 트랜잭션 경계와 운영 반영 범위 재확인 |
@@ -48,7 +47,7 @@
 | `CS-JAVA-09` | 확장자와 파일 시그니처를 함께 검사하는 업로드 검증 | Multipart 처리, allowlist, magic number, 설정 외부화 | `hold` | 크기·단축 입력·MIME 불일치·악성 fixture 테스트 추가 |
 | `CS-JAVA-10` | DB 버전 차이로 깨진 목록 페이징을 호환 구조로 복구한 과정 | MyBatis, pagination, 레거시 DB 호환성 | `hold` | Testcontainers 기반 버전별 재현과 실행계획 비교 |
 
-`CS-JAVA-02`, `CS-JAVA-03`, `CS-JAVA-06`은 회사 코드와 독립된 공개 샘플 검증 및 main Pages deploy까지 완료해 `published`입니다. `CS-JAVA-01`은 공개 샘플이 검증된 상태를 유지합니다. 나머지 `source-reviewed` 사례는 공개 재현 코드와 테스트가 생기기 전 완료 상태로 올리지 않습니다.
+`CS-JAVA-01`, `CS-JAVA-02`, `CS-JAVA-03`, `CS-JAVA-06`은 회사 코드와 독립된 공개 샘플 검증 및 main Pages deploy까지 완료해 `published`입니다. 나머지 `source-reviewed` 사례는 공개 재현 코드와 테스트가 생기기 전 완료 상태로 올리지 않습니다.
 
 ## Priority 2. AI 응용과 검증
 

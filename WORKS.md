@@ -23,7 +23,7 @@
 | `W00` | GitHub 게시 환경 준비 | 인증된 GitHub CLI, 작업 브랜치 | CLI·계정·remote·branch 확인 | `verified` |
 | `W01` | 회사·개인 근거 정합화 | claim, 사례 인덱스, 추가 업무 계정 귀속 | 비식별 claim과 후보 상태 일치 | `verified` |
 | `W02` | 검수 체계 고정 | 이 ledger와 공통 체크리스트 | 모든 Work의 증거·공개 gate 정의 | `verified` |
-| `W03` | 첫 Java/Spring 사례 공개 | 인증 통합 게시물, 독립 샘플, 테스트 | 정상·실패·경계 테스트 성공과 공개 검수 | `verified` |
+| `W03` | 첫 Java/Spring 사례 공개 | 인증 통합 게시물, 독립 샘플, 테스트 | 정상·실패·경계 테스트 성공과 공개 검수·Pages deploy | `published` |
 | `W04` | 추가 업무 사례 정리 | Java/Spring·데이터·AI 사례 초안 | 각 글의 근거·한계·재현 계획 명시 | `verified` |
 | `W05` | OpsMate Local 구현 | 설계, 수직 기능, 테스트 | RBAC·상태·멱등성·fail-closed 테스트 성공 | `verified` |
 | `W06` | GitHub Pages 블로그 구현 | 홈, 탐색, 레이아웃, 배포 workflow | 반응형 규칙·링크·접근성·빌드 검수 | `verified` |
@@ -50,9 +50,18 @@ W00 -> W01 -> W02
 
 - 첫 공개 포트폴리오, Java/Spring 인증 통합 샘플, Jekyll Pages, 공개 링크/민감정보 검수는 완료 상태를 유지합니다.
 - Spring Security 인증 브리지는 회사 코드와 독립된 합성 샘플로 24개 자동 테스트 성공 근거를 유지합니다.
+- main commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`의 Pages run `33276912458`에서 Spring Security regression, public/Jekyll 검사, Pages build/deploy가 모두 성공해 `CS-JAVA-01` publication gate를 충족했습니다.
 - 회사 업무는 원본 비공개 코드를 복사하지 않고 비식별 claim과 독립 재현 상태를 분리합니다.
 - OpsMate public evidence 반영 main Pages run `33250726427`의 verify matrix, Jekyll build와 deploy가 모두 성공 (`2026-08-29`).
 - Java 사례 publication-state 동기화 main Pages run `33252607907`도 verify/build/deploy가 성공했습니다.
+
+### W03 — `CS-JAVA-01` Spring Security 인증 브리지 — `published`
+
+- 독립 Java 21 / Spring Boot 3.5.16 합성 인증 샘플
+- 24개 자동 테스트: DB/SSO 로그인, RBAC, session rotation, CSRF lifecycle, issuer/audience/keyId/signature, nonce replay, 시간 경계와 fail-closed 설정
+- main publication evidence commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`
+- main Pages run `33276912458`: Spring Security regression + public portfolio + Jekyll + Pages build/deploy PASS
+- 실제 외부 IdP, 운영 DB, 분산 session, Redis replay store, 대규모 부하/SLA는 미검증
 
 ### W09 — OpsMate Local
 
@@ -107,6 +116,6 @@ W00 -> W01 -> W02
 
 ## 다음 실행 순서
 
-1. W12 publication-state 동기화 PR을 검증·merge해 상태 문서를 실제 Pages 증거와 일치시킵니다.
-2. 이후 신규 Java/Spring 사례는 기존 인증·SQL·배포·업무 규칙과 다른 backend dimension을 우선합니다.
-3. `evidence/company-github/monthly/`를 월말 갱신하고 Pages/링크를 유지관리합니다.
+1. Java/Spring 핵심 공개 사례 4건은 추가 개발 없이 유지합니다.
+2. 신규 사례는 지원 직무상 뚜렷한 증거 공백이 생길 때만 `CS-JAVA-11` 등 source-reviewed 후보에서 선택합니다.
+3. Pages/링크/모바일 baseline 회귀와 `evidence/company-github/monthly/` 월말 갱신을 유지관리합니다.

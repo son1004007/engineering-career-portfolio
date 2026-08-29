@@ -33,18 +33,19 @@
 - 업무 규칙 정합성 `CS-JAVA-06` final PR regression run `33276143715`: 8개 job 전체 성공
 - `CS-JAVA-06` main commit `733db7c614af5613216773b3b1fc6b3567e0b84c`
 - `CS-JAVA-06` main Pages run `33276278894`: 8개 verify job + build + deploy 성공 (`2026-08-30`)
-- 물리 모바일 최종 UX 검수는 유지관리 gate로 남음
+- Spring Security `CS-JAVA-01` publication evidence: main commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`, Pages run `33276912458`의 Spring Security/public/Jekyll/Pages build/deploy 성공 (`2026-08-30`)
+- 모바일 baseline은 viewport, 52rem/32rem responsive breakpoints, nav/code/table horizontal-overflow guard를 public portfolio test로 고정하며 물리 단말 육안 검수는 선택적 유지관리 항목으로 둠
 
 ## 프로젝트 상태
 
 | 프로젝트 | 코드 | 테스트 | 문서 | 현재 상태 | 확인 사항 |
 |---|---:|---:|---:|---|---|
 | [OpsMate Local](../02_projects/opsmate-local/README.md) | 수직 기능, 공개 웹, workspace/model guard, PostgreSQL, restricted tunnel, 배포/lifecycle 자산 있음 | 실제 `gemma3:12b` 9/9 E2E + Synology internal E2E + public Internet bounded E2E 성공 | README·ARCHITECTURE·SETUP·PUBLIC_DEMO·THREAT_MODEL·SERVICE_RUNBOOK·3종 E2E evidence | `implemented`, `tested-component`; 명시된 real-model/NAS/public boundary `verified` | 24x7 SLA, 장기 부하, 대규모 실제 사용자 운영은 검증/주장하지 않음. workload `CLOSED` |
-| [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공 | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `sample-verified` | 합성 사용자·issuer·audience 바인딩 SSO 샘플. 실제 회사 시스템 검증을 뜻하지 않음 |
+| [Spring Security 인증 브리지](../02_projects/case-study-samples/spring-security-auth-bridge/README.md) | 독립 공개 샘플 있음 | 24개 성공; main Pages run `33276912458` Spring Security regression PASS | [사례 게시물](case-studies/spring-security-auth-bridge.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | 합성 사용자·issuer·audience 바인딩 SSO 샘플. 실제 IdP/DB/분산 세션/운영 부하는 미검증 |
 | [MyBatis 기간 조회 정합성](../02_projects/case-study-samples/mybatis-query-correctness/README.md) | 독립 Spring Boot/MyBatis/H2 샘플 있음 | 12개 성공; final PR regression `33251272174` | [사례 게시물](case-studies/mybatis-query-correctness.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33251362190` 성공. Oracle 실행계획·운영 성능 수치는 미검증 |
 | [WAR 배포 이식성](../02_projects/case-study-samples/war-deployment-portability/README.md) | 독립 Spring Boot WAR 샘플 있음 | 10개 성공; final PR regression `33252086213` | [사례 게시물](case-studies/war-deployment-portability.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33252148733` 성공. 실제 외부 Tomcat rolling/zero-downtime/SLA는 미검증 |
 | [업무 규칙 정합성](../02_projects/case-study-samples/business-rule-consistency/README.md) | 독립 Spring Boot 합성 샘플 있음 | 11개 성공; final PR regression `33276143715` 전체 8개 job 성공 | [사례 게시물](case-studies/business-rule-consistency.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33276278894` 성공. canonical identity/latest-only/Mapper ownership/fail-closed 경계를 검증했으며 실제 회사 시스템 전체 정합성은 미검증 |
-| [Java/Spring 사례 후보](case-study-index.md) | 권한 있는 원본에서 일부 확인 | 공개 독립 샘플 4건 검증, 그중 3건 publication gate 완료 | 후보 인덱스 있음 | `published` 3건, `sample-verified` 1건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
+| [Java/Spring 사례 후보](case-study-index.md) | 권한 있는 원본에서 일부 확인 | 공개 독립 샘플 4건 검증, 4건 publication gate 완료 | 후보 인덱스 있음 | `published` 4건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
 | [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
 | [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 주요 구성요소 누락 |
 | [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | 참조 service, 앱 진입점, 저장 모델, tests 보완 필요 |
@@ -102,6 +103,28 @@
 상세: [`../02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](../02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
 
 이 증거는 bounded deployment/network/security/lifecycle 검증입니다. 24x7 SLA, 장기 부하, DDoS/WAF 전문 방어, production traffic 규모를 의미하지 않습니다.
+
+## `CS-JAVA-01` Spring Security 인증 브리지 공개 재현 증거
+
+권한 있는 비공개 원본에서 본인 귀속 인증 통합 범위를 확인한 뒤 회사 코드·계정·역할명·설정·내부 식별자를 사용하지 않는 독립 Spring Security 샘플로 재현했습니다.
+
+검증된 공개 샘플 경계:
+
+- Java 21 + Spring Boot 3.5.16
+- DB credential과 signed SSO assertion을 하나의 local user/RBAC 모델로 수렴
+- issuer, audience, active keyId와 HMAC signature 검증
+- local active status와 role을 최종 권한 source로 사용
+- session id rotation과 SecurityContext 저장
+- session/cookie/header CSRF 수명주기와 이전 token 재사용 거부
+- nonce replay 차단과 시간 경계 검증
+- 비밀 누락·길이 부족 시 SSO fail-closed
+- 24개 자동 테스트, 실패·오류·건너뜀 0 (`2026-08-03` 기록)
+- main commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`
+- main Pages run `33276912458`: Spring Security regression + public portfolio + Jekyll + Pages build/deploy PASS
+
+검증하지 않은 것: 실제 외부 IdP, 운영 DB, 분산 세션, Redis nonce store, 로그인 rate limit, 감사 이벤트, 대규모 동시 접속, 실제 운영 전환과 SLA.
+
+상세: [`../02_projects/case-study-samples/spring-security-auth-bridge/VERIFICATION.md`](../02_projects/case-study-samples/spring-security-auth-bridge/VERIFICATION.md)
 
 ## `CS-JAVA-02` MyBatis 공개 재현 증거
 
@@ -204,12 +227,13 @@
 
 ## 최근 완료된 공개 재현 작업
 
-`CS-JAVA-06` — 업무 규칙 정합성 publication gate를 완료했습니다.
+Java/Spring 공개 사례 4건의 publication gate를 완료했습니다.
 
-- 현재 상태: `published`
-- sample evidence: 11개 테스트 + final PR regression run `33276143715` 전체 8개 job PASS
-- publication evidence: main commit `733db7c614af5613216773b3b1fc6b3567e0b84c`, main Pages run `33276278894`의 8개 verify + build + deploy PASS
-- 금지: 회사 코드·테이블·식별자·데이터 복사, 실제 회사 전체 정합성이나 팀 전체 결과를 개인 성과로 확대
+- `CS-JAVA-01`: Spring Security 인증·인가·세션·CSRF, 24개 테스트 + main Pages `33276912458`
+- `CS-JAVA-02`: MyBatis 기간 정합성, 12개 테스트 + main Pages `33251362190`
+- `CS-JAVA-03`: WAR 배포 이식성, 10개 테스트 + main Pages `33252148733`
+- `CS-JAVA-06`: 업무 규칙 정합성, 11개 테스트 + main Pages `33276278894`
+- 공통 금지: 회사 코드·테이블·식별자·데이터 복사, 팀 전체 결과나 실제 운영 성과로의 확대 해석
 
 ## 현재 판단
 
@@ -230,6 +254,7 @@
 - 프로덕션 수준 백엔드·플랫폼 숙련도 전체 증명
 - 대규모 트래픽·분산 시스템·클라우드 네이티브 운영 증명
 - OpsMate의 24x7 Internet 운영, SLA, 장기 부하와 production traffic 규모 증명
+- Spring Security 샘플의 실제 외부 IdP/운영 DB/분산 세션/운영 부하 증명
 - MyBatis 샘플의 실제 Oracle 실행계획 또는 운영 성능 증명
 - WAR 샘플의 실제 외부 Tomcat zero-downtime/session-drain/SLA 증명
 - 업무 규칙 샘플의 실제 회사 SSO/session, Mapper SQL/운영 DB, 운영 데이터 전체 정합성 증명

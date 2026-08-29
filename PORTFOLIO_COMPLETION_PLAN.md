@@ -61,6 +61,23 @@
 
 사용자 작업: 없음.
 
+### P45. 첫 Java/Spring 사례 `CS-JAVA-01` — `verified`
+
+주제: **DB 로그인과 레거시 SSO를 하나의 Spring Security 권한 체계로 통합**
+
+- [x] authorized source에서 본인 귀속 인증 통합 범위 확인
+- [x] 회사 코드·계정·역할명·내부 설정 비복사 경계 확정
+- [x] Java 21 + Spring Boot 3.5.16 독립 Spring Security 샘플 구현
+- [x] DB/SSO 인증 수렴, local RBAC, session rotation, CSRF lifecycle, nonce replay와 fail-closed 설정 검증
+- [x] 24개 자동 테스트 성공
+- [x] main publication evidence commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`
+- [x] main Pages run `33276912458`: Spring Security regression + public/Jekyll + Pages build/deploy 성공
+- [x] 상태: `published`
+
+실제 외부 IdP, 운영 DB, 분산 session, Redis nonce store, 대규모 동시 접속과 SLA는 검증하지 않았다.
+
+사용자 작업: 없음.
+
 ### P50. 두 번째 Java/Spring 사례 `CS-JAVA-02` — `verified`
 
 주제: **MyBatis 기간 조회의 정합성과 인덱스 친화 조건을 함께 설계하기**
@@ -124,6 +141,8 @@ CI context-path 관측은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat 
 
 ### P70. 다음 Java/Spring 사례 선택 — `pending`
 
+현재 핵심 포트폴리오 완료 조건에는 신규 사례가 필요하지 않습니다. 추가 사례는 지원 직무에서 명확한 증거 공백이 확인될 때만 선택합니다.
+
 선택 기준:
 
 1. 인증·SQL·WAR 배포·업무 규칙과 다른 backend dimension을 추가할 것
@@ -131,27 +150,29 @@ CI context-path 관측은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat 
 3. 회사 코드와 독립된 합성 샘플로 정상·실패·경계 테스트가 가능할 것
 4. 확인되지 않은 운영 성과를 필요로 하지 않을 것
 
-`CS-JAVA-11` 통계 분석 UI는 데이터 처리/시각화 관점을 추가할 수 있는 `source-reviewed` 후보입니다. 다음 사례로 채택하기 전 직접 기여 경계와 통계 검증 범위를 다시 확인합니다.
+`CS-JAVA-11` 통계 분석 UI는 데이터 처리/시각화 관점이 실제 지원 직무에 필요할 때 선택 가능한 `source-reviewed` 후보입니다.
 
 ### P80. 포트폴리오 유지관리 — `pending`
 
-- [ ] Pages 링크/배포 상태 정기 확인
-- [ ] 물리 모바일 최종 UX 검수
-- [ ] 회사 GitHub evidence 월말 갱신
-- [ ] 완료·미검증 badge와 테스트/증거 동기화
+- [x] 현재 Pages 링크/배포 상태와 공개 상태값 동기화
+- [x] viewport, 52rem/32rem responsive breakpoint, nav/code/table overflow 모바일 baseline을 자동 회귀 테스트로 고정
+- [x] `published` 배지를 내부 상태값 대신 사용자용 문구로 표시
+- [x] 홈의 OpsMate 검증 범위를 최신 public E2E 사실과 동기화
+- [ ] 실제 물리 단말 육안 spot-check는 선택적 유지관리
+- [ ] 회사 GitHub evidence 월말 갱신은 반복 유지관리
 
 ## 현재 사용자에게 필요한 작업
 
 현재 즉시 필요한 사용자 작업은 없다.
 
-OpsMate workload는 `CLOSED` 상태를 유지한다. `CS-JAVA-02`, `CS-JAVA-03`, `CS-JAVA-06` publication gate는 완료되었으며 다음 단계는 신규 사례 선택과 유지관리다.
+OpsMate workload는 `CLOSED` 상태를 유지한다. `CS-JAVA-01`, `CS-JAVA-02`, `CS-JAVA-03`, `CS-JAVA-06` publication gate는 완료되었으며 신규 사례는 필수가 아니다.
 
 ## 완료 판정
 
 1. GitHub Pages 포트폴리오: `published`
 2. OpsMate code/regression + real-model/internal/public bounded E2E: `verified`
 3. OpsMate 24x7 운영/SLA/장기 부하: `not claimed`
-4. 첫 Java/Spring 인증 사례: `sample-verified`
+4. 첫 Java/Spring 인증 사례: `published`
 5. 두 번째 MyBatis 사례: `published`
 6. 세 번째 WAR deployment 사례: `published`
 7. 네 번째 업무 규칙 정합성 사례: `published`

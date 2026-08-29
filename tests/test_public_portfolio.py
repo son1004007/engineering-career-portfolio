@@ -98,6 +98,34 @@ class PublicPortfolioTest(unittest.TestCase):
         self.assertNotIn("case-card__id", case_card)
         self.assertNotIn("status-legend", blog)
 
+    def test_mobile_baseline_and_published_status_are_user_facing(self) -> None:
+        layout = (PROJECT_ROOT / "_layouts" / "default.html").read_text(
+            encoding="utf-8"
+        )
+        css = (PROJECT_ROOT / "assets" / "css" / "main.css").read_text(
+            encoding="utf-8"
+        )
+        badge = (PROJECT_ROOT / "_includes" / "status-badge.html").read_text(
+            encoding="utf-8"
+        )
+        home = (PROJECT_ROOT / "index.md").read_text(encoding="utf-8")
+
+        self.assertIn(
+            '<meta name="viewport" content="width=device-width, initial-scale=1">',
+            layout,
+        )
+        self.assertIn("@media (max-width: 52rem)", css)
+        self.assertIn("@media (max-width: 32rem)", css)
+        self.assertRegex(css, r"\.site-nav\s*\{[^}]*overflow-x:\s*auto;")
+        self.assertRegex(css, r"\.prose pre\s*\{[^}]*overflow-x:\s*auto;")
+        self.assertRegex(
+            css,
+            r"(?s)@media \(max-width: 32rem\).*?\.prose table\s*\{[^}]*overflow-x:\s*auto;",
+        )
+        self.assertIn("{% when 'published' %}", badge)
+        self.assertIn("게시·검증 완료", badge)
+        self.assertIn('id="CS-JAVA-01" status="published"', home)
+
     def test_internal_documents_are_noindex_without_hiding_public_pages(self) -> None:
         defaults = jekyll_page_defaults()
 
