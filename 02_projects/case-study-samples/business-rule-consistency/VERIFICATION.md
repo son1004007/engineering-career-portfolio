@@ -6,7 +6,15 @@
 ./mvnw -q clean verify
 ```
 
-## 현재 테스트 항목
+## 검증 결과
+
+- PR run: `33275860098`
+- job: `Business-rule consistency`
+- 결과: PASS
+- 자동 회귀 테스트: 11개 PASS
+- 같은 run의 전체 portfolio regression: 8개 job 모두 PASS
+
+## 검증된 테스트 항목
 
 1. canonical session subject가 legacy login보다 우선
 2. canonical subject가 없을 때만 legacy fallback
@@ -28,4 +36,4 @@
 - 운영 트래픽과 성능
 - 조직 전체의 업무 규칙 설계 책임
 
-CI가 성공하기 전에는 이 샘플을 `sample-verified`로 표시하지 않습니다.
+이 기록은 회사 코드와 독립된 합성 샘플의 `sample-verified` 근거입니다. 실제 회사 시스템 전체 검증을 뜻하지 않습니다.
