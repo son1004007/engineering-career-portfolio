@@ -26,9 +26,16 @@ chmod +x mvnw
 ./mvnw clean verify
 ```
 
-CI에서는 같은 명령을 `Verify Portfolio` Java matrix에서 실행합니다.
+`2026-08-29` GitHub Actions `Verify Portfolio` run `33252018737`의 `WAR deployment portability` job이 성공했습니다. 총 10개 자동 테스트가 다음 경계를 검증합니다.
 
-검증 대상은 context-path 동작, deploy-profile fail-closed, WAR 구조, 외부 container initializer, 정상 배포와 health 실패 rollback, unsafe app-name 거부입니다.
+- `/demo` non-root context-path entry/health와 root hardcoding 부재
+- deploy profile 외부 runtime 값 fail-closed / synthetic 값 주입 성공
+- WAR packaging, provided Tomcat, external-container initializer
+- 정상 health 시 candidate WAR 유지와 previous WAR backup
+- health 실패 시 previous WAR rollback
+- unsafe app-name 거부
+
+CI 관측 환경의 context-path 통합 테스트는 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat `10.1.55`에서 실행됐습니다. 이는 외부 운영 Tomcat 검증과 구분합니다.
 
 ## 공개 경계
 
