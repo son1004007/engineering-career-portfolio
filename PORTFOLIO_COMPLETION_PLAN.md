@@ -1,6 +1,6 @@
 # Portfolio Completion Plan
 
-- 기준일: `2026-08-29`
+- 기준일: `2026-08-30`
 - 목적: 공개 포트폴리오의 검증 상태를 실제 실행 증거와 동기화하고 Java/Spring 사례 공개를 순차적으로 완료한다.
 - 원칙: 문서상 완료가 아니라 source review, 독립 구현, 최근 CI와 필요한 runtime/publication evidence를 근거로 상태를 올린다.
 - 전역 기준: `son1004007/ai-agent-workflow-playbook/CONTROL.md`
@@ -106,25 +106,23 @@ CI context-path 관측은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat 
 
 주제: **여러 화면에 흩어진 기준값과 사용자 식별 규칙을 한 흐름으로 정합화한 과정**
 
-선택 이유:
-
-1. 인증, SQL query shape, deployment portability와 다른 application/domain-rule dimension을 추가한다.
-2. 기존 상태가 `source-reviewed`라 authorized source에서 재확인이 가능하다.
-3. Controller-Service-Mapper 규칙을 주문·회원 합성 도메인으로 독립 재구현할 수 있다.
-4. 정상·실패·경계 회귀 테스트를 운영 성과 주장 없이 검증할 수 있다.
-
-실행 gate:
-
-- [ ] authorized source에서 본인 귀속과 실제 결함/수정 경계 재확인
-- [ ] 공개 금지 정보와 합성 도메인 경계 확정
-- [ ] canonical business rule, user identity, persistence filter 요구사항 정의
-- [ ] 정상/실패/경계 회귀 테스트 설계
-- [ ] 독립 Spring 샘플 구현
-- [ ] sample CI와 전체 portfolio regression
-- [ ] 사례 문서 공개 안전성 검수
+- [x] authorized source에서 본인 author/committer와 실제 결함/수정 경계 재확인
+- [x] 공개 금지 경계 확정: 회사 클래스명, endpoint, field, SQL, schema, 테스트 계정, 실제 데이터와 내부 식별자 비복사
+- [x] canonical session identity / legacy fallback / latest-only / explicit-or-latest / Mapper 입력 소유권 요구사항 정의
+- [x] 정상·실패·경계 회귀 테스트 설계
+- [x] Java 21 + Spring Boot 3.5.16 독립 `member snapshot` 샘플 구현
+- [x] 11개 MockMvc 회귀 테스트 성공
+- [x] PR run `33275860098`의 `Business-rule consistency` job 성공
+- [x] 같은 run의 전체 portfolio 8개 job 성공
+- [x] public-portfolio 공개 텍스트/링크/상태 검사 성공
+- [ ] `sample-verified` 상태 동기화 후 최신 전체 PR regression 성공
+- [ ] main merge
 - [ ] main Pages build/deploy
+- [ ] 실제 게시 증거 반영 후 `published`
 
-사용자 작업: 기존 authorized evidence만으로 확정할 수 없는 내부 사실이 반드시 필요한 경우에만 요청한다.
+현재 공개 상태는 `sample-verified`입니다. 실제 회사 SSO/session E2E, 회사 Mapper SQL/운영 DB 결과, 운영 데이터 전체 정합성, 조직 전체 업무 규칙 설계 책임, 운영 성능/SLA는 검증하지 않는다.
+
+사용자 작업: 없음.
 
 ### P70. 포트폴리오 유지관리 — `pending`
 
@@ -137,7 +135,7 @@ CI context-path 관측은 Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat 
 
 현재 즉시 필요한 사용자 작업은 없다.
 
-OpsMate workload는 `CLOSED` 상태를 유지한다. 현재 active work는 `CS-JAVA-06` authorized source re-review다.
+OpsMate workload는 `CLOSED` 상태를 유지한다. 현재 active work는 `CS-JAVA-06`의 publication gate다.
 
 ## 완료 판정
 
@@ -147,5 +145,5 @@ OpsMate workload는 `CLOSED` 상태를 유지한다. 현재 active work는 `CS-J
 4. 첫 Java/Spring 인증 사례: `sample-verified`
 5. 두 번째 MyBatis 사례: `published`
 6. 세 번째 WAR deployment 사례: `published`
-7. 네 번째 업무 규칙 정합성 사례: `source-reviewed`, active reproduction pending
+7. 네 번째 업무 규칙 정합성 사례: `sample-verified`, Pages publication pending
 8. 회사 업무 사례: 권한 있는 원본 검토와 독립 공개 샘플 검증 상태를 분리
