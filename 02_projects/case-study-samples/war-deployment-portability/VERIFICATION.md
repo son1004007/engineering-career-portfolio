@@ -1,13 +1,20 @@
 # Verification
 
-## Gate V1 — WAR/container structure
+- 최근 검증일: `2026-08-29`
+- GitHub Actions run: `33252018737`
+- job: `WAR deployment portability`
+- command: `./mvnw -q clean verify`
+- result: `PASS`
+- automated tests: `10`
+
+## Gate V1 — WAR/container structure — PASS
 
 - Maven packaging is `war`.
 - Tomcat dependency is `provided`.
 - `ServletInitializer` extends `SpringBootServletInitializer`.
-- `mvn verify` reaches the package lifecycle and produces the WAR artifact.
+- Maven `verify` reached the package lifecycle successfully.
 
-## Gate V2 — context-path portability
+## Gate V2 — context-path portability — PASS
 
 With `server.servlet.context-path=/demo`:
 
@@ -16,13 +23,21 @@ With `server.servlet.context-path=/demo`:
 - `/demo/healthz` returns `UP`.
 - root `/healthz` is not accidentally exposed.
 
-## Gate V3 — deploy configuration boundary
+Observed CI runtime for this embedded-container gate:
+
+- Java `21.0.12`
+- Spring Boot `3.5.16`
+- embedded Tomcat `10.1.55`
+
+## Gate V3 — deploy configuration boundary — PASS
 
 - `deploy` profile without an external runtime token fails application-context creation.
 - the same profile starts when a synthetic external value is supplied.
 - runtime-token contents are not returned by application endpoints.
 
-## Gate V4 — release/rollback rehearsal
+The intentional missing-value test emits a Spring startup failure in the test log; the test itself passes only when that fail-closed behavior occurs.
+
+## Gate V4 — release/rollback rehearsal — PASS
 
 Using temporary synthetic files and a fake health client:
 
@@ -30,13 +45,8 @@ Using temporary synthetic files and a fake health client:
 - failed health restores the previous WAR.
 - unsafe application names are rejected before artifact replacement.
 
-## Command
+## Evidence boundary
 
-```bash
-chmod +x mvnw
-./mvnw clean verify
-```
+This is sufficient for `sample-verified`: the independent public sample executed its defined gates in CI. `published` still requires the merged main commit to complete GitHub Pages build/deploy.
 
-## Evidence rule
-
-`sample-verified` is assigned only after the GitHub Actions Java matrix executes this command successfully. `published` is assigned only after the merged main commit completes GitHub Pages build/deploy. Neither state proves a real external Tomcat rolling deployment, production SLA, or zero-downtime behavior.
+This evidence does **not** prove a real external Tomcat rolling deployment, production SLA, session drain, cluster failover, or zero-downtime behavior.
