@@ -1,0 +1,46 @@
+#!/bin/sh
+set -eu
+
+if command -v mvn >/dev/null 2>&1; then
+  exec mvn "$@"
+fi
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PROPS="$SCRIPT_DIR/.mvn/wrapper/maven-wrapper.properties"
+[ -f "$PROPS" ] || { echo "missing Maven wrapper properties" >&2; exit 1; }
+
+DIST_URL=$(sed -n 's/^distributionUrl=//p' "$PROPS")
+DIST_SHA=$(sed -n 's/^distributionSha256Sum=//p' "$PROPS")
+[ -n "$DIST_URL" ] || { echo "missing Maven distribution URL" >&2; exit 1; }
+
+MAVEN_USER_HOME=${MAVEN_USER_HOME:-"$HOME/.m2"}
+MAVEN_HOME="$MAVEN_USER_HOME/wrapper/dists/apache-maven-3.9.9/portfolio"
+
+if [ ! -x "$MAVEN_HOME/bin/mvn" ]; then
+  TMP_DIR=$(mktemp -d)
+  trap 'rm -rf "$TMP_DIR"' EXIT HUP INT TERM
+  ARCHIVE="$TMP_DIR/maven.zip"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$DIST_URL" -o "$ARCHIVE"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q "$DIST_URL" -O "$ARCHIVE"
+  else
+    echo "curl or wget is required to bootstrap Maven" >&2
+    exit 1
+  fi
+  if command -v sha256sum >/dev/null 2>&1; then
+    printf '%s  %s\n' "$DIST_SHA" "$ARCHIVE" | sha256sum -c - >/dev/null
+  elif command -v shasum >/dev/null 2>&1; then
+    printf '%s  %s\n' "$DIST_SHA" "$ARCHIVE" | shasum -a 256 -c - >/dev/null
+  else
+    echo "sha256sum or shasum is required" >&2
+    exit 1
+  fi
+  command -v unzip >/dev/null 2>&1 || { echo "unzip is required" >&2; exit 1; }
+  unzip -q "$ARCHIVE" -d "$TMP_DIR"
+  mkdir -p "$(dirname "$MAVEN_HOME")"
+  rm -rf "$MAVEN_HOME"
+  mv "$TMP_DIR/apache-maven-3.9.9" "$MAVEN_HOME"
+fi
+
+exec "$MAVEN_HOME/bin/mvn" "$@"
