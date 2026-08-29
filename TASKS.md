@@ -31,23 +31,31 @@ The active execution ledger, dependencies and verification evidence are maintain
 - normal close, same-digest reopen, emergency close and recovery normal close: verified
 - final runtime state: `CLOSED`, running workload container `0`, PostgreSQL persistent volume preserved
 - evidence: [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
+- status/evidence Pages publication run `33250726427`: success
 - bounded E2E only; do not claim 24x7 SLA, long-duration load or production traffic scale
 
-### 2. next Java/Spring case study publication — ACTIVE
-- selected candidate: `CS-JAVA-02` — MyBatis/Oracle query correctness and performance-oriented query design
-- preserve existing `source-reviewed` evidence; reconfirm attribution/disclosure boundary before making new company-work claims
-- implement an independent sample with synthetic schema/data; do not copy company code, SQL, identifiers or data
-- focus the public sample on filter/count/page consistency, deterministic ordering, index-friendly range predicates and regression tests
-- if Oracle-specific execution-plan evidence cannot be reproduced publicly, label it as an unverified production-specific boundary rather than inventing performance numbers
-- add normal, failure and boundary tests and publish only after a recent successful run
+### 2. CS-JAVA-02 MyBatis query correctness publication — ACTIVE
+- authorized source re-review: complete; personal SQL-improvement attribution reconfirmed without exposing private source identifiers
+- independent synthetic Spring Boot/MyBatis/H2 sample: implemented
+- automatic tests: 12 passed in PR run `33251026033` (`MyBatis query correctness` job)
+- verified boundaries: same/cross-year range correctness, tenant isolation, count/page consistency, deterministic pagination, invalid input, composite index presence, BoundSql shape
+- company SQL/schema/data/identifiers are not copied
+- actual Oracle execution plan and production performance numbers remain unverified and must not be claimed
+- remaining gate: latest whole-portfolio regression -> merge -> GitHub Pages deploy -> public case/sample link check
 
-### 3. portfolio publication maintenance
+### 3. next Java/Spring case study selection
+- after CS-JAVA-02 is published, choose the next `source-reviewed` case
+- prefer a case that adds a distinct backend dimension rather than repeating authentication/query themes
+- reconfirm attribution and disclosure boundary before implementation
+- implement with synthetic data and normal/failure/boundary tests
+
+### 4. portfolio publication maintenance
 - check Pages deployment and public links after material changes
 - keep status badges, test counts and limitations synchronized
 - perform physical mobile UX verification when practical
 - refresh sanitized company GitHub evidence at the defined review interval
 
-### 4. older sample disposition
+### 5. older sample disposition
 - keep `ai-rag-api`, `backend-platform-template`, and `security-audit-log` as supporting work only
 - repair a sample only when it strengthens the approved two-track strategy
 - otherwise mark it partial or archive it without presenting it as a flagship
@@ -62,3 +70,4 @@ A task is complete only when:
 - tests pass
 - documentation matches implementation
 - any external/runtime gate claimed as complete has bounded execution evidence
+- any publication claim has current Pages build/deploy and public-link evidence

@@ -1,7 +1,7 @@
 # Portfolio Work Ledger
 
 - 기준일: `2026-08-29`
-- 목적: 포트폴리오 작성부터 GitHub Pages 공개, OpsMate bounded public deployment 검증, 다음 Java/Spring 사례 공개까지 작업·의존성·증거를 추적
+- 목적: 포트폴리오 작성부터 GitHub Pages 공개, OpsMate bounded public deployment 검증, Java/Spring 사례 공개까지 작업·의존성·증거를 추적
 - 원칙: 문서·코드·테스트·공개 안전성 검토가 함께 끝나기 전에는 완료로 표시하지 않음
 - 공통 검수표: [`03_portfolio/review-checklist.md`](03_portfolio/review-checklist.md)
 - 현재 완료 계획: [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)
@@ -30,7 +30,7 @@
 | `W07` | 통합 검수 | 테스트·링크·민감정보·렌더링 결과 | 공통 검수표 필수 항목과 한계 기록 | `verified` |
 | `W08` | GitHub 공개 | commit, push, PR, Pages URL | 원격 배포 성공과 공개 URL 응답 확인 | `published` |
 | `W09` | OpsMate 공개 데모와 재현 가능한 운영 검증 | immutable release, private DB/model path, public HTTPS E2E, lifecycle evidence | internal + public network/security/lifecycle bounded E2E와 final CLOSED | `verified` |
-| `W10` | 두 번째 Java/Spring 사례 공개 | source-reviewed 근거, 독립 합성 샘플, 테스트, 게시물 | 본인 귀속/공개 경계 확인 + 정상·실패·경계 테스트 + Pages 게시 | `in-progress` |
+| `W10` | 두 번째 Java/Spring 사례 공개 | MyBatis 기간 조회 독립 샘플, 12개 테스트, 사례 게시물 | 본인 귀속/공개 경계 확인 + sample CI + 전체 regression + Pages 게시 | `in-progress` |
 
 ## 의존성
 
@@ -49,7 +49,7 @@ W00 -> W01 -> W02
 - 첫 공개 포트폴리오, Java/Spring 인증 통합 샘플, Jekyll Pages, 공개 링크/민감정보 검수는 완료 상태를 유지합니다.
 - Spring Security 인증 브리지는 회사 코드와 독립된 합성 샘플로 최근 테스트 성공 근거를 유지합니다.
 - 회사 업무는 원본 비공개 코드를 복사하지 않고 비식별 claim과 독립 재현 상태를 분리합니다.
-- 내부 E2E 상태 문서 반영 main Pages run `32851086949` 성공 (`2026-08-25`).
+- OpsMate public evidence 반영 main Pages run `33250726427`의 verify matrix, Jekyll build와 deploy가 모두 성공 (`2026-08-29`).
 
 ### W09 — OpsMate Local
 
@@ -63,7 +63,7 @@ W00 -> W01 -> W02
 - restricted SSH model tunnel과 fail-closed model boundary
 - normal close, emergency close, strict CLOSED verifier, same-digest reopen 자산
 - reviewed runtime source: `f99686981da7efb8802635ae2bde5b0f781433ad`
-- `Verify Portfolio` run `32848946968`: 모든 job 성공 (`2026-08-25`)
+- repository regression run `32848946968`: 성공 (`2026-08-25`)
 
 #### 실제 모델 단독 E2E
 
@@ -82,26 +82,16 @@ W00 -> W01 -> W02
 
 #### Synology internal E2E — `verified`
 
-`2026-08-25` bounded runtime run `32849533407`에서 다음을 모두 통과했습니다.
-
-- stack/port/network/edge security
-- app/edge direct egress 차단
-- app/DB/model-tunnel host port 없음
-- Secure cookie session, restricted 실제 model path
-- persona flow, durable draft, cross-workspace isolation
-- rate limit `429`, credential/log scan
-- normal close + synthetic workspace purge
-- strict CLOSED, same-digest reopen, emergency close, final normal close
-- final `runtime_policy_flags=YES_YES`, `CLOSED`
+`2026-08-25` bounded runtime run `32849533407`에서 stack/port/network/session/model/rate/log/lifecycle gate와 final `CLOSED`를 통과했습니다.
 
 상세: [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
 
 #### Public Internet deployment/lifecycle E2E — `verified`
 
-`2026-08-29` bounded public runtime run `33241004788`에서 다음을 모두 통과했습니다.
+`2026-08-29` bounded public runtime run `33241004788`에서 다음을 통과했습니다.
 
-- DSM TLS ingress를 통한 실제 Internet HTTPS root/live marker
-- public `/api/**` denial, `/actuator/**` 차단
+- 실제 Internet HTTPS root/live marker
+- public API denial 및 actuator 차단
 - 실제 모델 draft -> submit -> approve -> order -> audit -> cleanup
 - 외부 두 session cross-workspace isolation
 - URL `;jsessionid` rewriting 부재
@@ -109,28 +99,46 @@ W00 -> W01 -> W02
 - 외부 PostgreSQL/model/loopback edge 직접 TCP 비노출
 - bounded burst 60건: allowed `24`, HTTP `429` `36`, transport failure `0`
 - credential/private-key/Bearer marker log scan
-- normal close 후 public live marker 부재 + strict `CLOSED`
-- same immutable digest reopen 후 public HTTPS + 실제 모델 smoke 재통과
-- emergency close + public live marker 부재 + strict `CLOSED`
-- recovery normal close/purge
+- normal close, same-digest reopen, emergency close, recovery normal close
 - final running container `0`, PostgreSQL volume 보존, `runtime_policy_flags=YES_YES`, `CLOSED`
 
 상세: [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
 
 이 결과는 bounded E2E이며 24x7 SLA, 장기 부하, 대규모 실제 사용자 운영을 뜻하지 않습니다. 검증 종료 후 workload는 의도대로 `CLOSED`입니다.
 
-### W10 — 다음 Java/Spring 사례
+### W10 — 두 번째 Java/Spring 사례 `CS-JAVA-02`
 
-현재 active work입니다.
+#### authorized source review
 
-1. `03_portfolio/case-study-index.md`의 `source-reviewed` 후보를 우선순위화합니다.
-2. authorized evidence에서 본인 귀속과 공개 가능한 문제/제약/구현 범위를 재확인합니다.
-3. 회사 원본을 복사하지 않고 합성 도메인의 독립 샘플을 구현합니다.
-4. 정상·실패·경계 테스트를 통과시킨 뒤 게시물을 공개합니다.
+권한 있는 비공개 원본에서 본인 귀속 변경으로 다음 범위를 재확인했습니다.
+
+- 여러 연도 기간 조건의 복합 `OR`을 시작/중간/종료 구간으로 분해
+- 서로 겹치지 않는 구간을 `UNION ALL`로 결합
+- 검색·정렬 year/month column의 숫자 변환 제거
+
+회사 SQL, schema, 데이터와 내부 식별자는 공개 저장소에 복사하지 않습니다.
+
+#### independent public sample
+
+[`02_projects/case-study-samples/mybatis-query-correctness/`](02_projects/case-study-samples/mybatis-query-correctness/README.md)에 Java 21 + Spring Boot 3.5.16 + MyBatis + H2 합성 샘플을 구현했습니다.
+
+검증 범위:
+
+- same-year / cross-year 경계
+- 누락·중복 부재, tenant isolation
+- count/page 동일 filter semantics
+- deterministic pagination
+- invalid input boundary
+- 합성 복합 인덱스 존재
+- BoundSql 기반 `UNION ALL` branch와 indexed-column conversion/period-OR 부재
+
+자동 테스트 12개가 성공했습니다. PR run `33251026033`의 `MyBatis query correctness` job에서 `./mvnw -q clean verify`가 PASS했습니다.
+
+현재 남은 W10 gate는 **최신 전체 PR regression 통과 → main merge → GitHub Pages 게시/링크 확인**입니다. Oracle optimizer의 index 선택과 운영 성능 수치는 공개 검증하지 않았으므로 주장하지 않습니다.
 
 ## 다음 실행 순서
 
-1. 이 public E2E 상태 문서의 `Verify Portfolio`와 Pages deploy를 통과시킵니다.
-2. W10의 다음 Java/Spring 사례를 선택하고 authorized evidence를 재검토합니다.
-3. 독립 재구현 샘플 + 테스트 + 사례 게시물을 완성합니다.
+1. W10의 최신 전체 PR regression을 통과시킵니다.
+2. PR을 merge하고 Pages build/deploy 및 공개 case/sample 링크를 확인합니다.
+3. W10을 `published`로 닫고 다음 `source-reviewed` Java/Spring 후보를 선택합니다.
 4. `evidence/company-github/monthly/`를 월말 갱신하고 Pages/링크를 유지관리합니다.
