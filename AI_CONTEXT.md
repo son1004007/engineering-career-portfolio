@@ -40,10 +40,12 @@
 
 ### CS-JAVA-01 — Spring Security 인증 브리지
 
-- 상태: `sample-verified`
+- 상태: `published`
 - 권한 있는 비공개 원본에서 본인 귀속 인증 통합 범위를 확인
 - 회사 코드와 독립된 합성 Spring Security 샘플 구현
 - 24개 자동 테스트 성공
+- main publication evidence: commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`, Pages run `33276912458`의 Spring Security/public/Jekyll/build/deploy PASS
+- 실제 IdP, 운영 DB, 분산 세션, 대규모 운영 부하는 검증/주장하지 않음
 
 ### CS-JAVA-02 — MyBatis 기간 조회 정합성
 
@@ -101,6 +103,7 @@
 - 특정 기술의 숙련도나 대규모 운영 경험 확정
 - 회사·팀 전체 성과를 개인 성과로 해석
 - bounded E2E를 장기 production 운영 또는 SLA로 확대 해석
+- Spring Security 합성 샘플을 실제 외부 IdP/운영 DB/분산 세션 운영 증거로 확대 해석
 - H2 합성 샘플을 실제 Oracle 실행계획/성능 증거로 확대 해석
 - embedded Tomcat CI를 실제 외부 운영 Tomcat 무중단 배포 증거로 확대 해석
 - 업무 규칙 합성 샘플을 실제 회사 시스템 전체 정합성·운영 데이터 정확성 증거로 확대 해석
@@ -142,7 +145,7 @@
 | 항목 | 상태 | 판단 |
 |---|---|---|
 | `OpsMate Local` | `implemented`, `tested-component`; real-model, NAS internal, public Internet bounded boundary `verified` | 실제 모델, immutable Synology 배포, private DB/model, 외부 HTTPS/session/rate/non-exposure와 lifecycle 검증. 24x7 SLA/장기 부하는 미검증 |
-| Spring Security 인증 사례 | `sample-verified` | 회사 코드와 독립된 합성 샘플 24개 테스트 성공 |
+| Spring Security 인증 사례 | `published` | 회사 코드와 독립된 합성 샘플 24개 테스트와 main Pages run `33276912458` 성공. 실제 IdP/DB/분산 세션은 미검증 |
 | MyBatis 기간 조회 사례 | `published` | 합성 Spring Boot/MyBatis/H2 샘플 12개 테스트와 main Pages run `33251362190` 성공. Oracle 운영 성능은 미검증 |
 | WAR 배포 이식성 사례 | `published` | 합성 Spring Boot WAR 샘플 10개 테스트, PR regression `33252086213`, main Pages `33252148733` 성공. 실제 외부 Tomcat 운영은 미검증 |
 | 업무 규칙 정합성 사례 | `published` | 합성 Spring Boot 샘플 11개 테스트, final PR `33276143715`, main Pages `33276278894` 성공. 실제 회사 시스템 전체 정합성은 미검증 |
@@ -176,6 +179,7 @@ Agentic AI Runtime의 작업 격리와 산출물 추적 구성요소 구현
 
 ```text
 Java/Spring 실무의 전체 수준과 아직 재현하지 않은 나머지 사례의 구현 완료
+Spring Security 샘플의 실제 외부 IdP/운영 DB/분산 세션/운영 부하
 MyBatis 샘플의 실제 Oracle 실행계획과 운영 성능
 WAR 샘플의 실제 외부 Tomcat zero-downtime/session-drain/SLA
 업무 규칙 샘플의 실제 회사 SSO/session E2E, Mapper SQL/운영 DB 결과, 운영 데이터 전체 정합성
