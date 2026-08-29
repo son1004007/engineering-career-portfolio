@@ -2,7 +2,7 @@
 title: DB 로그인과 레거시 SSO를 하나의 Spring Security 권한 체계로 통합한 과정
 description: DB 로그인과 가상 SSO를 로컬 RBAC·세션·CSRF 정책으로 통합한 독립 재현 사례
 permalink: /cases/spring-security-auth-bridge/
-status: sample-verified
+status: published
 ---
 
 # DB 로그인과 레거시 SSO를 하나의 Spring Security 권한 체계로 통합한 과정
@@ -91,7 +91,7 @@ signed SSO assertion -> SSO verifier -----+
 | 경계 | `USER`와 `ADMIN`의 reports 권한, SSO 최대 과거 시각과 미래 skew의 포함 여부, 경계를 1초 벗어난 assertion, canonical delimiter 입력 |
 | 설정 | SSO 비밀 누락·길이 부족 시 fail-closed |
 
-`2026-08-03`에 Java 21, Spring Boot 3.5.16과 Maven Wrapper 3.9.9로 `24`개 테스트를 실행해 실패·오류·건너뜀 `0`을 확인했습니다. 실행 명령은 `.\mvnw.cmd -q clean verify`이며 환경은 샘플의 [`VERIFICATION.md`](../../02_projects/case-study-samples/spring-security-auth-bridge/VERIFICATION.md)에 기록했습니다.
+`2026-08-03`에 Java 21, Spring Boot 3.5.16과 Maven Wrapper 3.9.9로 `24`개 테스트를 실행해 실패·오류·건너뜀 `0`을 확인했습니다. 이후 GitHub Actions의 `Spring Security auth bridge` job에서 동일 샘플의 `./mvnw -q clean verify`를 반복 회귀 검증했고, main Pages run `33276912458`에서 Spring Security job, 공개 텍스트·링크 검사, Jekyll build와 Pages deploy가 모두 성공했습니다. 상세 환경과 한계는 샘플의 [`VERIFICATION.md`](../../02_projects/case-study-samples/spring-security-auth-bridge/VERIFICATION.md)에 기록했습니다.
 
 ## 확인한 결과
 
@@ -112,4 +112,4 @@ signed SSO assertion -> SSO verifier -----+
 
 ## 현재 공개 범위
 
-회사명, 고객명, 내부 경로와 원본 코드·설정·데이터는 포함하지 않았습니다. 공개 코드는 합성 사용자와 일반화한 인증 요구사항으로 별도 구현했으며, 24개 테스트 결과는 이 독립 샘플의 동작만 확인합니다. 실제 회사 시스템의 규모와 운영 성과를 검증한 결과로 해석하지 않습니다.
+회사명, 고객명, 내부 경로와 원본 코드·설정·데이터는 포함하지 않았습니다. 공개 코드는 합성 사용자와 일반화한 인증 요구사항으로 별도 구현했으며, 24개 테스트 결과와 Pages publication evidence는 이 독립 샘플과 공개 문서의 상태만 확인합니다. 실제 회사 시스템의 규모와 운영 성과를 검증한 결과로 해석하지 않습니다.
