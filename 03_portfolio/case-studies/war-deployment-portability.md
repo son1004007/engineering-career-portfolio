@@ -1,6 +1,6 @@
 ---
 title: WAR 기반 Spring 서비스의 배포 이식성
- description: context path와 환경 차이로 발생하는 배포 결함을 profile, health와 rollback 관점에서 정리한 비식별 사례
+description: context path와 환경 차이로 발생하는 배포 결함을 profile, health와 rollback 관점에서 정리한 비식별 사례
 permalink: /cases/war-deployment-portability/
 status: sample-implemented
 ---
