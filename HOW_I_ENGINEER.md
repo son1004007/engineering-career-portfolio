@@ -37,7 +37,7 @@ AI가 틀리거나 응답하지 않아도 중요한 업무 규칙이 무너지�
 
 ## 3. 언어와 프레임워크는 문제에 맞춰 선택합니다
 
-Java/Spring, Python/FastAPI, SQL, Docker와 LLM을 목적에 따라 사용합니다.
+Java/Spring과 Python/FastAPI를 모두 실무에서 사용해 왔고, SQL, Docker와 LLM을 목적에 따라 연결합니다. 현재 공개 재현 샘플은 Java/Spring 쪽이 더 많기 때문에 Python/FastAPI 기반 데이터·AI 서비스는 별도의 공개 증거로 보강하는 것이 다음 과제입니다.
 
 예를 들면:
 
@@ -114,7 +114,7 @@ AI가 빠르게 조사하거나 코드를 작성해도 최종 완료 여부는 �
 - 로그에 무엇을 남길 것인가
 - 서비스를 안전하게 중단하고 다시 열 수 있는가
 
-기술적으로는 CI/CD, health check, rollback, least privilege, observability 같은 주제로 이어집니다.
+기술적으로는 CI/CD, health check, rollback, least privilege, 로그와 runtime 상태 확인 같은 주제로 이어집니다.
 
 ## 8. 업무 결과를 다른 사람이 확인할 수 있게 남깁니다
 

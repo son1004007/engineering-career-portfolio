@@ -9,7 +9,7 @@ permalink: /
     <div>
       <p class="eyebrow">Backend / AI Integration / Reliable Systems</p>
       <h1 id="hero-title"><em>업무 요구사항을 실제로 작동하는 백엔드 시스템으로</em> 구현합니다.</h1>
-      <p class="hero__lead">데이터, 권한, 처리 상태와 실패 조건을 명확하게 설계하고, AI 기능은 서버의 검증과 사람의 승인 안에서 실제 업무와 연결합니다. Java/Spring, Python/FastAPI, SQL, Docker와 LLM은 문제에 맞게 선택하는 도구입니다.</p>
+      <p class="hero__lead">데이터, 권한, 처리 상태와 실패 조건을 명확하게 설계하고, AI 기능은 서버의 검증과 사람의 승인 안에서 실제 업무와 연결합니다. Java/Spring과 Python/FastAPI를 업무 특성에 따라 사용해 왔으며, 현재 공개 재현 샘플은 Java/Spring 쪽이 더 강합니다.</p>
       <div class="button-row">
         <a class="button" href="{{ '/#evidence' | relative_url }}">실제 검증 보기</a>
         <a class="button button--secondary" href="{{ '/HOW_I_ENGINEER/' | relative_url }}">개발 방식 보기</a>
@@ -94,9 +94,9 @@ permalink: /
     <div class="card-grid">
       <article class="case-card">
         <div class="case-card__topline"><span class="status-badge status-badge--published">실제 모델 E2E</span></div>
-        <h3>OpsMate Local: 실제 LLM 요청 9/9 성공</h3>
-        <p>Ollama `gemma3:12b`를 사용한 합성 구매 요청을 실제 모델로 실행하고 모든 요청이 완료되는지 확인했습니다.</p>
-        <p class="case-card__focus"><strong>응답시간 기준:</strong> 관측 p95 21,076ms, 프로젝트 gate &lt;= 30,000ms</p>
+        <h3>OpsMate Local: 실제 LLM 핵심 업무 시나리오 9건 전건 성공</h3>
+        <p>Ollama `gemma3:12b`를 사용해 구매 요청부터 초안 생성까지의 핵심 합성 시나리오를 실제 모델로 실행했습니다.</p>
+        <p class="case-card__focus"><strong>실패 경계:</strong> 잘못된 모델 출력이나 모델 장애가 중요한 데이터 저장으로 이어지지 않게 차단</p>
       </article>
       <article class="case-card">
         <div class="case-card__topline"><span class="status-badge status-badge--published">외부 접속 검증</span></div>
@@ -225,7 +225,7 @@ permalink: /
       <article class="link-card">
         <span class="link-card__label">Data & AI Integration</span>
         <h3>데이터와 AI 기능 연결</h3>
-        <p>Oracle, PostgreSQL, SQL, Text2SQL/NL2SQL, LLM integration, structured output validation, RAG/Agent patterns</p>
+        <p>Oracle, PostgreSQL, SQL, Text2SQL/NL2SQL, LLM integration, structured output validation</p>
       </article>
       <article class="link-card">
         <span class="link-card__label">Operations & Delivery</span>

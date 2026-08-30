@@ -4,7 +4,7 @@
 
 업무 요구사항을 **데이터, 권한, 처리 상태와 실패 조건이 명확한 백엔드 시스템으로 구현**합니다.
 
-AI 기능은 결과를 그대로 신뢰하지 않고 서버의 검증과 사람의 승인 안에서 실제 업무와 연결합니다. Java/Spring, Python/FastAPI, SQL, Docker와 LLM은 문제에 맞게 선택하는 도구이며, 자동 테스트와 실제 실행 환경 검증으로 동작 범위와 실패 조건을 확인합니다.
+AI 기능은 결과를 그대로 신뢰하지 않고 서버의 검증과 사람의 승인 안에서 실제 업무와 연결합니다. Java/Spring과 Python/FastAPI를 업무 특성에 따라 사용해 왔고, 현재 공개 재현 샘플은 Java/Spring 쪽이 더 강합니다. SQL, Docker와 LLM은 필요한 문제를 해결하기 위한 도구로 사용하며, 자동 테스트와 실제 실행 환경 검증으로 동작 범위와 실패 조건을 확인합니다.
 
 ## 제가 잘하는 일
 
@@ -19,12 +19,11 @@ AI 기능은 결과를 그대로 신뢰하지 않고 서버의 검증과 사람�
 
 ## 공개 검증으로 확인한 것
 
-- `OpsMate Local`: 실제 Ollama `gemma3:12b` 모델을 사용한 합성 업무 요청 E2E `9/9` 성공
-- `OpsMate Local`: 실제 모델 응답 관측 p95 `21,076ms`, 프로젝트 gate `<= 30,000ms` 충족
+- `OpsMate Local`: 실제 Ollama `gemma3:12b` 모델로 9개 핵심 업무 시나리오 E2E 전건 성공
 - `OpsMate Local`: `2026-08-29` 실제 Internet HTTPS 경로에서 사용자 작업 분리, rate limit, DB/model 비노출, close/reopen 검증
 - 인증과 권한, 데이터 정합성, 배포와 복구, 업무 규칙 일관성 문제를 회사 코드와 독립된 합성 샘플로 재현하고 정상, 실패, 경계 조건을 자동 테스트로 검증
 
-각 결과는 해당 프로젝트의 공개 evidence와 테스트 결과에서 다시 확인할 수 있습니다. 장기 SLA, 대규모 사용자 운영, 실제 회사 운영 성능처럼 검증하지 않은 범위는 주장하지 않습니다.
+각 결과는 해당 프로젝트의 공개 evidence와 테스트 결과에서 다시 확인할 수 있습니다. 실제 모델 응답시간과 프로젝트 gate 같은 세부 수치는 evidence 문서에 남기고, 장기 SLA, 대규모 사용자 운영, 실제 회사 운영 성능처럼 검증하지 않은 범위는 주장하지 않습니다.
 
 ## 대표 작업
 
@@ -56,6 +55,8 @@ AI 기능은 결과를 그대로 신뢰하지 않고 서버의 검증과 사람�
 - Text2SQL/NL2SQL, SQL 검증과 실행
 - validation set과 다중 모델 비교
 - 결과 기록과 실패 유형 분류
+
+이 항목은 비식별 실무 evidence가 중심이며, Java/Spring 사례와 같은 수준의 독립 공개 Python 재현 샘플은 다음 보강 대상으로 남겨 두고 있습니다.
 
 ### 3. 기존 시스템의 문제를 작게 재현하고 검증 - Engineering Case Studies
 
@@ -105,7 +106,7 @@ AI는 조사, 구현과 리뷰를 빠르게 만드는 도구로 사용합니다.
 |---|---|
 | Backend | Java, Spring Boot, Spring MVC, Spring Security, JPA, MyBatis, Python, FastAPI |
 | Data | Oracle, PostgreSQL, SQL, CSV/Excel 처리 |
-| AI integration | Text2SQL/NL2SQL, LLM integration, structured output validation, RAG/Agent patterns |
+| AI integration | Text2SQL/NL2SQL, LLM integration, structured output validation |
 | Operations | Linux, Docker, Tomcat, Nginx, Jenkins, GitHub Actions |
 | Engineering | 인증, 권한, 상태 전이, 멱등성, 트랜잭션, 감사 이벤트, 테스트와 evidence 관리 |
 
