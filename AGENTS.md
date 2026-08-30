@@ -14,9 +14,9 @@ This repository is a public engineering portfolio.
 
 Its purpose is to show:
 
-1. what kinds of problems Son Gisuk can turn into working systems
-2. how he designs boundaries, data flow, permissions, failures and operations
-3. how he uses AI as both a development tool and a product capability
+1. what kinds of backend problems Son Gisuk can turn into working systems
+2. how he connects business rules, data, permissions, failures and operations
+3. how he integrates AI capabilities without handing critical decisions to the model
 4. how he verifies implementation with tests and runtime evidence
 5. which languages, frameworks and tools he used to accomplish those goals
 
@@ -41,7 +41,7 @@ Preferred pattern:
 
 ```text
 쉽게 설명:
-사용자 역할에 따라 할 수 있는 일을 제한하고, 잘못된 요청은 안전하게 중단했습니다.
+사용자 역할에 따라 할 수 있는 일을 제한하고, 잘못된 요청은 중요한 처리로 이어지지 않게 했습니다.
 
 기술적으로:
 RBAC, server-side validation, fail-closed policy를 적용했습니다.
@@ -49,38 +49,61 @@ RBAC, server-side validation, fail-closed policy를 적용했습니다.
 
 For major public documents:
 
+- make the role classification obvious before listing adjacent capabilities
 - explain the problem before naming the framework
 - explain the result before listing implementation details
 - translate specialist terms when they first appear
 - keep technical vocabulary where it demonstrates depth
-- put technology lists after capability and evidence sections
-- avoid inflated marketing language
+- put technology lists after role, capability and evidence sections
+- avoid inflated marketing language and AI buzzword stacking
 - preserve exact verification boundaries and limitations
+- do not use a raw test count as the primary achievement when the failure condition or runtime boundary can be explained instead
 
-## Capability-First Positioning
+## Public Positioning
 
-Do not define the owner primarily by one programming language or framework.
+Do not define the owner primarily by one programming language or framework, but do make the primary market role immediately clear.
 
 The target public identity is:
 
-> A software/backend/platform engineer who structures business problems into systems, uses appropriate technologies and AI, and validates the result through tests, security boundaries and real execution evidence.
+> Backend Engineer - AI Integration & Reliable Systems
 
 Korean public summary:
 
-> 업무 문제를 시스템으로 구조화하고, 적절한 기술과 AI를 활용해 구현하며, 테스트·보안·운영 증거까지 남기는 소프트웨어/백엔드/플랫폼 엔지니어
+> 업무 요구사항을 데이터, 권한, 처리 상태와 실패 조건이 명확한 백엔드 시스템으로 구현하고, AI 기능을 서버 검증과 실제 실행 증거 안에서 안전하게 연결하는 엔지니어
+
+Positioning hierarchy:
+
+```text
+Primary role:
+Backend Engineer
+
+Differentiators:
+AI Integration
+Reliable Systems
+
+Supporting capabilities:
+Data
+Security
+Operations
+```
 
 Java/Spring and Python/FastAPI are important implementation tools and verified experience, but they are not the top-level identity.
 
-The portfolio should make these capabilities visible before technology labels:
+Do not use `Software / Backend / Platform Engineer` as the first-screen title. `Software Engineer` is too generic to improve classification, and current public evidence is not sufficient to make `Platform Engineer` the top-level role.
 
-1. problem framing and system design
-2. backend and data integration
-3. AI-assisted engineering and AI feature integration
-4. verification and evidence
-5. security and governance boundaries
-6. deployment, operation and recovery
+Do not position the owner as an ML model researcher. AI capability here means integrating, evaluating and operating LLM capabilities inside backend systems and using AI effectively in the engineering workflow.
 
-Do not position the owner as an ML model researcher. AI capability here means integrating, evaluating and operating LLM/Agent capabilities inside software systems and using AI effectively in the engineering workflow.
+## Platform Claim Gate
+
+Do not use `Platform Engineer` as a headline or equivalent top-level role unless public evidence has materially expanded to include several of the following:
+
+- repeatable IaC-managed infrastructure
+- Kubernetes or comparable orchestration operations
+- internal developer platform or shared deployment/development capabilities
+- centralized observability and operations automation
+- multi-environment operation, incident handling or capacity evidence
+
+Using Linux, Docker, Nginx, Tomcat, CI/CD and deployment automation is valuable operations evidence, but by itself does not justify the broader platform title.
 
 ## Portfolio Composition
 
@@ -88,12 +111,65 @@ Keep the evidence complementary rather than language-centric.
 
 1. `OpsMate Local` demonstrates controlled AI integration with business transactions, security boundaries and operation.
 2. Text2SQL/NL2SQL evidence demonstrates Python/API/data/LLM evaluation capability.
-3. Engineering case studies demonstrate reusable problem-solving depth across identity, data correctness, deployment/recovery and business-rule consistency.
-4. `HOW_I_ENGINEER.md` demonstrates the engineering method: problem definition -> plan -> AI-assisted implementation -> test -> runtime verification -> evidence.
+3. Engineering case studies demonstrate reusable backend problem-solving depth across identity, data correctness, deployment/recovery and business-rule consistency.
+4. `HOW_I_ENGINEER.md` demonstrates the engineering method: problem definition -> plan -> AI-assisted exploration/implementation -> test -> runtime verification -> evidence.
 
 Case studies may use Java/Spring when it is the right reconstruction tool, but titles and summaries should lead with the engineering problem rather than the framework name.
 
 Company work may be inspected only as evidence. Never copy company code into this repository. Public code must be independently reconstructed with synthetic data and generalized domains.
+
+## AI Wording Standard
+
+AI terms must be backed by concrete implementation or verification.
+
+Prefer:
+
+```text
+AI가 구매 요청 초안을 만들고,
+서버가 권한과 상태를 검증한 뒤,
+사람이 승인한 요청만 발주되게 했습니다.
+```
+
+before:
+
+```text
+Agentic AI Runtime
+context engineering
+agent workflow
+provenance
+```
+
+Terms such as `Agent`, `RAG`, `context engineering`, `Agentic AI Runtime` and `provenance` may appear only where the document also states what was implemented, what was verified and what remains unverified.
+
+Do not present routine use of ChatGPT/Codex/Gemini for coding as a differentiating capability by itself. The differentiator must be an engineering outcome, control boundary, verification method or repeatable workflow.
+
+## Evidence Presentation
+
+Public evidence should lead with what was proven, not how many assertions exist.
+
+Preferred order:
+
+```text
+runtime behavior or user flow
+-> failure/security boundary
+-> execution environment
+-> supporting test count or metric when useful
+```
+
+Strong examples:
+
+- unauthorized approval is blocked by the server
+- two user sessions do not share workspaces
+- the database and model are not directly exposed on the public path
+- the service can be closed and reopened with the same verified release
+- actual-model E2E completed 9/9 requests
+- p95 met a predeclared project gate
+
+Weak first-screen example:
+
+- 24 + 12 + 10 + 11 tests
+
+Test counts remain valid supporting evidence in detailed case-study pages.
 
 ## Public Repository Rule
 
@@ -137,7 +213,7 @@ Never present a planned or partial item as completed. Update `03_portfolio/evide
 - `03_portfolio/case-studies/`: recruiter-facing, sanitized engineering case studies
 - `evidence/company-github/`: sanitized company contribution evidence and monthly snapshots
 - `tools/`: local evidence collection utilities; local configuration is never committed
-- `HOW_I_ENGINEER.md`: public explanation of problem solving, AI use, verification and operation method
+- `HOW_I_ENGINEER.md`: public explanation of backend problem solving, AI integration, verification and operation method
 
 ## Required Project Deliverables
 
@@ -218,9 +294,10 @@ Problem
 
 ## Current Project Priority
 
-1. keep README, AI context, profile and evidence documents synchronized with the verified `2026-08-29` OpsMate public Internet E2E boundary
-2. make the first-screen portfolio understandable to HR before technical details
-3. keep capability coverage balanced across backend, data, AI integration, security, verification and operations
-4. choose the next public case study by missing capability evidence, not by programming language
-5. keep the GitHub Pages site, evidence links and physical mobile rendering healthy
-6. repair or archive older partial samples only when they strengthen the capability map
+1. keep GitHub profile, README, Pages, profile and strategy documents synchronized with `Backend Engineer - AI Integration & Reliable Systems`
+2. make the first-screen role understandable to HR before technical details
+3. emphasize verified failure boundaries and runtime behavior over raw test counts
+4. strengthen reproducible Python/FastAPI and AI/data backend evidence without inventing experience
+5. keep the verified `2026-08-29` OpsMate public Internet E2E boundary accurate
+6. keep the GitHub Pages site, evidence links and mobile rendering healthy
+7. repair or archive older partial samples when they weaken public engineering credibility
