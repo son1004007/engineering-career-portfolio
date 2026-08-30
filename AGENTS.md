@@ -9,15 +9,94 @@ When GitHub access is available, before substantive work read `son1004007/ai-age
 If the private global control is unavailable, continue from this file and repository evidence. Never weaken public-disclosure, security or verification rules because the global control cannot be read.
 
 ## Repository Purpose
-This repository is a public engineering portfolio.
-Its purpose is to show:
-1. who Son Gisuk is as an engineer
-2. what kinds of systems he designs and builds
-3. how he documents, implements, and validates work
 
-When an AI receives only this repository URL, it must read `AI_CONTEXT.md`, `WORKS.md`, `TASKS.md`, `03_portfolio/portfolio-strategy.md`, `03_portfolio/case-study-index.md`, `evidence/company-github/README.md`, and `03_portfolio/evidence-index.md` first. This repository is a public evidence source, not the authority for private job-choice constraints or offer decisions.
+This repository is a public engineering portfolio.
+
+Its purpose is to show:
+
+1. what kinds of problems Son Gisuk can turn into working systems
+2. how he designs boundaries, data flow, permissions, failures and operations
+3. how he uses AI as both a development tool and a product capability
+4. how he verifies implementation with tests and runtime evidence
+5. which languages, frameworks and tools he used to accomplish those goals
+
+When an AI receives only this repository URL, it must read `README.md`, `HOW_I_ENGINEER.md`, `AI_CONTEXT.md`, `WORKS.md`, `TASKS.md`, `03_portfolio/portfolio-strategy.md`, `03_portfolio/case-study-index.md`, `evidence/company-github/README.md`, and `03_portfolio/evidence-index.md` first.
+
+This repository is a public evidence source, not the authority for private job-choice constraints or offer decisions.
+
+## Reader-First Writing Standard
+
+The primary public audience includes HR, recruiters, hiring managers and engineers.
+
+Write in two layers.
+
+```text
+Layer 1: plain-language problem, action and result that a non-engineer can understand
+Layer 2: technical terms, implementation detail and evidence for engineering review
+```
+
+Do not require readers to understand framework jargon before they can understand the value of the work.
+
+Preferred pattern:
+
+```text
+쉽게 설명:
+사용자 역할에 따라 할 수 있는 일을 제한하고, 잘못된 요청은 안전하게 중단했습니다.
+
+기술적으로:
+RBAC, server-side validation, fail-closed policy를 적용했습니다.
+```
+
+For major public documents:
+
+- explain the problem before naming the framework
+- explain the result before listing implementation details
+- translate specialist terms when they first appear
+- keep technical vocabulary where it demonstrates depth
+- put technology lists after capability and evidence sections
+- avoid inflated marketing language
+- preserve exact verification boundaries and limitations
+
+## Capability-First Positioning
+
+Do not define the owner primarily by one programming language or framework.
+
+The target public identity is:
+
+> A software/backend/platform engineer who structures business problems into systems, uses appropriate technologies and AI, and validates the result through tests, security boundaries and real execution evidence.
+
+Korean public summary:
+
+> 업무 문제를 시스템으로 구조화하고, 적절한 기술과 AI를 활용해 구현하며, 테스트·보안·운영 증거까지 남기는 소프트웨어/백엔드/플랫폼 엔지니어
+
+Java/Spring and Python/FastAPI are important implementation tools and verified experience, but they are not the top-level identity.
+
+The portfolio should make these capabilities visible before technology labels:
+
+1. problem framing and system design
+2. backend and data integration
+3. AI-assisted engineering and AI feature integration
+4. verification and evidence
+5. security and governance boundaries
+6. deployment, operation and recovery
+
+Do not position the owner as an ML model researcher. AI capability here means integrating, evaluating and operating LLM/Agent capabilities inside software systems and using AI effectively in the engineering workflow.
+
+## Portfolio Composition
+
+Keep the evidence complementary rather than language-centric.
+
+1. `OpsMate Local` demonstrates controlled AI integration with business transactions, security boundaries and operation.
+2. Text2SQL/NL2SQL evidence demonstrates Python/API/data/LLM evaluation capability.
+3. Engineering case studies demonstrate reusable problem-solving depth across identity, data correctness, deployment/recovery and business-rule consistency.
+4. `HOW_I_ENGINEER.md` demonstrates the engineering method: problem definition -> plan -> AI-assisted implementation -> test -> runtime verification -> evidence.
+
+Case studies may use Java/Spring when it is the right reconstruction tool, but titles and summaries should lead with the engineering problem rather than the framework name.
+
+Company work may be inspected only as evidence. Never copy company code into this repository. Public code must be independently reconstructed with synthetic data and generalized domains.
 
 ## Public Repository Rule
+
 Do not add private job-search notes, company comparisons, support decisions, or internal-only memos.
 Only add recruiter-facing portfolio content.
 
@@ -25,19 +104,10 @@ Do not copy salary, family, health, current-employer problems, private activity-
 
 For company GitHub evidence, publish only sanitized metadata and reviewed career claims. Do not publish repository names, customer identifiers, commit messages, file paths, diffs, internal emails, or source code. A Git commit identifies author/committer metadata; it does not by itself prove who performed the push event.
 
-## Portfolio Composition
-
-Keep the two portfolio tracks separate and complementary:
-
-1. `OpsMate Local` is the implemented flagship candidate that demonstrates safe AI Agent integration with enterprise transactions. A real private `gemma3:12b` E2E was verified on `2026-08-23`; keep the overall `tested-component` boundary explicit until public URL/external network gates and close/reopen rehearsal are verified.
-2. Case-study posts demonstrate existing Java/Spring, SQL, authentication, deployment, and operations depth.
-
-Do not position the owner as an ML model researcher. The target identity is a Java/Spring enterprise backend and platform engineer who can safely integrate open-weight LLM and Agent capabilities.
-
-Company work may be inspected only as evidence. Never copy company code into this repository. Public code must be independently reconstructed with synthetic data and generalized domains.
-
 ## Evidence Labels
+
 Keep profile claims and project status explicit:
+
 - `verified`: a recent run or test success is recorded
 - `implemented`: core code exists
 - `tested-file-present`: tests exist but recent success is not recorded
@@ -60,15 +130,19 @@ Never present a planned or partial item as completed. Update `03_portfolio/evide
 - Before leaving the employer, create a final `departure-snapshot-YYYY-MM-DD.md` while authorized access still exists.
 
 ## Folder Roles
+
 - `01_profile/`: profile, strengths, direction
 - `02_projects/`: project artifacts
 - `03_portfolio/`: positioning and portfolio summaries
 - `03_portfolio/case-studies/`: recruiter-facing, sanitized engineering case studies
 - `evidence/company-github/`: sanitized company contribution evidence and monthly snapshots
 - `tools/`: local evidence collection utilities; local configuration is never committed
+- `HOW_I_ENGINEER.md`: public explanation of problem solving, AI use, verification and operation method
 
 ## Required Project Deliverables
+
 Each project should include:
+
 - `README.md`
 - `ARCHITECTURE.md`
 - `SETUP.md`
@@ -85,23 +159,28 @@ For Java/Spring code, follow [`03_portfolio/code-explanation-standard.md`](03_po
 - Update or remove an explanation whenever the related behavior changes, and keep it consistent with tests and public documentation.
 - Never include customer identifiers, private repository paths, internal URLs, credentials, or copied company code in explanations or examples.
 
+The same principle applies to Python and other languages: explain durable engineering decisions, not obvious syntax.
+
 ## Work Sequence
+
 Follow this order for each project:
-1. write design document
-2. write project README
+
+1. define the problem, constraints and completion criteria
+2. write or update design documents
 3. implement code
 4. add tests
 5. run tests and confirm success
-6. update docs if needed
-7. commit changes
-8. push changes
+6. verify relevant runtime boundaries when practical
+7. update evidence and public docs
+8. commit and push changes
 
-A task is not complete if tests do not exist or if tests fail.
+A task is not complete if required tests fail or if the public claim exceeds the verified boundary.
 
 ## Required Case Study Deliverables
 
 Each published case study should include:
 
+- plain-language title and one-paragraph summary for non-engineers
 - anonymized problem and constraints
 - the owner's verified responsibility, separated from team outcomes
 - alternatives and the engineering decision
@@ -109,11 +188,27 @@ Each published case study should include:
 - synthetic or public data
 - tests for normal, failure, and boundary scenarios
 - a recent verification result
+- technical detail section for engineering readers
 - disclosure review and explicit limitations
+
+Preferred case-study order:
+
+```text
+Problem
+-> Why it mattered
+-> Constraints
+-> Decision
+-> Implementation
+-> Verification
+-> Result
+-> Limits
+-> Technologies used
+```
 
 `source-reviewed` means private source and attribution were checked. It does not mean a public sample is implemented or verified.
 
 ## Commit Message Rules
+
 - `docs:` documentation changes
 - `feat:` new functionality
 - `fix:` bug fixes
@@ -122,8 +217,10 @@ Each published case study should include:
 - `chore:` maintenance work
 
 ## Current Project Priority
-1. synchronize public/state documents with the verified `2026-08-23` OpsMate real-model E2E evidence
-2. finish OpsMate public URL/external smoke, network exposure/policy gates and close/reopen rehearsal without adding a paid API fallback
-3. keep the GitHub Pages site and published evidence links healthy, including physical mobile verification when practical
-4. independently reconstruct and verify the next Java/Spring case from `03_portfolio/case-study-index.md`
-5. repair or archive the older partial samples only when they strengthen the two primary tracks
+
+1. keep README, AI context, profile and evidence documents synchronized with the verified `2026-08-29` OpsMate public Internet E2E boundary
+2. make the first-screen portfolio understandable to HR before technical details
+3. keep capability coverage balanced across backend, data, AI integration, security, verification and operations
+4. choose the next public case study by missing capability evidence, not by programming language
+5. keep the GitHub Pages site, evidence links and physical mobile rendering healthy
+6. repair or archive older partial samples only when they strengthen the capability map
