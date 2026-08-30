@@ -1,6 +1,6 @@
 # Core Strengths
 
-이 문서는 특정 기술 스택이 아니라 **어떤 문제를 어떻게 해결하는지**를 기준으로 강점을 정리합니다.
+이 문서는 특정 기술 스택이 아니라 **백엔드 시스템에서 어떤 문제를 어떻게 해결하는지**를 기준으로 강점을 정리합니다.
 
 ## 1. 문제를 시스템 구조로 바꾸는 능력
 
@@ -33,22 +33,22 @@
 - 데이터 분석 결과의 서비스화
 - 화면, backend, DB를 연결하는 end-to-end 흐름
 
-## 3. AI를 기능과 개발 과정 모두에 활용하는 능력
+## 3. AI를 백엔드 기능으로 안전하게 연결하는 능력
 
 쉽게 말하면:
 
 - AI에게 중요한 업무 결정을 그대로 맡기지 않습니다.
-- AI가 잘하는 초안, 탐색, 요약과 사람이 또는 서버가 책임져야 할 판단을 나눕니다.
-- 개발 과정에서도 AI를 조사, 구현, 테스트와 검토에 활용하되 결과를 다시 검증합니다.
+- AI가 제안할 일과 서버 또는 사람이 책임져야 할 판단을 나눕니다.
+- 모델이 잘못된 결과를 만들거나 사용할 수 없는 경우 중요한 처리를 진행하지 않게 합니다.
 
 경험:
 
 - Text2SQL/NL2SQL
 - RAG와 LLM 응용
 - local LLM adapter
-- Agentic AI Runtime
+- structured output validation
 - validation set과 다중 모델 비교
-- artifact/provenance 추적
+- 사용자별 AI 작업 공간 분리와 결과 추적
 
 ## 4. 잘못된 결과를 막는 검증 중심 개발
 
@@ -65,7 +65,7 @@
 - AI evaluation
 - fail-closed
 - health check
-- evidence-driven verification
+- runtime verification
 
 ## 5. 보안과 권한을 개발 문제로 다루는 능력
 
@@ -107,27 +107,27 @@
 쉽게 말하면:
 
 - 작업 방법과 현재 상태를 개인 기억에만 두지 않습니다.
-- 개발자나 다른 AI가 프로젝트를 이어받아도 목표와 제한, 검증 결과를 파악할 수 있도록 정리합니다.
+- 개발자나 다른 AI가 프로젝트를 이어받아도 목표, 제한과 검증 결과를 파악할 수 있도록 정리합니다.
 
 경험:
 
 - Git 기반 협업
 - 실행/개발환경 가이드
 - 공통 코드와 작업 규칙 정리
-- repository 상태 문서와 evidence 관리
-- AI Agent 작업 context와 검증 절차 구조화
+- repository 상태 문서와 검증 근거 관리
+- AI를 이용한 작업에서도 목표, 제약과 검증 기준을 문서로 유지
 
 ## 8. 기술을 목적이 아니라 도구로 보는 관점
 
-Java/Spring, Python/FastAPI, SQL, Docker, LLM 등 다양한 기술을 사용하지만 핵심 강점은 특정 문법이나 framework 암기가 아닙니다.
+Java/Spring, Python/FastAPI, SQL, Docker, LLM 등 다양한 기술을 사용하지만 상위 정체성은 Backend Engineer입니다.
 
 ```text
 문제 이해
--> 적절한 구조 선택
+-> 백엔드 구조 선택
 -> 필요한 도구 선택
 -> 구현
 -> 검증
--> 운영과 evidence
+-> 배포와 복구
 ```
 
 이 흐름을 끝까지 연결하는 것을 강점으로 봅니다.
