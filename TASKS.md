@@ -96,30 +96,50 @@ problem and result
 -> technology
 ```
 
-### 7. Next public evidence selection
+### 7. Python/FastAPI Data / AI Service Integration evidence - SELECTED, NOT STARTED
 
 No additional Java/Spring case is required for the current core portfolio.
 
-Choose the next project only when a capability gap is clear.
+Independent Codex/Gemini review found that the public evidence is materially stronger for Java/Spring than for Python/FastAPI even though Python/FastAPI and Text2SQL/NL2SQL appear in the public positioning. The next implementation therefore fills that capability gap rather than adding another language keyword.
 
-Candidate capability areas:
+Selected direction:
 
-- Data / AI Service Integration
-- AI evaluation quality
-- Platform / Operations
-- Security / Governance
-- AI-assisted engineering workflow
+> one independently runnable Python/FastAPI backend sample that demonstrates data + AI service integration and evaluation boundaries
 
-Selection criteria:
+Preferred scope:
 
-1. adds evidence not already covered by identity, SQL, deployment and business-rule cases
-2. has real career evidence or an independently meaningful implementation
-3. can be explained to a non-engineer as a business/system problem
-4. can be reconstructed without company code or confidential data
-5. supports normal, failure and boundary testing
-6. demonstrates engineering judgment rather than a framework tutorial
+- synthetic/public data only
+- FastAPI request/API boundary
+- natural-language question -> SQL candidate -> validation -> read-only execution -> result flow
+- explicit distinction between generation success, policy/validation success, execution success and answer correctness
+- read-only SQL policy, row/timeout limits and unsafe-query rejection
+- deterministic test provider or fixture so the core verification does not require an external paid model
+- optional real-model adapter kept behind a separate bounded gate if it adds evidence
+- normal, failure and boundary tests
+- reproducible setup and recent CI evidence
+- HR-readable explanation of what failure is prevented before framework/model details
 
-`CS-JAVA-11` statistical analysis UI remains an optional source-reviewed candidate if a future target role needs stronger data-service evidence. Its legacy ID does not make Java the selection criterion.
+Do not build:
+
+- a generic FastAPI CRUD tutorial
+- a generic RAG chatbot only to add `RAG` to the technology list
+- multiple small Python demos when one strong evidence track is enough
+- company code, real queries, schemas, customer data or internal identifiers
+
+Completion gate:
+
+```text
+problem/decision documented
+-> independent Python implementation
+-> deterministic automated tests PASS
+-> public disclosure review PASS
+-> portfolio regression PASS
+-> Pages publication PASS
+```
+
+Until this gate is complete, Python/FastAPI remains real experience with weaker public reproduction evidence than the published Java/Spring samples.
+
+`CS-JAVA-11` statistical analysis UI remains an optional source-reviewed candidate only if a future target role specifically needs stronger analysis-UI evidence. Its legacy ID does not make Java the selection criterion.
 
 ### 8. HR-readable case-study refinement
 
