@@ -1,6 +1,6 @@
 # AI Context for Engineering Career Portfolio
 
-> 이 저장소 URL만 받은 AI는 이 문서, [`WORKS.md`](WORKS.md), [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md), [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md), [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다.
+> 이 저장소 URL만 받은 AI는 `README.md`, `HOW_I_ENGINEER.md`, 이 문서, [`WORKS.md`](WORKS.md), [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md), [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md), [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다.
 
 - 기준일: `2026-08-30`
 - 공개 범위: `public`
@@ -8,27 +8,113 @@
 - 역할: 손기석의 기술 방향, 구현 샘플, 공개 가능한 경력·기술 근거
 - 범위 제한: 개인 연봉, 가족, 건강, 현재 회사 문제, 비공개 지원 전략은 이 저장소에서 판단하지 않음
 
-## 확정된 포트폴리오 전략
+## 핵심 정체성
 
-이 저장소는 두 트랙으로 구성합니다.
+이 저장소는 특정 언어나 프레임워크의 숙련도를 먼저 보여주는 포트폴리오가 아닙니다.
 
-1. `OpsMate Local`: 온프레미스 AI Agent를 기업 업무 트랜잭션에 안전하게 연결하는 대표 프로젝트
-2. Java/Spring 실무 사례: 인증, DB/SQL, 배포, 업무 규칙과 운영의 실무 깊이를 회사 코드와 독립된 공개 샘플로 재현
+핵심 정체성은 다음입니다.
 
-핵심 정체성은 ML 모델 연구자가 아니라 **Java/Spring 엔터프라이즈 백엔드 경험을 중심으로 AI Agent 기능을 통합하는 백엔드·플랫폼 엔지니어**입니다.
+> 업무 문제를 시스템으로 구조화하고, 적절한 기술과 AI를 활용해 구현하며, 테스트·보안·운영 증거까지 남기는 소프트웨어/백엔드/플랫폼 엔지니어
 
-## OpsMate Local 상태
+Java/Spring, Python/FastAPI, SQL, Docker, LLM은 중요한 실제 사용 기술이지만 상위 정체성 자체는 아닙니다.
 
-`OpsMate Local`은 `implemented`, `tested-component`이며 다음 명시된 bounded boundary는 `verified`입니다.
+이 저장소를 해석할 때 아래 역량을 먼저 봅니다.
 
-- `2026-08-23`: Ollama `gemma3:12b` 실제 모델 E2E 9/9, 관측 p95 `21,076ms` (`<= 30,000ms` gate)
-- `2026-08-25`: Synology exact immutable release 내부 stack/network/session/model/rate/log/lifecycle E2E
-- `2026-08-29`: DSM TLS ingress를 통한 실제 Internet HTTPS persona flow, 외부 두 session isolation, URL session rewriting 부재, DB/model/loopback 비노출, app direct egress 차단, public `429`, log scan, normal close, same-digest reopen, emergency close, recovery normal close와 final `CLOSED`
-- public evidence 반영 main Pages run `33250726427`: verify matrix, Jekyll build와 Pages deploy 성공
+1. 문제 정의와 시스템 구조화
+2. 백엔드와 데이터 연결
+3. AI를 개발 과정과 서비스 기능에 활용하는 능력
+4. 테스트와 실제 실행을 통한 검증
+5. 권한, 실패, 감사와 같은 보안·통제 경계
+6. 배포, 운영, 복구와 재현 가능성
 
-모델이 없거나 잘못된 출력을 반환하면 모델 의존 초안 생성은 저장 전에 `fail-closed`로 중단되고 외부 유료 API로 자동 우회하지 않습니다. 이미 제출된 요청의 승인·반려·발주는 모델 가용성과 분리되어 있습니다.
+ML 모델 연구자나 파인튜닝 전문가로 포지셔닝하지 않습니다. AI 역량은 모델을 직접 연구하는 것보다 LLM/Agent 기능을 기존 소프트웨어에 안전하게 연결하고, 평가·운영하며, 개발 workflow에도 활용하는 능력을 의미합니다.
 
-이 증거는 bounded deployment E2E이며 24x7 가용성, SLA, 장기 부하, 대규모 실제 사용자 운영을 증명하지 않습니다.
+## 공개 문서 작성 원칙
+
+HR, 채용담당자와 엔지니어가 함께 읽는 구조를 사용합니다.
+
+```text
+먼저: 왜 필요한 일인지, 무엇을 해결했는지, 어떤 결과가 있었는지
+그 다음: 어떤 기술과 설계 원칙을 사용했는지
+마지막: 테스트, 실행 결과, 한계와 증거
+```
+
+전문 용어는 유지하되, 전문 용어를 알아야만 내용을 이해할 수 있게 쓰지 않습니다.
+
+예:
+
+```text
+쉬운 설명:
+사용자 역할에 따라 할 수 있는 일을 제한하고, 잘못된 요청은 안전하게 중단했습니다.
+
+기술 설명:
+RBAC, server-side validation, fail-closed policy를 적용했습니다.
+```
+
+Case Study 제목과 요약은 framework 이름보다 문제를 먼저 보여줍니다.
+
+## 포트폴리오 구성
+
+### 1. Controlled AI Integration
+
+`OpsMate Local`은 AI가 업무를 대신 결정하게 하지 않고, 기존 서버 규칙과 사람 승인 안에서 초안 생성 기능을 사용하는 대표 프로젝트입니다.
+
+주로 증명하는 것:
+
+- 업무 규칙과 AI 역할 분리
+- 권한, 상태 전이, 중복 방지
+- 잘못된 모델 결과의 안전 중단
+- session과 network isolation
+- 실제 모델과 public HTTPS 경계 검증
+- 서비스 close/reopen과 복구 절차
+
+### 2. Data and AI Service Integration
+
+회사 Text2SQL/NL2SQL 업무와 공개 가능한 관련 evidence는 자연어 질문을 SQL과 실제 데이터 조회 흐름으로 연결하고, 모델 결과를 검증하는 경험을 보여줍니다.
+
+주로 증명하는 것:
+
+- Python/FastAPI API
+- SQL validation and execution
+- validation set
+- multi-model comparison
+- AI output evaluation
+
+### 3. Engineering Case Studies
+
+회사 코드를 공개하지 않고 실제 업무 문제를 일반화한 독립 샘플을 구현합니다.
+
+현재 published 사례:
+
+- 사용자 로그인과 권한 통합
+- 복잡한 기간 조회의 데이터 정합성
+- 배포와 복구의 이식성
+- 업무 규칙의 일관성
+
+이 사례는 `Java/Spring 사례집`으로만 해석하지 않습니다. 각각 identity boundary, data correctness, deployment/recovery, business-rule consistency라는 문제 해결 증거입니다.
+
+### 4. Engineering Method
+
+[`HOW_I_ENGINEER.md`](HOW_I_ENGINEER.md)는 다음 흐름을 공개적으로 설명합니다.
+
+```text
+문제와 제약 정의
+-> 설계
+-> AI를 활용한 탐색과 구현
+-> 자동 테스트
+-> 실제 실행 검증
+-> evidence와 문서 갱신
+```
+
+AI가 코드를 작성했다는 사실보다, 다른 AI나 개발자가 현재 상태와 제약을 복원할 수 있고 결과를 다시 검증할 수 있다는 점을 중요하게 봅니다.
+
+## OpsMate Local 현재 검증 상태
+
+`OpsMate Local`은 `implemented`, `tested-component`이며 아래 bounded boundary는 `verified`입니다.
+
+- `2026-08-23`: Ollama `gemma3:12b` 실제 모델 E2E `9/9`, 관측 p95 `21,076ms`, 프로젝트 gate `<= 30,000ms`
+- `2026-08-25`: Synology immutable release의 내부 stack/network/session/model/rate/log/lifecycle E2E
+- `2026-08-29`: 실제 Internet HTTPS 경로의 persona flow, 외부 session isolation, DB/model/loopback 비노출, app direct egress 차단, public `429`, log scan, normal close, same-digest reopen, emergency close, recovery normal close와 final `CLOSED`
 
 상세:
 
@@ -36,92 +122,71 @@
 - [`02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/NAS_INTERNAL_E2E_EVIDENCE.md)
 - [`02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md`](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
 
-## Java/Spring 공개 사례 상태
+모델이 없거나 잘못된 출력을 반환하면 모델 의존 초안 생성은 저장 전에 중단되며, 이미 제출된 요청의 승인·반려·발주는 모델 가용성과 분리됩니다.
 
-### CS-JAVA-01 — Spring Security 인증 브리지
+이 증거는 bounded deployment E2E이며 24x7 가용성, SLA, 장기 부하나 대규모 실제 사용자 운영을 증명하지 않습니다.
 
-- 상태: `published`
-- 권한 있는 비공개 원본에서 본인 귀속 인증 통합 범위를 확인
-- 회사 코드와 독립된 합성 Spring Security 샘플 구현
-- 24개 자동 테스트 성공
-- main publication evidence: commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`, Pages run `33276912458`의 Spring Security/public/Jekyll/build/deploy PASS
-- 실제 IdP, 운영 DB, 분산 세션, 대규모 운영 부하는 검증/주장하지 않음
+## 공개 Case Study 상태
 
-### CS-JAVA-02 — MyBatis 기간 조회 정합성
+| 사례 | 쉽게 설명하면 | 상태 | 공개 검증 |
+|---|---|---|---:|
+| Spring Security 인증 브리지 | 서로 다른 로그인 방식에서도 사용자와 권한이 잘못 연결되지 않게 함 | `published` | 24 tests |
+| MyBatis 기간 조회 정합성 | 복잡한 기간 조건에서 빠지거나 겹치는 데이터가 없도록 함 | `published` | 12 tests |
+| WAR 배포 이식성 | 서버 환경이 달라도 같은 애플리케이션을 배포·복구할 수 있게 함 | `published` | 10 tests |
+| 업무 규칙 정합성 | 사용자 식별과 최신 기준이 화면·API·DB에서 다르게 적용되지 않게 함 | `published` | 11 tests |
 
-- 상태: `published`
-- 권한 있는 비공개 원본에서 본인 귀속 SQL 개선 범위를 재확인
-- 확인된 원칙: 여러 연도 기간의 복합 `OR`을 상호 배타적 구간으로 분해해 `UNION ALL`로 결합하고, indexed year/month column 숫자 변환 제거
-- 공개 구현: [`02_projects/case-study-samples/mybatis-query-correctness/`](02_projects/case-study-samples/mybatis-query-correctness/README.md)
-- Java 21 + Spring Boot 3.5.16 + MyBatis + H2 합성 데이터
-- 12개 자동 테스트
-- final PR regression run `33251272174`: PASS
-- main Pages run `33251362190`: verify/build/deploy PASS
-- 실제 Oracle optimizer index 선택과 운영 성능 수치는 검증/주장하지 않음
+각 사례는 회사 코드와 독립된 합성 샘플입니다. 실제 회사 시스템 전체, 운영 DB, 장기 부하, SLA와 성능 수치를 확대해서 주장하지 않습니다.
 
-### CS-JAVA-03 — WAR 배포 이식성
+## 회사 업무 evidence
 
-- 상태: `published`
-- 권한 있는 비공개 원본에서 본인 귀속 WAR deploy workflow/runbook, context-path 보정, profile/config 외부화 범위를 재확인
-- 공개 구현: [`02_projects/case-study-samples/war-deployment-portability/`](02_projects/case-study-samples/war-deployment-portability/README.md)
-- Java 21 + Spring Boot 3.5.16 WAR, provided Tomcat, `SpringBootServletInitializer`
-- non-root context path, deploy profile fail-closed, backup/replace/health/rollback을 합성 환경에서 재현
-- 10개 자동 테스트
-- final PR regression run `33252086213`: 7개 job 전체 PASS
-- main commit `63abaa49e05a366d6007902edd184a83df6bc7e9`
-- main Pages run `33252148733`: 7개 verify job + build + deploy PASS
-- CI context-path 관측: Java `21.0.12`, Spring Boot `3.5.16`, embedded Tomcat `10.1.55`
-- 실제 외부 운영 Tomcat rolling deployment, session drain, zero-downtime, SLA는 검증/주장하지 않음
+기존 회사 업무는 원본 소스나 내부 식별자를 공개하지 않습니다.
 
-### CS-JAVA-06 — 업무 규칙 정합성
+게시물은 다음 순서를 지킵니다.
 
-- 상태: `published`
-- 권한 있는 비공개 원본에서 본인 author/committer 변경과 사용자 식별·최신 기준·조회 경로·null-safe 처리 범위를 재확인
-- 공개 구현: [`02_projects/case-study-samples/business-rule-consistency/`](02_projects/case-study-samples/business-rule-consistency/README.md)
-- Java 21 + Spring Boot 3.5.16 합성 `member snapshot` 도메인
-- canonical session identity 우선, legacy fallback 제한, `LATEST_ONLY`/`EXPLICIT_OR_LATEST`, 명시적 Mapper 입력, 400/401/404 fail-closed 경계 재현
-- 11개 MockMvc 자동 테스트
-- 최초 PR run `33275860098`: 신규 sample job 및 전체 8개 portfolio job PASS
-- final PR run `33276143715`: 상태 동기화 후 전체 8개 portfolio job PASS
-- main merge commit `733db7c614af5613216773b3b1fc6b3567e0b84c`
-- main Pages run `33276278894`: 8개 verify job + Pages build + deploy PASS
-- 회사 클래스명, endpoint, field, SQL, schema, 테스트 계정, 실제 데이터와 내부 식별자는 공개하지 않음
+```text
+권한 있는 환경에서 본인 귀속과 범위 확인
+-> 문제와 제약 비식별화
+-> 필요하면 합성 데이터로 독립 구현
+-> 테스트
+-> 공개 가능한 claim만 게시
+```
 
-기존 회사 업무는 원본 소스나 내부 식별자를 공개하지 않습니다. 게시물은 원본에서 본인 귀속과 구현 범위를 확인한 뒤 비식별 서술과 독립 재구현 코드로 만듭니다.
+현재 공개 evidence에는 회사 Text2SQL/NL2SQL 업무와 Agentic AI Runtime의 작업 격리, artifact/provenance, storage 관련 본인 구현 범위를 제한적으로 포함합니다.
 
 ## 이 저장소로 할 수 있는 판단
 
-- 공개 프로필에 기재된 기술 방향 파악
-- 저장된 코드와 테스트 파일의 존재 및 최근 검증 상태 확인
-- 개인 포트폴리오 프로젝트의 구현 범위와 검증된 boundary 확인
-- Java/Spring 인증·SQL 정합성·WAR 배포·업무 규칙 정합성 사례가 독립 샘플에서 어떻게 재현됐는지 확인
-- 백엔드·데이터·AI 응용·보안 관점의 조합 검토
+- 어떤 종류의 문제를 시스템으로 구조화하는지
+- 공개 코드와 테스트의 최근 검증 상태
+- AI를 기존 업무 규칙과 서버 경계 안에 통합하는 방식
+- 백엔드, 데이터, AI, 보안, 운영 역량의 조합
+- 회사 코드를 공개하지 않고 문제를 독립 재현하는 방식
+- 테스트와 runtime evidence를 완료 근거로 사용하는 습관
 
 ## 이 저장소만으로 하면 안 되는 판단
 
 - 실무 경력 연수와 회사별 재직 기간 확정
-- 특정 기술의 숙련도나 대규모 운영 경험 확정
+- 특정 언어의 숙련도를 저장소 파일 수로 단정
 - 회사·팀 전체 성과를 개인 성과로 해석
 - bounded E2E를 장기 production 운영 또는 SLA로 확대 해석
-- Spring Security 합성 샘플을 실제 외부 IdP/운영 DB/분산 세션 운영 증거로 확대 해석
-- H2 합성 샘플을 실제 Oracle 실행계획/성능 증거로 확대 해석
-- embedded Tomcat CI를 실제 외부 운영 Tomcat 무중단 배포 증거로 확대 해석
-- 업무 규칙 합성 샘플을 실제 회사 시스템 전체 정합성·운영 데이터 정확성 증거로 확대 해석
+- 합성 샘플을 실제 회사 운영환경 검증으로 확대 해석
+- 프로덕션 트래픽과 운영 규모
+- 아직 검증하지 않은 Kafka/Redis/Kubernetes 실전 운영
+- 팀 프로젝트 전체에서의 개인 기여 비율
 - 특정 회사 입사, 연봉, 근무환경, 오퍼 수락 판단
 
 ## 읽기 순서
 
-1. [`WORKS.md`](WORKS.md)
-2. [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)
-3. [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md)
-4. [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md)
-5. [`evidence/company-github/README.md`](evidence/company-github/README.md)
-6. [`evidence/company-github/career-claims.csv`](evidence/company-github/career-claims.csv)
+1. [`README.md`](README.md)
+2. [`HOW_I_ENGINEER.md`](HOW_I_ENGINEER.md)
+3. [`WORKS.md`](WORKS.md)
+4. [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md)
+5. [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md)
+6. [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md)
 7. [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)
-8. [`01_profile/career-summary.md`](01_profile/career-summary.md)
-9. [`01_profile/core-strengths.md`](01_profile/core-strengths.md)
-10. [`01_profile/career-direction.md`](01_profile/career-direction.md)
-11. [`03_portfolio/portfolio-overview.md`](03_portfolio/portfolio-overview.md)
+8. [`evidence/company-github/README.md`](evidence/company-github/README.md)
+9. [`01_profile/career-summary.md`](01_profile/career-summary.md)
+10. [`01_profile/core-strengths.md`](01_profile/core-strengths.md)
+11. [`01_profile/career-direction.md`](01_profile/career-direction.md)
 12. 검증하려는 프로젝트 또는 사례의 README, 코드, 테스트
 
 ## 증거 라벨
@@ -132,11 +197,11 @@
 - `source-reviewed`: 권한 있는 비공개 원본에서 본인 귀속과 구현 범위를 확인했으나 공개 재현 검증은 아직 없음
 - `sample-verified`: 회사 코드와 독립된 공개 샘플의 최근 테스트 성공 기록이 있으나 실제 회사 시스템 검증을 뜻하지 않음
 - `published`: 독립 공개 샘플과 문서의 검증 후 main Pages build/deploy까지 성공
-- `verified`: 최근 실행일, 명령/실행 경계, 환경·버전, 성공 결과가 함께 기록됨
+- `verified`: 최근 실행일, 실행 경계, 환경과 성공 결과가 함께 기록됨
 - `partial`: 일부 코드나 문서만 있고 주요 구성요소가 빠짐
 - `planned`: 문서 또는 작업 목록에만 존재
 - `self-described`: 경력·프로필 문서의 자기기술이며 별도 근거 확인 필요
-- `private-work-code-verified`: 권한 있는 환경에서 회사 비공개 코드와 본인 귀속 커밋을 확인하고 공개 문서에는 비식별 claim만 남김
+- `private-work-code-verified`: 권한 있는 환경에서 회사 비공개 코드와 본인 귀속을 확인하고 공개 문서에는 비식별 claim만 남김
 
 기술 키워드, README 설명, 디렉터리 이름만으로 `verified`를 부여하지 않습니다.
 
@@ -145,51 +210,17 @@
 | 항목 | 상태 | 판단 |
 |---|---|---|
 | `OpsMate Local` | `implemented`, `tested-component`; real-model, NAS internal, public Internet bounded boundary `verified` | 실제 모델, immutable Synology 배포, private DB/model, 외부 HTTPS/session/rate/non-exposure와 lifecycle 검증. 24x7 SLA/장기 부하는 미검증 |
-| Spring Security 인증 사례 | `published` | 회사 코드와 독립된 합성 샘플 24개 테스트와 main Pages run `33276912458` 성공. 실제 IdP/DB/분산 세션은 미검증 |
-| MyBatis 기간 조회 사례 | `published` | 합성 Spring Boot/MyBatis/H2 샘플 12개 테스트와 main Pages run `33251362190` 성공. Oracle 운영 성능은 미검증 |
-| WAR 배포 이식성 사례 | `published` | 합성 Spring Boot WAR 샘플 10개 테스트, PR regression `33252086213`, main Pages `33252148733` 성공. 실제 외부 Tomcat 운영은 미검증 |
-| 업무 규칙 정합성 사례 | `published` | 합성 Spring Boot 샘플 11개 테스트, final PR `33276143715`, main Pages `33276278894` 성공. 실제 회사 시스템 전체 정합성은 미검증 |
+| 사용자 로그인과 권한 통합 사례 | `published` | 독립 합성 샘플 24개 테스트 성공. 실제 외부 IdP/운영 DB/분산 세션은 미검증 |
+| 기간 조회 데이터 정합성 사례 | `published` | 독립 합성 샘플 12개 테스트 성공. 실제 Oracle 실행계획/운영 성능은 미검증 |
+| 배포와 복구 이식성 사례 | `published` | 독립 합성 샘플 10개 테스트 성공. 실제 외부 Tomcat 무중단 배포/SLA는 미검증 |
+| 업무 규칙 일관성 사례 | `published` | 독립 합성 샘플 11개 테스트 성공. 실제 회사 시스템 전체 정합성은 미검증 |
 | `ai-rag-api` | `implemented`, `tested-file-present` | 코드·테스트 파일은 있으나 최근 성공 실행 미확인 |
 | `backend-platform-template` | `partial` | 현재 구조에 누락 모듈이 있음 |
-| `security-audit-log` | `partial` | API route만 있고 참조 service, 앱 진입점, 테스트가 없음 |
+| `security-audit-log` | `partial` | 일부 코드만 있고 완결된 공개 검증이 없음 |
 | 회사 Text2SQL/NL2SQL 업무 | `private-work-code-verified`, `tested-component` | 비공개 회사 Git에서 본인 귀속 구성요소와 benchmark evidence 확인 |
 | 회사 Agentic AI Runtime 업무 | `private-work-code-verified`, `tested-component` | workspace, artifact, provenance, storage와 테스트의 본인 구현 범위 확인 |
 
 상세 상태는 [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 기준으로 합니다.
-
-## 안전한 해석
-
-현재 공개 저장소는 다음을 보여주기에 적합합니다.
-
-```text
-Java/Spring 인증·인가·세션·CSRF 경계를 독립 샘플과 테스트로 검증하는 방식
-MyBatis 기간 조회를 정합성·tenant isolation·count/page·pagination·SQL shape 관점에서 검증하는 방식
-WAR 서비스의 external-container bootstrap, non-root context path, 외부 config fail-closed, health rollback 경계를 독립 샘플로 검증하는 방식
-canonical session identity, 화면별 snapshot policy, Service-Mapper 책임을 독립 회귀 샘플로 검증하는 방식
-AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계에 넣는 설계와 구현
-실제 open-weight model 구조화 출력을 서버 검증·저장까지 연결한 E2E
-immutable artifact를 Synology에 배포하고 private DB/model network와 restricted SSH tunnel을 검증한 경험
-Internet HTTPS 경로에서 실제 모델 업무 흐름, session isolation, rate/non-exposure 통제와 lifecycle을 bounded E2E로 검증한 경험
-Text2SQL/NL2SQL API, SQL 검증과 다중 모델 benchmark 업무
-Agentic AI Runtime의 작업 격리와 산출물 추적 구성요소 구현
-비공개 업무 근거를 비식별 claim과 독립 공개 재현 상태로 분리하는 방식
-```
-
-다음은 이 저장소만으로 확정할 수 없습니다.
-
-```text
-Java/Spring 실무의 전체 수준과 아직 재현하지 않은 나머지 사례의 구현 완료
-Spring Security 샘플의 실제 외부 IdP/운영 DB/분산 세션/운영 부하
-MyBatis 샘플의 실제 Oracle 실행계획과 운영 성능
-WAR 샘플의 실제 외부 Tomcat zero-downtime/session-drain/SLA
-업무 규칙 샘플의 실제 회사 SSO/session E2E, Mapper SQL/운영 DB 결과, 운영 데이터 전체 정합성
-프로덕션 트래픽과 운영 규모
-Kafka/Redis/Kubernetes 실전 운영
-RAG 품질·보안·관측성·비용 최적화
-팀 프로젝트 전체에서의 개인 기여 비율
-회사 비공개 서비스의 장기 운영 규모와 성과
-OpsMate의 24x7 외부 운영 안정성, SLA, 장기/대규모 부하 성능
-```
 
 ## 직무·직장 선택과 결합할 때
 
