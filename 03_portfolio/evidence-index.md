@@ -1,6 +1,6 @@
 # Portfolio Evidence Index
 
-- 최종 점검일: `2026-08-30`
+- 최종 점검일: `2026-08-31`
 - 목적: 프로필 주장, 구현 코드, 테스트, 계획을 구분해 과장 없는 기술 검토를 가능하게 함
 
 ## 상태 정의
@@ -32,8 +32,9 @@
 - Java publication-state sync main Pages run `33252607907`: 7개 verify job + build + deploy 성공
 - 업무 규칙 정합성 `CS-JAVA-06` final PR regression run `33276143715`: 8개 job 전체 성공
 - `CS-JAVA-06` main commit `733db7c614af5613216773b3b1fc6b3567e0b84c`
-- `CS-JAVA-06` main Pages run `33276278894`: 8개 verify job + build + deploy 성공 (`2026-08-30`)
-- Spring Security `CS-JAVA-01` publication evidence: main commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`, Pages run `33276912458`의 Spring Security/public/Jekyll/Pages build/deploy 성공 (`2026-08-30`)
+- `CS-JAVA-06` main Pages run `33276278894`: 8개 verify + build + deploy 성공 (`2026-08-30`)
+- Spring Security `CS-JAVA-01` publication evidence: main commit `c74655a2e7aacfa0d05f41bc594598a0c0f73296`, Pages run `33276912458`의 Spring Security regression, public/Jekyll 검사, Pages build/deploy 성공 (`2026-08-30`)
+- `CS-AI-01`은 독립 프로젝트 검증은 완료했지만 이 포트폴리오의 Pages publication은 아직 진행 중이므로 현재 `sample-verified`로 유지
 - 모바일 baseline은 viewport, 52rem/32rem responsive breakpoints, nav/code/table horizontal-overflow guard를 public portfolio test로 고정하며 물리 단말 육안 검수는 선택적 유지관리 항목으로 둠
 
 ## 프로젝트 상태
@@ -45,11 +46,11 @@
 | [MyBatis 기간 조회 정합성](../02_projects/case-study-samples/mybatis-query-correctness/README.md) | 독립 Spring Boot/MyBatis/H2 샘플 있음 | 12개 성공; final PR regression `33251272174` | [사례 게시물](case-studies/mybatis-query-correctness.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33251362190` 성공. Oracle 실행계획·운영 성능 수치는 미검증 |
 | [WAR 배포 이식성](../02_projects/case-study-samples/war-deployment-portability/README.md) | 독립 Spring Boot WAR 샘플 있음 | 10개 성공; final PR regression `33252086213` | [사례 게시물](case-studies/war-deployment-portability.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33252148733` 성공. 실제 외부 Tomcat rolling/zero-downtime/SLA는 미검증 |
 | [업무 규칙 정합성](../02_projects/case-study-samples/business-rule-consistency/README.md) | 독립 Spring Boot 합성 샘플 있음 | 11개 성공; final PR regression `33276143715` 전체 8개 job 성공 | [사례 게시물](case-studies/business-rule-consistency.md)·README·ARCHITECTURE·SETUP·VERIFICATION | `published` | main Pages `33276278894` 성공. canonical identity/latest-only/Mapper ownership/fail-closed 경계를 검증했으며 실제 회사 시스템 전체 정합성은 미검증 |
+| [Text2SQL Workspace](https://github.com/son1004007/text2sql-workspace) | 독립 Python/FastAPI 멀티사용자 Text2SQL 서비스, SQLGlot policy, SQLite/PostgreSQL query executor, Docker runtime | public project main CI에서 Python test + Docker/PostgreSQL E2E PASS (`2026-08-31`) | README·ARCHITECTURE·SETUP·CURRENT_STATE·runtime/security evidence + [사례 게시물](case-studies/text2sql-validation.md) | `sample-verified` | reader SELECT 성공/INSERT 실패, workspace 격리, unsafe SQL 사전 차단, bounded execution/evaluation 검증. external real LLM·production auth/load/SLA는 미검증; portfolio Pages publication pending |
 | [Java/Spring 사례 후보](case-study-index.md) | 권한 있는 원본에서 일부 확인 | 공개 독립 샘플 4건 검증, 4건 publication gate 완료 | 후보 인덱스 있음 | `published` 4건, `source-reviewed` 다수 | 원본 코드를 공개하지 않으며 독립 재현·최근 테스트가 없는 사례를 완료로 표현하지 않음 |
 | [`ai-rag-api`](../02_projects/ai-rag-api/README.md) | 있음 | 있음 | README·ARCHITECTURE·SETUP | `implemented`, `tested-file-present` | 현재 점검 환경에서 최근 성공 실행 미확인. 실제 LLM·벡터 저장소 품질과 운영성 별도 검증 필요 |
 | [`backend-platform-template`](../02_projects/backend-platform-template/README.md) | 일부 | 있음 | README·ARCHITECTURE·SETUP | `partial` | `app/main.py`가 존재하지 않는 `app.api.routes`를 import. 주요 구성요소 누락 |
 | [`security-audit-log`](../02_projects/security-audit-log/README.md) | route만 있음 | 없음 | README | `partial` | 참조 service, 앱 진입점, 저장 모델, tests 보완 필요 |
-| 개인 공개 `text2sql` 샘플 | 없음 | 없음 | 상위 문서의 계획만 있음 | `planned` | 회사 실무 Text2SQL과 혼동 금지 |
 | `security-backend-platform` | 없음 | 없음 | 상위 문서의 예시만 있음 | `planned` | 별도 프로젝트로 완료되기 전 기술 근거로 사용 금지 |
 
 ## OpsMate 실제 모델 E2E 증거
@@ -195,6 +196,47 @@
 
 상세: [`../02_projects/case-study-samples/business-rule-consistency/VERIFICATION.md`](../02_projects/case-study-samples/business-rule-consistency/VERIFICATION.md)
 
+## `CS-AI-01` Text2SQL Workspace 공개 재현 증거
+
+비공개 업무 Text2SQL/NL2SQL 구현에서 확인된 문제 범위를 회사 코드와 분리하고, 별도 공개 프로젝트 [`Text2SQL Workspace`](https://github.com/son1004007/text2sql-workspace)로 독립 구현했습니다.
+
+검증된 공개 샘플 경계:
+
+- Python 3.13 + FastAPI
+- synthetic signed bearer identity와 사용자별 workspace/query ownership
+- cross-user workspace/query 접근 거부
+- replaceable `Text2SqlModel` interface와 deterministic fixture model
+- natural-language question -> SQL candidate -> SQLGlot validation -> read-only execution -> result
+- exactly one statement, SELECT/query-only, explicit analytics table allowlist
+- unsafe fixture SQL은 query executor 호출 전에 차단
+- query/attempt history와 retry 관계 보존
+- generation / validation / execution / correctness 상태와 평가 지표 분리
+- SQL string equality가 아닌 columns/rows result semantics 기반 correctness
+- SQLite read-only deterministic adapter + PostgreSQL read-only runtime adapter
+- PostgreSQL 17 Docker runtime의 dedicated analytics reader
+- 동일 reader direct `SELECT` 성공, `INSERT` 실패
+- explicit read-only PostgreSQL transaction, bounded rows, statement timeout
+- application metadata state와 analytics query authority 분리
+- non-root FastAPI container
+- host에는 FastAPI loopback binding만 publish하고 PostgreSQL port는 publish하지 않음
+- clean-volume Docker E2E에서 API health, 두 사용자 격리, safe query, unsafe rejection, evaluation, network exposure와 DB privilege를 검증
+- public project security/disclosure review PASS
+- public project main CI에서 Python test와 Docker/PostgreSQL E2E 모두 PASS (`2026-08-31`)
+
+runtime gate에서 SQLite-only 경로가 드러내지 못한 PostgreSQL numeric aggregation/type 차이를 실제로 발견해 synthetic money 타입과 cross-engine result comparison을 수정했습니다.
+
+현재 deterministic evaluation fixture는 2개의 작은 합성 case가 generation/validation/execution/correctness pipeline을 통과하는지 검증합니다. 이것을 외부 LLM의 100% Text2SQL accuracy로 표현하지 않습니다.
+
+검증하지 않은 것:
+
+- production authentication 또는 external IdP
+- external/real LLM E2E와 statistically meaningful model-quality metrics
+- arbitrary production database connector
+- production concurrency, load, SLA, large-user operation
+- 실제 회사 schema/query/data와 운영 정확도
+
+상세: [Text2SQL Workspace README](https://github.com/son1004007/text2sql-workspace) | [포트폴리오 사례](case-studies/text2sql-validation.md)
+
 ## 회사 GitHub 실무 근거
 
 원본은 회사 소유 비공개 저장소이며 공개 저장소에는 코드와 내부 식별자를 복사하지 않습니다. 상세 공개 범위와 claim은 [`../evidence/company-github/README.md`](../evidence/company-github/README.md)에서 확인합니다.
@@ -218,21 +260,22 @@
 | 주장 | 현재 분류 | 안전한 표현 | 추가 근거 |
 |---|---|---|---|
 | Java/Spring 백엔드 개발 경험 | `self-described` + 독립 공개 사례 | Java/Spring 기반 업무 경험과 독립 샘플 검증을 분리해 제시 | 회사·프로젝트 기간, 역할, 코드·산출물 색인 |
-| Python/FastAPI API 구현 | `self-described` + 개인 코드 `implemented` | 실무 자기기술과 FastAPI 포트폴리오 코드가 각각 존재 | 실무 범위와 개인 샘플 분리 |
+| Python/FastAPI API 구현 | `self-described` + `sample-verified` 공개 Text2SQL | 실무 자기기술과 독립 FastAPI API/runtime evidence를 분리해 제시 | production auth/load 범위는 별도 근거 전 주장 금지 |
 | 데이터 분석 결과 서비스화 | `self-described` | 분석 결과를 웹/API로 연결한 경험을 경력 문서에 기재 | 프로젝트별 역할, 기간, 운영 반영, 성과 |
-| Text2SQL/NL2SQL/LLM PoC | `private-work-code-verified`, `E3`; RAG 개인 샘플 `implemented` | FastAPI 기반 Text2SQL/NL2SQL 구현과 다중 모델 benchmark 경험 | 운영 반영 범위와 장기 성과는 별도 확인 |
+| Text2SQL/NL2SQL/LLM PoC | `private-work-code-verified`, `E3` + 독립 공개 `sample-verified` | 실무 Text2SQL 구현 경험과 공개 synthetic Text2SQL service/runtime 검증을 함께 제시하되 서로 다른 evidence로 구분 | external real-model accuracy와 운영 반영 범위는 별도 확인 |
 | Agentic AI Runtime | `private-work-code-verified`, `E3` for components | 작업 격리와 artifact/provenance 추적 구성요소 및 테스트 구현 | 전체 플랫폼 완성 또는 LLMOps lead로 표현 금지 |
 | Linux/Docker/Jenkins 운영 반영 | `self-described` | 배포·환경 구성·장애 분석 경험을 경력 문서에 기재 | 운영 범위, 책임, 자동화, 장애·개선 결과 |
 | 보안 경력과 자격 | `self-described` | 보안·통제 관점을 가진 백엔드 전환형 프로필 | 재직 연표, 자격 유효 상태, 실제 담당 업무 |
 
 ## 최근 완료된 공개 재현 작업
 
-Java/Spring 공개 사례 4건의 publication gate를 완료했습니다.
+현재 독립 공개 재현 evidence는 Java/Spring 사례 4건의 publication gate와 Python/FastAPI Text2SQL 샘플의 runtime verification을 포함합니다.
 
 - `CS-JAVA-01`: Spring Security 인증·인가·세션·CSRF, 24개 테스트 + main Pages `33276912458`
 - `CS-JAVA-02`: MyBatis 기간 정합성, 12개 테스트 + main Pages `33251362190`
 - `CS-JAVA-03`: WAR 배포 이식성, 10개 테스트 + main Pages `33252148733`
 - `CS-JAVA-06`: 업무 규칙 정합성, 11개 테스트 + main Pages `33276278894`
+- `CS-AI-01`: Python/FastAPI Text2SQL, public project main Python test + Docker/PostgreSQL E2E PASS (`2026-08-31`), portfolio Pages publication pending
 - 공통 금지: 회사 코드·테이블·식별자·데이터 복사, 팀 전체 결과나 실제 운영 성과로의 확대 해석
 
 ## 현재 판단
@@ -243,6 +286,8 @@ Java/Spring 공개 사례 4건의 publication gate를 완료했습니다.
 - MyBatis 기간 조회를 결과 정합성, tenant isolation, count/page 일치, deterministic pagination과 index-friendly SQL shape로 검증하는 방식
 - WAR 서비스의 external-container bootstrap, non-root context path, 외부 config fail-closed와 health rollback을 검증하는 방식
 - canonical session identity, 화면별 snapshot policy, Service-Mapper responsibility와 fail-closed를 회귀 테스트로 고정하는 방식
+- Python/FastAPI 멀티사용자 Text2SQL API에서 사용자 ownership, model output validation, PostgreSQL read-only privilege와 result-based evaluation을 분리해 검증하는 방식
+- SQLite-only 검증에 머물지 않고 Docker/PostgreSQL runtime에서 엔진 호환성, 네트워크 노출과 database privilege를 확인하는 방식
 - AI 출력을 Spring 업무 규칙·승인·멱등성·fail-closed 경계 안에 두고 workspace·모델 호출량·DB 권한·서비스 수명주기까지 통제하는 설계와 구현
 - 실제 오픈웨이트 모델 구조화 출력을 Spring 서버 검증·저장 경계까지 연결한 E2E
 - immutable deployment artifact, private DB/model network, restricted tunnel, public HTTPS ingress, rate/session/egress boundary와 normal/emergency lifecycle bounded E2E
@@ -258,6 +303,7 @@ Java/Spring 공개 사례 4건의 publication gate를 완료했습니다.
 - MyBatis 샘플의 실제 Oracle 실행계획 또는 운영 성능 증명
 - WAR 샘플의 실제 외부 Tomcat zero-downtime/session-drain/SLA 증명
 - 업무 규칙 샘플의 실제 회사 SSO/session, Mapper SQL/운영 DB, 운영 데이터 전체 정합성 증명
+- Text2SQL 샘플의 external real LLM 정확도, production IdP, arbitrary DB, concurrency/load/SLA 증명
 - 프로젝트별 정량 성과와 본인 기여 범위 전체 증명
 
 ## 갱신 규칙

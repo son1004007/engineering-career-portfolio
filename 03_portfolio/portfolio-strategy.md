@@ -1,7 +1,7 @@
 # Portfolio Content Strategy
 
 - 결정일: `2026-08-03`
-- 상태 갱신일: `2026-08-30`
+- 상태 갱신일: `2026-08-31`
 - 상태: `approved`
 - 목적: HR이 첫 화면에서 역할을 즉시 이해하고, 엔지니어는 공개 코드와 검증 근거로 깊이를 확인할 수 있게 구성
 
@@ -28,7 +28,7 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 
 ## 독립 검토 반영
 
-`2026-08-30`에 Codex와 Gemini 계열 에이전트가 현재 공개 main을 read-only로 독립 검토했습니다.
+`2026-08-30`에 Codex와 Gemini 계열 에이전트가 당시 공개 main을 read-only로 독립 검토했습니다.
 
 공통 판단은 다음과 같습니다.
 
@@ -38,8 +38,9 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 - AI 통합은 OpsMate와 Text2SQL 검증으로 실질적인 engineering capability가 보입니다.
 - 단순 테스트 개수보다 실패 조건, 권한 경계, 실제 모델과 실제 배포 환경에서 무엇을 검증했는지가 더 강한 evidence입니다.
 - 쉬운 설명을 먼저 두고 전문 용어와 구현 세부를 뒤에 두는 2단 구조는 유지합니다.
+- Python/FastAPI 공개 재현 evidence가 당시 Java/Spring보다 약했으므로 하나의 독립 실행 사례를 보강하는 것이 유효합니다.
 
-따라서 이 문서 이후의 공개 문구는 위 판단을 기준으로 유지합니다.
+이후 Python/FastAPI 공백은 `Text2SQL Workspace`의 독립 공개 구현과 PostgreSQL/Docker runtime verification으로 보강했습니다. 포지셔닝 자체는 바꾸지 않고 claim과 evidence를 정렬합니다.
 
 ## 독자 우선순위
 
@@ -168,7 +169,7 @@ Backend Engineer identity
 - CI/CD
 - health check
 - rollback
-- observability
+- runtime verification
 
 ## Portfolio Evidence Tracks
 
@@ -199,20 +200,43 @@ AI를 기업 업무 트랜잭션에 안전하게 연결하는 대표 프로젝�
 
 이 결과를 24x7 SLA나 장기 대규모 운영으로 확대 해석하지 않습니다.
 
-### Track B. Data / AI Service Integration
+### Track B. Data / AI Service Integration - Text2SQL Workspace
 
-Text2SQL/NL2SQL과 AI 작업 런타임 evidence를 통해 Python/API/data/LLM 평가 역량을 보여줍니다.
+회사 코드와 독립된 Python/FastAPI 프로젝트로 자연어 질문을 안전한 데이터 조회 기능으로 연결하는 방식을 보여줍니다.
+
+쉽게 설명하면:
+
+> 모델이 SQL을 만들었다는 이유만으로 실행하지 않고, 서버 정책과 데이터베이스 권한을 모두 통과한 읽기 질의만 실행하며 실제 결과가 기대값과 맞는지 별도로 평가합니다.
 
 주로 증명하는 것:
 
-- 자연어 질문과 SQL/DB 연결
-- FastAPI 기반 AI 응용 API
-- validation set
-- multi-model comparison
-- 사용자별 작업 공간 분리
-- 결과 파일과 입력의 추적 가능성
+- Python/FastAPI 기반 멀티사용자 API
+- 사용자별 workspace/query ownership
+- replaceable Text2SQL model boundary
+- SQLGlot 기반 single-statement / SELECT-only / table allowlist
+- unsafe SQL의 executor 이전 차단
+- read-only, row/time bounded execution
+- generation / validation / execution / correctness 상태 분리
+- SQL 문자열이 아니라 결과 semantics 기반 evaluation
+- PostgreSQL 17 전용 analytics reader와 Docker runtime
+- reader `SELECT` 성공 / `INSERT` 실패
+- application metadata와 analytics query authority 분리
+- loopback-only app host binding과 PostgreSQL host-port 비노출
 
-회사 비공개 코드는 공개하지 않으며 확인된 역할과 범위만 비식별 claim으로 사용합니다.
+현재 공개 검증:
+
+- `2026-08-31`: 독립 public project main CI에서 Python test와 Docker/PostgreSQL E2E 모두 PASS
+- deterministic evaluation fixture는 2개 bounded case의 pipeline correctness를 검증하며 외부 LLM 정확도 주장이 아님
+- 공개 security/disclosure review PASS
+
+미검증 범위:
+
+- production authentication/external IdP
+- external real LLM E2E와 statistically meaningful model-quality metrics
+- arbitrary production database connector
+- production concurrency/load/SLA/large-user operation
+
+포트폴리오 Pages publication 전 상태는 `sample-verified`입니다.
 
 ### Track C. Engineering Problem Case Studies
 
@@ -226,6 +250,7 @@ Case Study는 framework 이름이나 테스트 개수보다 문제와 실패 조
 | MyBatis 기간 조회 | 복잡한 기간 조회에서 데이터 정합성 유지 | 기간 경계, 중복, 누락 |
 | WAR 배포 이식성 | 환경이 달라도 배포하고 복구할 수 있는 구조 | 설정 차이, health failure, rollback |
 | 업무 규칙 정합성 | 사용자 식별과 업무 기준을 여러 계층에서 일관되게 유지 | 계층 간 기준 불일치 |
+| Text2SQL 안전 실행·평가 | 자연어 질문을 읽기 전용 데이터 조회로 안전하게 연결 | 사용자 작업 혼선, 위험 SQL, DB 쓰기, 결과 오류 |
 
 각 게시물은 다음 질문에 답합니다.
 
@@ -316,15 +341,17 @@ p95 21,076ms, gate <= 30,000ms
 
 ## 다음 프로젝트를 고르는 기준
 
-다음 Case Study나 프로젝트는 `Java 사례를 하나 더 만든다`는 방식으로 선택하지 않습니다.
+다음 Case Study나 프로젝트는 `Java 사례를 하나 더 만든다` 또는 `Python 프로젝트 수를 늘린다`는 방식으로 선택하지 않습니다.
 
-현재 backend evidence는 충분한 편이므로, 같은 역할 안에서 아직 공개 증거가 약한 영역을 우선합니다.
+현재 Backend, Java/Spring, Python/FastAPI, AI integration의 핵심 공개 evidence는 역할 분류에 필요한 수준으로 보완되어 있습니다. 따라서 새 프로젝트는 실제 지원 직무에서 필요한 **새로운 capability gap이 확인될 때만** 추가합니다.
+
+후보 우선순위:
 
 ```text
-1. Python/FastAPI 기반의 재현 가능한 AI/data backend evidence
-2. 실제 장애, 실패와 복구를 보여주는 reliability evidence
+1. 실제 장애, 실패와 복구를 더 강하게 보여주는 reliability evidence
+2. concurrency, queue/cache, resource-bound 같은 backend scale evidence가 실제 근거와 함께 필요할 경우 독립 재현
 3. security automation 또는 access/audit backend evidence
-4. 분산, concurrency, queue/cache 등 backend scale evidence가 실제로 있을 경우 독립 재현
+4. 특정 지원 직무에서 분석 UI나 다른 데이터 역량이 명확히 요구될 경우 해당 evidence
 ```
 
 대규모 트래픽, 분산 시스템이나 platform 경험은 실제 근거 없이 포트폴리오용으로 만들어 경력처럼 표현하지 않습니다.
@@ -350,8 +377,8 @@ evidence/company-github/
 
 ## 다음 실행 순서
 
-1. README, GitHub profile, Pages, profile 문서를 `Backend Engineer - AI Integration & Reliable Systems`로 동기화합니다.
-2. 첫 화면에서는 AI buzzword와 단순 테스트 숫자를 줄이고 실제 실패 경계와 실행 검증을 우선합니다.
-3. case-study 제목과 도입부를 HR이 이해할 수 있는 문제 중심 문장으로 유지합니다.
-4. Python/FastAPI와 AI/data integration의 공개 재현 evidence를 보강합니다.
+1. `Text2SQL Workspace`를 `CS-AI-01` 공개 evidence로 포트폴리오 상태 문서와 첫 화면에 정합화합니다.
+2. portfolio regression과 Pages publication gate를 통과한 뒤 `sample-verified`를 `published`로 승격합니다.
+3. 첫 화면에서는 AI buzzword와 단순 테스트 숫자를 줄이고 실제 실패 경계와 실행 검증을 계속 우선합니다.
+4. GitHub profile과 Pages의 공개 역할·evidence 요약을 동기화합니다.
 5. GitHub Pages 링크, 모바일 렌더링과 공개 안전성 regression을 유지합니다.

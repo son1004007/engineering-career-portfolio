@@ -43,10 +43,11 @@ permalink: /cases/
 
 ## AI와 데이터 서비스
 
-- [자연어 질문을 SQL과 데이터 조회로 연결하고 검증](text2sql-validation.md)
-  - LLM이 만든 SQL을 그대로 신뢰하지 않고 문법, 실행 가능성, 업무 정답 관점에서 검증한 경험
-  - 검증 초점: 생성 성공과 실행 성공, 업무 정답을 구분
-  - 기술: Python, FastAPI, Text2SQL/NL2SQL, validation set
+- [Text2SQL을 다중사용자 백엔드 기능으로 안전하게 실행](text2sql-validation.md)
+  - 여러 사용자의 질문과 결과를 분리하고, 모델이 만든 SQL을 application policy와 PostgreSQL read-only 권한 안에서 실행하는 독립 공개 사례
+  - 검증 초점: cross-user isolation, unsafe SQL 차단, DB reader write 거부, result-based correctness
+  - 기술: Python, FastAPI, SQLGlot, PostgreSQL, Docker, Text2SQL/NL2SQL
+  - 공개 구현: [`text2sql-workspace`](https://github.com/son1004007/text2sql-workspace)
 
 - [AI 작업 결과가 어디서 만들어졌는지 추적](agent-runtime-artifact-provenance.md)
   - 여러 AI 작업의 결과 파일이 섞이지 않게 분리하고 입력, 작업과 결과를 다시 추적할 수 있도록 만든 경험

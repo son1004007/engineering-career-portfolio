@@ -96,48 +96,51 @@ problem and result
 -> technology
 ```
 
-### 7. Python/FastAPI Data / AI Service Integration evidence - SELECTED, NOT STARTED
+### 7. Python/FastAPI Data / AI Service Integration evidence - SAMPLE VERIFIED, PUBLICATION PENDING
 
-No additional Java/Spring case is required for the current core portfolio.
+The capability gap identified by the independent Codex/Gemini review is now covered by one independently runnable public sample rather than another Java/Spring case.
 
-Independent Codex/Gemini review found that the public evidence is materially stronger for Java/Spring than for Python/FastAPI even though Python/FastAPI and Text2SQL/NL2SQL appear in the public positioning. The next implementation therefore fills that capability gap rather than adding another language keyword.
+Implemented public project:
 
-Selected direction:
+> `Text2SQL Workspace` — Python/FastAPI multi-user Text2SQL backend with deterministic evaluation and PostgreSQL read-only Docker runtime verification
 
-> one independently runnable Python/FastAPI backend sample that demonstrates data + AI service integration and evaluation boundaries
-
-Preferred scope:
+Verified scope:
 
 - synthetic/public data only
-- FastAPI request/API boundary
-- natural-language question -> SQL candidate -> validation -> read-only execution -> result flow
-- explicit distinction between generation success, policy/validation success, execution success and answer correctness
-- read-only SQL policy, row/timeout limits and unsafe-query rejection
-- deterministic test provider or fixture so the core verification does not require an external paid model
-- optional real-model adapter kept behind a separate bounded gate if it adds evidence
-- normal, failure and boundary tests
-- reproducible setup and recent CI evidence
-- HR-readable explanation of what failure is prevented before framework/model details
+- FastAPI authentication/workspace/query API boundary
+- natural-language question -> SQL candidate -> SQLGlot validation -> read-only execution -> result flow
+- generation / validation / execution / answer-correctness outcomes separated
+- single-statement, SELECT-only and table-allowlist application policy
+- unsafe/write SQL rejected before executor invocation
+- deterministic fixture model so core verification does not require an external paid model
+- result-based evaluation instead of SQL-string equality
+- PostgreSQL 17 Docker runtime with dedicated analytics reader
+- database reader can `SELECT` but cannot `INSERT`
+- bounded rows, statement timeout and explicit read-only transaction
+- application metadata authority separated from analytics query authority
+- FastAPI host exposure bounded to loopback; PostgreSQL has no host-published port
+- public disclosure review completed
+- public project main CI PASS for both Python tests and Docker/PostgreSQL E2E (`2026-08-31`)
 
-Do not build:
+Still not claimed:
 
-- a generic FastAPI CRUD tutorial
-- a generic RAG chatbot only to add `RAG` to the technology list
-- multiple small Python demos when one strong evidence track is enough
-- company code, real queries, schemas, customer data or internal identifiers
+- production authentication or external IdP integration
+- external/real LLM E2E or statistically meaningful model-quality metrics
+- arbitrary production database connectors
+- production concurrency, load, SLA or large-user operation
 
-Completion gate:
+Remaining publication gate:
 
 ```text
-problem/decision documented
--> independent Python implementation
--> deterministic automated tests PASS
--> public disclosure review PASS
+portfolio evidence/status synchronization
 -> portfolio regression PASS
--> Pages publication PASS
+-> merge
+-> main Pages build/deploy PASS
+-> status promoted from sample-verified to published
+-> final status-sync Pages build/deploy PASS
 ```
 
-Until this gate is complete, Python/FastAPI remains real experience with weaker public reproduction evidence than the published Java/Spring samples.
+Until the Pages gate completes, `CS-AI-01` remains `sample-verified`, not `published`.
 
 `CS-JAVA-11` statistical analysis UI remains an optional source-reviewed candidate only if a future target role specifically needs stronger analysis-UI evidence. Its legacy ID does not make Java the selection criterion.
 

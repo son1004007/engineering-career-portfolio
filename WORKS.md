@@ -1,6 +1,6 @@
 # Portfolio Work Ledger
 
-- 기준일: `2026-08-30`
+- 기준일: `2026-08-31`
 - 목적: capability-first 포트폴리오, GitHub Pages 공개, OpsMate bounded public deployment, 실무 문제 독립 재현 사례와 evidence를 추적
 - 원칙: 문서·코드·테스트·공개 안전성 검토가 함께 끝나기 전에는 완료로 표시하지 않음
 - 공통 검수표: [`03_portfolio/review-checklist.md`](03_portfolio/review-checklist.md)
@@ -34,7 +34,7 @@
 | `W11` | 배포·복구 이식성 사례 공개 | WAR/context/profile/rollback 샘플 | regression + Pages | `published` |
 | `W12` | 업무 규칙 일관성 사례 공개 | identity/reference-period 독립 샘플 | regression + Pages | `published` |
 | `W13` | capability-first 첫 화면 재구성 | README·Pages·strategy·AI context | HR role clarity + evidence hierarchy | `verified` |
-| `W14` | Python/FastAPI Data / AI Service Integration 공개 증거 | 독립 Python/FastAPI + synthetic data + tests | failure-boundary tests + regression + Pages | `pending` |
+| `W14` | Python/FastAPI Data / AI Service Integration 공개 증거 | Text2SQL Workspace + case study + evidence | independent runtime evidence + portfolio regression + Pages | `verified` (`sample-verified`, publication pending) |
 
 ## 핵심 검증 기록
 
@@ -90,43 +90,65 @@
 
 2026-08-30 독립 Codex/Gemini read-only 검토에서는 현재 `Backend Engineer` 방향을 유지하되 다음 P0 정렬이 필요하다고 확인했습니다.
 
-- 공개 재현 evidence가 Java/Spring 쪽에 더 강하다는 사실을 숨기지 않음
-- Python/FastAPI 실무 경험은 유지하되 독립 공개 evidence gap을 명시
+- Java/Spring 중심으로 보이던 공개 재현 evidence의 언어 편중을 독립 Python/FastAPI evidence로 보완
 - 공개 검증보다 앞선 `RAG/Agent patterns`, `observability` 같은 상위 용어를 첫 화면에서 내림
 - p95/테스트 개수보다 실제 시나리오와 실패 차단 경계를 먼저 제시
 
-현재 branch에서 위 문구 정렬을 publication 재검증 중입니다.
+P0 문구 정렬은 반영했고, Python/FastAPI evidence gap은 W14의 독립 공개 구현으로 보강했습니다.
 
-### W14 — Python/FastAPI Data / AI Service Integration — `pending`
+### W14 — Python/FastAPI Data / AI Service Integration — `verified`, publication pending
 
-목적은 Python 프로젝트 수를 늘리는 것이 아니라 **현재 공개 evidence의 실제 공백을 하나의 강한 사례로 채우는 것**입니다.
+목적은 Python 프로젝트 수를 늘리는 것이 아니라 **공개 evidence의 실제 공백을 하나의 강한 사례로 채우는 것**입니다.
 
-선정 범위:
+독립 공개 프로젝트 `Text2SQL Workspace`에서 다음 경계를 구현하고 검증했습니다.
 
 ```text
 FastAPI API
+-> authenticated owned workspace
 -> natural-language question
--> SQL candidate
--> read-only validation/policy
--> bounded execution
--> result/evaluation status
+-> Text2SQL model interface
+-> SQLGlot policy validation
+-> read-only query executor
+-> PostgreSQL result
+-> result-based evaluation
 ```
 
-핵심 검증:
+검증된 경계:
 
-- generation success / policy success / execution success / answer correctness 분리
-- unsafe/write SQL 차단
-- row/timeout limit
-- invalid input와 unsupported query fail-closed
-- deterministic fixture/provider 기반 core regression
-- synthetic/public data only
+- synthetic signed bearer identity와 두 사용자 workspace/query isolation
+- generation / validation / execution / correctness 분리
+- exactly-one-statement, SELECT-only, table allowlist
+- unsafe/write SQL은 executor 호출 전에 차단
+- deterministic fixture model 기반 core regression
+- result semantics 기반 evaluation
+- SQLite deterministic adapter와 PostgreSQL runtime adapter 분리
+- PostgreSQL 17 Docker runtime
+- dedicated analytics reader `SELECT` 성공, `INSERT` 실패
+- explicit read-only transaction, bounded rows, statement timeout
+- application metadata와 analytics query authority 분리
+- FastAPI loopback-only host binding, PostgreSQL host-port 비노출
+- non-root application container
+- public disclosure review PASS
+- public project main CI: Python test + Docker/PostgreSQL E2E PASS (`2026-08-31`)
 
-외부 paid model, generic CRUD, generic RAG chatbot은 필수 범위가 아닙니다.
+Docker/PostgreSQL gate는 SQLite-only 검증에서 드러나지 않았던 PostgreSQL numeric aggregation 타입 차이도 발견해 수정했습니다. 이 사실은 runtime gate가 단순 배포 장식이 아니라 엔진 호환성을 검증했다는 근거로 기록합니다.
+
+미검증 범위:
+
+- production authentication/external IdP
+- external real LLM E2E 및 통계적으로 의미 있는 모델 정확도
+- arbitrary production DB connectors
+- production concurrency/load/SLA/large-user operation
+
+현재 상태는 독립 프로젝트 기준 `sample-verified`입니다. 포트폴리오 regression과 main Pages publication을 통과한 뒤 `published`로 승격합니다.
 
 ## 다음 실행 순서
 
-1. W13 P0 문구 정렬 PR regression과 Pages publication을 마감합니다.
-2. 변경된 공개 main을 Synology self-hosted 경로의 Codex/Gemini로 다시 독립 검토합니다.
-3. 새 P0 blocker가 없으면 W14 Python/FastAPI Data / AI Service Integration 한 건을 시작합니다.
-4. 기존 Java/Spring 사례는 추가 개수 확대보다 유지관리합니다.
-5. Pages/링크/모바일 baseline과 회사 evidence 월말 갱신을 반복 유지합니다.
+1. W14 case/evidence/status 문서를 `sample-verified`로 정합화합니다.
+2. portfolio PR regression을 통과시킵니다.
+3. merge 후 main Pages build/deploy를 확인합니다.
+4. Pages 성공 근거를 상태 문서에 반영하고 W14/CS-AI-01을 `published`로 승격합니다.
+5. status-sync 변경도 main Pages build/deploy까지 다시 확인합니다.
+6. 이후 필요하면 변경된 공개 main을 Codex/Gemini read-only 경로로 재검토합니다.
+7. 기존 Java/Spring 사례는 추가 개수 확대보다 유지관리합니다.
+8. Pages/링크/모바일 baseline과 회사 evidence 월말 갱신을 반복 유지합니다.
