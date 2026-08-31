@@ -40,7 +40,7 @@ ML 모델 연구, 학습 또는 파인튜닝을 핵심 정체성으로 두지 �
 - 쉬운 설명을 먼저 두고 전문 용어와 구현 세부를 뒤에 두는 2단 구조는 유지합니다.
 - Python/FastAPI 공개 재현 evidence가 당시 Java/Spring보다 약했으므로 하나의 독립 실행 사례를 보강하는 것이 유효합니다.
 
-이후 Python/FastAPI 공백은 `Text2SQL Workspace`의 독립 공개 구현과 PostgreSQL/Docker runtime verification으로 보강했습니다. 포지셔닝 자체는 바꾸지 않고 claim과 evidence를 정렬합니다.
+이후 Python/FastAPI 공백은 `Text2SQL Workspace`의 독립 공개 구현, PostgreSQL/Docker runtime verification과 portfolio Pages publication으로 보강했습니다. 포지셔닝 자체는 바꾸지 않고 claim과 evidence를 정렬합니다.
 
 ## 독자 우선순위
 
@@ -228,6 +228,9 @@ AI를 기업 업무 트랜잭션에 안전하게 연결하는 대표 프로젝�
 - `2026-08-31`: 독립 public project main CI에서 Python test와 Docker/PostgreSQL E2E 모두 PASS
 - deterministic evaluation fixture는 2개 bounded case의 pipeline correctness를 검증하며 외부 LLM 정확도 주장이 아님
 - 공개 security/disclosure review PASS
+- portfolio publication PR regression 8개 job PASS
+- portfolio main verify 8개 job + Pages build/deploy PASS
+- 현재 상태: `published`
 
 미검증 범위:
 
@@ -235,8 +238,6 @@ AI를 기업 업무 트랜잭션에 안전하게 연결하는 대표 프로젝�
 - external real LLM E2E와 statistically meaningful model-quality metrics
 - arbitrary production database connector
 - production concurrency/load/SLA/large-user operation
-
-포트폴리오 Pages publication 전 상태는 `sample-verified`입니다.
 
 ### Track C. Engineering Problem Case Studies
 
@@ -377,8 +378,8 @@ evidence/company-github/
 
 ## 다음 실행 순서
 
-1. `Text2SQL Workspace`를 `CS-AI-01` 공개 evidence로 포트폴리오 상태 문서와 첫 화면에 정합화합니다.
-2. portfolio regression과 Pages publication gate를 통과한 뒤 `sample-verified`를 `published`로 승격합니다.
-3. 첫 화면에서는 AI buzzword와 단순 테스트 숫자를 줄이고 실제 실패 경계와 실행 검증을 계속 우선합니다.
-4. GitHub profile과 Pages의 공개 역할·evidence 요약을 동기화합니다.
-5. GitHub Pages 링크, 모바일 렌더링과 공개 안전성 regression을 유지합니다.
+1. 현재 published evidence와 landing page의 상태·한계를 유지합니다.
+2. 첫 화면에서는 AI buzzword와 단순 테스트 숫자를 줄이고 실제 실패 경계와 실행 검증을 계속 우선합니다.
+3. GitHub profile과 Pages의 공개 역할·evidence 요약을 동기화합니다.
+4. GitHub Pages 링크, 모바일 렌더링과 공개 안전성 regression을 유지합니다.
+5. 새 공개 프로젝트는 실제 지원 직무에서 새로운 capability gap이 확인될 때만 추가합니다.
