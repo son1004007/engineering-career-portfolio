@@ -76,7 +76,7 @@ AI 관련 용어도 같은 원칙을 적용합니다. `Agent`, `RAG`, `context e
 
 `Text2SQL Workspace`는 회사 코드와 독립된 공개 Python/FastAPI 프로젝트로, 자연어 질문을 데이터 조회로 연결할 때 모델 출력과 데이터베이스 권한을 모두 통제하는 방식을 보여줍니다.
 
-현재 `sample-verified` 경계:
+현재 `published` 경계:
 
 - Python / FastAPI API
 - synthetic signed identity와 사용자별 workspace/query isolation
@@ -92,14 +92,13 @@ AI 관련 용어도 같은 원칙을 적용합니다. `Agent`, `RAG`, `context e
 - FastAPI host 노출은 loopback으로 제한하고 PostgreSQL host port는 publish하지 않음
 - public project main CI에서 Python test와 Docker/PostgreSQL E2E 모두 PASS (`2026-08-31`)
 - 공개 disclosure review 완료
+- 포트폴리오 main verify 8개 job + Pages build/deploy PASS (`2026-08-31`)
 
 현재 한계:
 
 - production authentication / external IdP는 미검증
 - external/real LLM E2E와 statistically meaningful model-quality metrics는 미검증
 - arbitrary production DB connector, concurrency/load/SLA/large-user operation은 미검증
-
-포트폴리오의 Pages publication gate가 끝나기 전에는 `published`가 아니라 `sample-verified`로 해석합니다.
 
 ### 3. Engineering Case Studies
 
@@ -109,10 +108,7 @@ AI 관련 용어도 같은 원칙을 적용합니다. `Agent`, `RAG`, `context e
 - 복잡한 기간 조회의 데이터 정합성
 - 배포와 복구의 이식성
 - 업무 규칙의 일관성
-
-현재 publication 진행 중인 독립 재현 사례:
-
-- Python/FastAPI Text2SQL 안전 실행과 평가 경계 (`CS-AI-01`, `sample-verified`)
+- Python/FastAPI Text2SQL 안전 실행과 평가 경계 (`CS-AI-01`)
 
 각 사례는 회사 코드와 독립된 합성 샘플이며 실제 회사 전체 시스템 검증을 뜻하지 않습니다.
 
@@ -143,7 +139,7 @@ AI가 코드를 작성했다는 사실보다 결과를 다시 테스트하고 �
 - Python/FastAPI 공개 재현 evidence가 Java/Spring보다 약했던 공백을 하나의 강한 독립 사례로 보강할 것
 - unsupported AI buzzword와 first-screen 세부 성능 수치를 줄일 것
 
-P0 문구 정렬은 반영했고, Python/FastAPI evidence gap은 `Text2SQL Workspace`의 독립 구현과 runtime verification으로 보강했습니다. 현재 남은 단계는 portfolio regression과 Pages publication이며, 그 이후 같은 독립 review path로 재검토할 수 있습니다.
+P0 문구 정렬은 반영했고, Python/FastAPI evidence gap은 `Text2SQL Workspace`의 독립 구현, PostgreSQL runtime verification과 portfolio publication으로 보강했습니다. 이후 필요하면 같은 독립 review path로 재검토할 수 있습니다.
 
 ## 공개 Case Study 상태
 
@@ -153,7 +149,7 @@ P0 문구 정렬은 반영했고, Python/FastAPI evidence gap은 `Text2SQL Works
 | 복잡한 기간 조회 데이터 정합성 | `published` | 기간 경계, 중복, 누락 |
 | 배포·복구 이식성 | `published` | 설정 차이, health failure, rollback |
 | 업무 규칙 일관성 | `published` | identity/reference-period 기준 불일치 |
-| Python/FastAPI Text2SQL 안전 실행·평가 | `sample-verified` | workspace isolation, SQL safety, PostgreSQL read-only, bounded execution, evaluation boundary |
+| Python/FastAPI Text2SQL 안전 실행·평가 | `published` | workspace isolation, SQL safety, PostgreSQL read-only, bounded execution, evaluation boundary |
 
 ## 공개 경계
 
