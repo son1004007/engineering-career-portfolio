@@ -2,7 +2,7 @@
 title: Text2SQL을 다중사용자 백엔드 기능으로 안전하게 실행하기
 description: 사용자별 작업 공간, SQL 정책 검증, PostgreSQL 읽기 전용 권한과 결과 기반 평가를 연결한 Python/FastAPI 사례
 permalink: /cases/text2sql-validation/
-status: sample-verified
+status: published
 ---
 
 # Text2SQL을 다중사용자 백엔드 기능으로 안전하게 실행하기
@@ -175,6 +175,6 @@ SQLite-only 테스트에서는 드러나지 않았던 numeric aggregation 타입
 
 ## 현재 상태
 
-`text2sql-workspace` 자체의 main CI에서 Python test와 Docker/PostgreSQL E2E는 성공했습니다. 공개 안전성 검토도 별도 문서로 기록했습니다.
+`text2sql-workspace` 자체의 main CI에서 Python test와 Docker/PostgreSQL E2E가 성공했고, 공개 안전성 검토도 별도 문서로 기록했습니다.
 
-이 사례는 현재 `sample-verified`입니다. 이 포트폴리오의 main Pages build/deploy까지 성공한 뒤에만 `published`로 승격합니다.
+포트폴리오 main publication에서도 verify 8개 job과 Pages build/deploy가 모두 성공했습니다. 따라서 이 사례는 `published`입니다.
