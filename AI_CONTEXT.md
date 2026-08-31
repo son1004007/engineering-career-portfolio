@@ -2,7 +2,7 @@
 
 > 이 저장소 URL만 받은 AI는 `README.md`, `HOW_I_ENGINEER.md`, 이 문서, [`WORKS.md`](WORKS.md), [`PORTFOLIO_COMPLETION_PLAN.md`](PORTFOLIO_COMPLETION_PLAN.md), [`03_portfolio/portfolio-strategy.md`](03_portfolio/portfolio-strategy.md), [`03_portfolio/case-study-index.md`](03_portfolio/case-study-index.md), [`03_portfolio/evidence-index.md`](03_portfolio/evidence-index.md)를 먼저 읽습니다.
 
-- 기준일: `2026-08-30`
+- 기준일: `2026-08-31`
 - 공개 범위: `public`
 - 공개 사이트: [GitHub Pages 포트폴리오](https://son1004007.github.io/engineering-career-portfolio/)
 - 역할: 기술 방향, 구현 샘플, 공개 가능한 경력과 기술 근거
@@ -17,9 +17,11 @@
 
 > 업무 요구사항을 데이터, 권한, 처리 상태와 실패 조건이 명확한 백엔드 시스템으로 구현하고, AI 기능을 서버 검증과 실제 실행 근거 안에서 안전하게 연결하는 엔지니어
 
-시장 분류는 Backend Engineer로 고정합니다. Java/Spring과 Python/FastAPI는 모두 실제 사용 기술이지만, **현재 독립 공개 재현 evidence는 Java/Spring 쪽이 더 강합니다.** 이 차이를 기술 목록으로 감추지 않습니다.
+시장 분류는 Backend Engineer로 고정합니다. Java/Spring과 Python/FastAPI는 모두 구현 도구이며, 현재 공개 evidence는 서로 다른 문제를 보완적으로 증명합니다.
 
-Python/FastAPI와 Text2SQL/NL2SQL은 Data / AI Service Integration 경험을 설명하는 실제 기술 근거가 있으나, published Java/Spring 사례와 동등한 수준의 독립 공개 Python 샘플은 아직 없습니다. 다음 신규 evidence는 이 공백을 채우는 하나의 Python/FastAPI 사례로 선택했습니다.
+- Java/Spring 사례는 인증·권한, 데이터 정합성, 배포·복구, 업무 규칙 일관성을 독립 합성 샘플로 보여줍니다.
+- Python/FastAPI는 `Text2SQL Workspace`에서 멀티사용자 API, SQL policy, PostgreSQL read-only 실행과 result-based evaluation을 독립 공개 구현과 CI/runtime evidence로 보여줍니다.
+- OpsMate Local은 Spring 기반 업무 흐름에 실제 LLM을 통합하고 서버 규칙·사람 승인·배포 및 네트워크 경계를 검증한 대표 AI integration evidence입니다.
 
 ML 모델 연구자나 파인튜닝 전문가로 포지셔닝하지 않습니다. AI 역량은 LLM 기능을 기존 백엔드 시스템에 통합하고 평가하며, 모델 실패가 중요한 업무 처리로 이어지지 않게 만드는 능력을 의미합니다.
 
@@ -72,34 +74,32 @@ AI 관련 용어도 같은 원칙을 적용합니다. `Agent`, `RAG`, `context e
 
 ### 2. Data and AI Service Integration
 
-공개 가능한 Text2SQL/NL2SQL evidence는 자연어 질문을 SQL과 데이터 조회 흐름으로 연결하고 모델 결과를 검증하는 경험을 보여줍니다.
+`Text2SQL Workspace`는 회사 코드와 독립된 공개 Python/FastAPI 프로젝트로, 자연어 질문을 데이터 조회로 연결할 때 모델 출력과 데이터베이스 권한을 모두 통제하는 방식을 보여줍니다.
 
-현재 설명 가능한 범위:
+현재 `sample-verified` 경계:
 
-- Python/FastAPI API
-- SQL validation and execution
-- validation set
-- multi-model comparison
-- AI output evaluation
+- Python / FastAPI API
+- synthetic signed identity와 사용자별 workspace/query isolation
+- replaceable Text2SQL model interface와 deterministic fixture model
+- 자연어 질문 -> SQL candidate -> SQLGlot policy validation -> read-only execution -> result
+- generation / validation / execution / correctness 분리
+- SQL string equality가 아닌 결과 기반 correctness evaluation
+- single-statement, SELECT-only, table allowlist 정책
+- unsafe/write SQL은 executor 호출 전에 차단
+- PostgreSQL 17 Docker runtime과 전용 analytics reader
+- 동일 reader의 `SELECT` 성공과 `INSERT` 실패를 직접 검증
+- explicit read-only transaction, row limit, statement timeout
+- FastAPI host 노출은 loopback으로 제한하고 PostgreSQL host port는 publish하지 않음
+- public project main CI에서 Python test와 Docker/PostgreSQL E2E 모두 PASS (`2026-08-31`)
+- 공개 disclosure review 완료
 
 현재 한계:
 
-> 실무 evidence는 존재하지만 독립 실행 가능한 published Python/FastAPI 공개 샘플은 아직 없음.
+- production authentication / external IdP는 미검증
+- external/real LLM E2E와 statistically meaningful model-quality metrics는 미검증
+- arbitrary production DB connector, concurrency/load/SLA/large-user operation은 미검증
 
-다음 selected public evidence:
-
-> Python/FastAPI Data / AI Service Integration sample
-
-예정 검증 경계:
-
-- natural-language question -> SQL candidate -> validation -> read-only execution -> result
-- generation / policy / execution / answer-correctness 상태 분리
-- unsafe/write SQL 거부
-- row/timeout limit
-- deterministic test fixture/provider
-- synthetic/public data only
-
-상태는 `pending`이며 구현 전에는 완료로 해석하지 않습니다.
+포트폴리오의 Pages publication gate가 끝나기 전에는 `published`가 아니라 `sample-verified`로 해석합니다.
 
 ### 3. Engineering Case Studies
 
@@ -110,7 +110,11 @@ AI 관련 용어도 같은 원칙을 적용합니다. `Agent`, `RAG`, `context e
 - 배포와 복구의 이식성
 - 업무 규칙의 일관성
 
-각각 identity boundary, data correctness, deployment/recovery, business-rule consistency라는 백엔드 문제 해결 증거입니다. 모두 회사 코드와 독립된 합성 샘플이며 실제 회사 전체 시스템 검증을 뜻하지 않습니다.
+현재 publication 진행 중인 독립 재현 사례:
+
+- Python/FastAPI Text2SQL 안전 실행과 평가 경계 (`CS-AI-01`, `sample-verified`)
+
+각 사례는 회사 코드와 독립된 합성 샘플이며 실제 회사 전체 시스템 검증을 뜻하지 않습니다.
 
 ### 4. Engineering Method
 
@@ -136,10 +140,10 @@ AI가 코드를 작성했다는 사실보다 결과를 다시 테스트하고 �
 - `Backend Engineer` 중심 포지셔닝은 유지
 - 전면 재포지셔닝보다 `MINOR_REVISE` 수준의 claim/evidence 정렬 필요
 - AI·서버·사람의 책임 분리와 evidence discipline은 유지
-- Python/FastAPI 공개 재현 evidence는 Java/Spring보다 약하므로 하나의 강한 독립 사례가 유효
+- Python/FastAPI 공개 재현 evidence가 Java/Spring보다 약했던 공백을 하나의 강한 독립 사례로 보강할 것
 - unsupported AI buzzword와 first-screen 세부 성능 수치를 줄일 것
 
-현재 P0 문구 정렬은 branch에서 publication 재검증 중이며, merge 후 같은 self-hosted review path로 다시 검토합니다.
+P0 문구 정렬은 반영했고, Python/FastAPI evidence gap은 `Text2SQL Workspace`의 독립 구현과 runtime verification으로 보강했습니다. 현재 남은 단계는 portfolio regression과 Pages publication이며, 그 이후 같은 독립 review path로 재검토할 수 있습니다.
 
 ## 공개 Case Study 상태
 
@@ -149,7 +153,7 @@ AI가 코드를 작성했다는 사실보다 결과를 다시 테스트하고 �
 | 복잡한 기간 조회 데이터 정합성 | `published` | 기간 경계, 중복, 누락 |
 | 배포·복구 이식성 | `published` | 설정 차이, health failure, rollback |
 | 업무 규칙 일관성 | `published` | identity/reference-period 기준 불일치 |
-| Python/FastAPI Data / AI Service Integration | `pending` | SQL safety, bounded execution, evaluation boundary |
+| Python/FastAPI Text2SQL 안전 실행·평가 | `sample-verified` | workspace isolation, SQL safety, PostgreSQL read-only, bounded execution, evaluation boundary |
 
 ## 공개 경계
 
@@ -171,7 +175,7 @@ AI가 코드를 작성했다는 사실보다 결과를 다시 테스트하고 �
 - 합성 샘플을 실제 회사 운영환경 검증으로 확대
 - 프로덕션 트래픽과 운영 규모
 - 아직 검증하지 않은 Kafka/Redis/Kubernetes 실전 운영
-- pending Python sample을 published evidence로 해석
+- deterministic Text2SQL fixture 성공을 실제 외부 LLM 정확도 100%로 해석
 
 ## 증거 라벨
 
