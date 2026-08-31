@@ -9,7 +9,7 @@ permalink: /
     <div>
       <p class="eyebrow">Backend / AI Integration / Reliable Systems</p>
       <h1 id="hero-title"><em>업무 요구사항을 실제로 작동하는 백엔드 시스템으로</em> 구현합니다.</h1>
-      <p class="hero__lead">데이터, 권한, 처리 상태와 실패 조건을 명확하게 설계하고, AI 기능은 서버의 검증과 사람의 승인 안에서 실제 업무와 연결합니다. Java/Spring과 Python/FastAPI를 업무 특성에 따라 사용해 왔으며, 현재 공개 재현 샘플은 Java/Spring 쪽이 더 강합니다.</p>
+      <p class="hero__lead">데이터, 권한, 처리 상태와 실패 조건을 명확하게 설계하고, AI 기능은 서버의 검증과 사람의 승인 안에서 실제 업무와 연결합니다. Java/Spring과 Python/FastAPI를 업무 특성에 따라 사용하며, 두 기술 축 모두 회사 코드와 독립된 공개 구현과 실행 검증으로 보여드립니다.</p>
       <div class="button-row">
         <a class="button" href="{{ '/#evidence' | relative_url }}">실제 검증 보기</a>
         <a class="button button--secondary" href="{{ '/HOW_I_ENGINEER/' | relative_url }}">개발 방식 보기</a>
@@ -88,26 +88,32 @@ permalink: /
         <p class="eyebrow">공개 검증</p>
         <h2 id="evidence-title">몇 개를 테스트했는지보다 무엇을 실제로 확인했는지 보여드립니다.</h2>
       </div>
-      <p>실제 모델, 실패 조건, 권한 경계, 배포와 복구처럼 채용 검토자가 다시 확인할 수 있는 범위를 우선합니다.</p>
+      <p>실제 모델, 실패 조건, 권한 경계와 실행 환경처럼 채용 검토자가 다시 확인할 수 있는 범위를 우선합니다.</p>
     </div>
 
     <div class="card-grid">
       <article class="case-card">
-        <div class="case-card__topline"><span class="status-badge status-badge--published">실제 모델 E2E</span></div>
+        <div class="case-card__topline"><span class="status-badge status-badge--sample-verified">실제 모델 E2E</span></div>
         <h3>OpsMate Local: 실제 LLM 핵심 업무 시나리오 9건 전건 성공</h3>
         <p>Ollama `gemma3:12b`를 사용해 구매 요청부터 초안 생성까지의 핵심 합성 시나리오를 실제 모델로 실행했습니다.</p>
         <p class="case-card__focus"><strong>실패 경계:</strong> 잘못된 모델 출력이나 모델 장애가 중요한 데이터 저장으로 이어지지 않게 차단</p>
       </article>
       <article class="case-card">
-        <div class="case-card__topline"><span class="status-badge status-badge--published">외부 접속 검증</span></div>
+        <div class="case-card__topline"><span class="status-badge status-badge--sample-verified">외부 접속 검증</span></div>
         <h3>사용자 작업 분리와 외부 노출 차단 확인</h3>
         <p>실제 Internet HTTPS 경로에서 서로 다른 사용자의 작업이 섞이지 않는지, 과도한 요청이 차단되는지, DB와 모델이 외부에 직접 노출되지 않는지 확인했습니다.</p>
         <p class="case-card__focus"><strong>복구:</strong> 서비스를 닫고 같은 검증 버전으로 다시 열 수 있는지까지 확인</p>
       </article>
       <article class="case-card">
-        <div class="case-card__topline"><span class="status-badge status-badge--published">독립 재현 사례</span></div>
+        <div class="case-card__topline"><span class="status-badge status-badge--sample-verified">Python / PostgreSQL E2E</span></div>
+        <h3>Text2SQL Workspace: 사용자 격리와 읽기 전용 DB 경계를 실제 runtime에서 검증</h3>
+        <p>Python/FastAPI 멀티사용자 API에서 자연어 질문을 SQL로 연결하고 PostgreSQL Docker runtime에서 사용자별 workspace, SQL 정책과 DB 권한을 함께 확인했습니다.</p>
+        <p class="case-card__focus"><strong>실패 경계:</strong> 다른 사용자 접근 차단, 위험 SQL 실행 전 차단, analytics reader의 write 거부</p>
+      </article>
+      <article class="case-card">
+        <div class="case-card__topline"><span class="status-badge status-badge--sample-verified">독립 재현 사례</span></div>
         <h3>업무에서 자주 발생하는 실패 조건을 합성 샘플로 재현</h3>
-        <p>로그인과 권한, 데이터 정합성, 배포와 복구, 업무 규칙 일관성 문제를 회사 코드와 독립된 샘플로 다시 구현했습니다.</p>
+        <p>로그인과 권한, 데이터 정합성, 배포와 복구, 업무 규칙 일관성 문제를 회사 코드와 독립된 Java/Spring 샘플로 다시 구현했습니다.</p>
         <p class="case-card__focus"><strong>검증:</strong> 정상 흐름과 함께 권한 오류, 기간 경계, 잘못된 설정과 상태 불일치를 자동 테스트</p>
       </article>
     </div>
@@ -151,7 +157,44 @@ permalink: /
   </div>
 </section>
 
-<section class="section" id="case-studies" aria-labelledby="cases-title">
+<section class="section" id="text2sql" aria-labelledby="text2sql-title">
+  <div class="shell">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Python / Data & AI Backend</p>
+        <h2 id="text2sql-title">모델이 만든 SQL을 여러 사용자가 안전하게 쓰는 백엔드 기능으로 연결했습니다.</h2>
+      </div>
+      <p>`Text2SQL Workspace`는 Python/FastAPI, PostgreSQL과 Docker로 구현한 독립 공개 멀티사용자 데이터 질의 서비스입니다.</p>
+    </div>
+
+    <article class="project-panel">
+      <div class="project-panel__main">
+        <p class="eyebrow">Multi-user Text2SQL</p>
+        <h3>SQL 생성보다 사용자 격리, 실행 권한과 정답 검증을 먼저 설계했습니다.</h3>
+        <p>사용자가 workspace에서 자연어 질문을 보내면 모델은 SQL 후보만 제안합니다. 서버가 사용자 소유권과 SQL 정책을 확인한 뒤 전용 PostgreSQL reader로만 실행하며, 결과 평가는 SQL 문자열이 아니라 실제 columns와 rows를 기준으로 합니다.</p>
+        <p><strong>기술적으로:</strong> Python, FastAPI, SQLAlchemy, SQLGlot, PostgreSQL, psycopg, Docker Compose, result-based evaluation을 적용했습니다.</p>
+        <div class="button-row">
+          <a class="button" href="{{ '/cases/text2sql-validation/' | relative_url }}">사례와 검증 보기</a>
+          <a class="text-link" href="https://github.com/son1004007/text2sql-workspace">독립 공개 소스 보기</a>
+        </div>
+      </div>
+      <div class="project-panel__flow">
+        <h4>검증한 경계</h4>
+        <ol class="flow-list">
+          <li>사용자별 workspace와 query history 분리</li>
+          <li>위험 SQL을 DB 실행 전에 차단</li>
+          <li>PostgreSQL 전용 reader로 SELECT만 허용</li>
+          <li>동일 reader의 write 시도 거부</li>
+          <li>generation / validation / execution / correctness 분리</li>
+          <li>Docker/PostgreSQL E2E에서 runtime 경계 재검증</li>
+        </ol>
+        <p class="status-note"><strong>한계:</strong> 현재 실제 LLM의 통계적 정확도, production IdP, 대규모 동시 사용자와 SLA는 검증하거나 주장하지 않습니다.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="section section--soft" id="case-studies" aria-labelledby="cases-title">
   <div class="shell">
     <div class="section-heading">
       <div>
@@ -162,6 +205,8 @@ permalink: /
     </div>
 
     <div class="card-grid">
+      {% include case-card.html id="CS-AI-01" status="sample-verified" title="Text2SQL을 다중사용자 백엔드 기능으로 안전하게 실행" description="사용자별 작업을 분리하고 모델이 만든 SQL을 서버 정책과 PostgreSQL read-only 권한 안에서만 실행하도록 구현했습니다." focus="기술: Python, FastAPI, SQLGlot, PostgreSQL, Docker" href="/cases/text2sql-validation/" %}
+
       {% include case-card.html id="CS-JAVA-01" status="published" title="사용자 로그인과 권한을 안전하게 통합" description="서로 다른 인증 경로에서도 사용자와 권한이 잘못 연결되지 않는지 정상 흐름과 권한 오류를 함께 검증했습니다." focus="기술: Spring Security, RBAC, session/CSRF, assertion 검증" href="/cases/spring-security-auth-bridge/" %}
 
       {% include case-card.html id="CS-JAVA-02" status="published" title="복잡한 기간 조회에서 데이터 정합성 유지" description="여러 연도와 월을 함께 조회할 때 조건이 겹치거나 빠지지 않는지 기간 경계와 중복 조건을 검증했습니다." focus="기술: Spring Boot, MyBatis, SQL, H2" href="/cases/mybatis-query-correctness/" %}
@@ -173,7 +218,7 @@ permalink: /
   </div>
 </section>
 
-<section class="section section--soft" id="ai-engineering" aria-labelledby="ai-engineering-title">
+<section class="section" id="ai-engineering" aria-labelledby="ai-engineering-title">
   <div class="shell">
     <div class="section-heading">
       <div>
@@ -207,7 +252,7 @@ permalink: /
   </div>
 </section>
 
-<section class="section" id="technology" aria-labelledby="technology-title">
+<section class="section section--soft" id="technology" aria-labelledby="technology-title">
   <div class="shell">
     <div class="section-heading">
       <div>
@@ -236,7 +281,7 @@ permalink: /
   </div>
 </section>
 
-<section class="section section--soft" id="scope" aria-labelledby="scope-title">
+<section class="section" id="scope" aria-labelledby="scope-title">
   <div class="shell section-heading">
     <div>
       <p class="eyebrow">공개 범위</p>
