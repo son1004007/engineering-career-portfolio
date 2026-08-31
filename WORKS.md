@@ -34,7 +34,7 @@
 | `W11` | 배포·복구 이식성 사례 공개 | WAR/context/profile/rollback 샘플 | regression + Pages | `published` |
 | `W12` | 업무 규칙 일관성 사례 공개 | identity/reference-period 독립 샘플 | regression + Pages | `published` |
 | `W13` | capability-first 첫 화면 재구성 | README·Pages·strategy·AI context | HR role clarity + evidence hierarchy | `verified` |
-| `W14` | Python/FastAPI Data / AI Service Integration 공개 증거 | Text2SQL Workspace + case study + evidence | independent runtime evidence + portfolio regression + Pages | `verified` (`sample-verified`, publication pending) |
+| `W14` | Python/FastAPI Data / AI Service Integration 공개 증거 | Text2SQL Workspace + case study + evidence | independent runtime evidence + portfolio regression + Pages | `published` |
 
 ## 핵심 검증 기록
 
@@ -94,9 +94,9 @@
 - 공개 검증보다 앞선 `RAG/Agent patterns`, `observability` 같은 상위 용어를 첫 화면에서 내림
 - p95/테스트 개수보다 실제 시나리오와 실패 차단 경계를 먼저 제시
 
-P0 문구 정렬은 반영했고, Python/FastAPI evidence gap은 W14의 독립 공개 구현으로 보강했습니다.
+P0 문구 정렬은 반영했고, Python/FastAPI evidence gap은 W14의 독립 공개 구현과 publication으로 보강했습니다.
 
-### W14 — Python/FastAPI Data / AI Service Integration — `verified`, publication pending
+### W14 — Python/FastAPI Data / AI Service Integration — `published`
 
 목적은 Python 프로젝트 수를 늘리는 것이 아니라 **공개 evidence의 실제 공백을 하나의 강한 사례로 채우는 것**입니다.
 
@@ -130,6 +130,8 @@ FastAPI API
 - non-root application container
 - public disclosure review PASS
 - public project main CI: Python test + Docker/PostgreSQL E2E PASS (`2026-08-31`)
+- portfolio PR regression: 8개 job 전체 PASS
+- portfolio main publication: verify 8개 job + Pages build + deploy PASS (`2026-08-31`)
 
 Docker/PostgreSQL gate는 SQLite-only 검증에서 드러나지 않았던 PostgreSQL numeric aggregation 타입 차이도 발견해 수정했습니다. 이 사실은 runtime gate가 단순 배포 장식이 아니라 엔진 호환성을 검증했다는 근거로 기록합니다.
 
@@ -140,15 +142,10 @@ Docker/PostgreSQL gate는 SQLite-only 검증에서 드러나지 않았던 Postgr
 - arbitrary production DB connectors
 - production concurrency/load/SLA/large-user operation
 
-현재 상태는 독립 프로젝트 기준 `sample-verified`입니다. 포트폴리오 regression과 main Pages publication을 통과한 뒤 `published`로 승격합니다.
-
 ## 다음 실행 순서
 
-1. W14 case/evidence/status 문서를 `sample-verified`로 정합화합니다.
-2. portfolio PR regression을 통과시킵니다.
-3. merge 후 main Pages build/deploy를 확인합니다.
-4. Pages 성공 근거를 상태 문서에 반영하고 W14/CS-AI-01을 `published`로 승격합니다.
-5. status-sync 변경도 main Pages build/deploy까지 다시 확인합니다.
-6. 이후 필요하면 변경된 공개 main을 Codex/Gemini read-only 경로로 재검토합니다.
-7. 기존 Java/Spring 사례는 추가 개수 확대보다 유지관리합니다.
-8. Pages/링크/모바일 baseline과 회사 evidence 월말 갱신을 반복 유지합니다.
+1. published case와 공개 landing page의 상태·링크·한계를 유지합니다.
+2. 이후 필요하면 변경된 공개 main을 Codex/Gemini read-only 경로로 재검토합니다.
+3. 기존 Java/Spring 및 Text2SQL 사례는 개수 확대보다 유지관리합니다.
+4. 새로운 public project는 실제 지원 직무에서 새로운 capability gap이 확인될 때만 추가합니다.
+5. Pages/링크/모바일 baseline과 회사 evidence 월말 갱신을 반복 유지합니다.
