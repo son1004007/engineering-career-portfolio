@@ -40,7 +40,7 @@
 | `CS-JAVA-02` | 복잡한 기간 조회에서 데이터 정합성 유지 | 12 tests + Pages | `published` |
 | `CS-JAVA-03` | 환경이 달라도 배포하고 복구할 수 있는 구조 | 10 tests + Pages | `published` |
 | `CS-JAVA-06` | 사용자 식별과 업무 기준을 여러 계층에서 일관되게 유지 | 11 tests + Pages | `published` |
-| `CS-AI-01` | 자연어 질문을 읽기 전용 데이터 조회로 안전하게 연결 | Python test + Docker/PostgreSQL E2E | `sample-verified`, portfolio Pages pending |
+| `CS-AI-01` | 자연어 질문을 읽기 전용 데이터 조회로 안전하게 연결 | Python test + Docker/PostgreSQL E2E + Pages | `published` |
 
 ID는 evidence traceability를 위해 유지하지만, 공개 제목과 포지셔닝은 framework보다 문제를 먼저 보여줍니다.
 
@@ -130,7 +130,7 @@ ID는 evidence traceability를 위해 유지하지만, 공개 제목과 포지�
 3. deterministic fixture로 외부 유료 모델 없이 core regression이 재현됨
 4. PostgreSQL runtime gate를 통해 SQLite-only 검증에서 보이지 않는 엔진 호환성까지 확인 가능
 
-### P75. Python/FastAPI Data / AI Service Integration sample - `verified`, publication pending
+### P75. Python/FastAPI Data / AI Service Integration sample - `published`
 
 구현된 흐름:
 
@@ -163,6 +163,8 @@ FastAPI request boundary
 - FastAPI loopback host binding / PostgreSQL host-port 비노출
 - public security/disclosure review
 - public project main CI에서 Python test + Docker/PostgreSQL E2E PASS (`2026-08-31`)
+- portfolio publication PR regression 8개 job 전체 PASS
+- merge 후 main verify 8개 job + Pages build + deploy PASS (`2026-08-31`)
 
 미검증 범위:
 
@@ -170,17 +172,6 @@ FastAPI request boundary
 - external real LLM E2E 또는 모델 품질 일반화
 - arbitrary production database connectors
 - concurrency/load/SLA/large-user operation
-
-남은 완료 gate:
-
-```text
-portfolio 상태 정합화
--> portfolio regression PASS
--> merge
--> main Pages publication PASS
--> published 상태 동기화
--> 상태 동기화 Pages PASS
-```
 
 회사 코드, 실제 query/schema/data, 내부 식별자는 사용하지 않습니다.
 
@@ -198,14 +189,13 @@ portfolio 상태 정합화
 
 ### P90. 포트폴리오 유지관리 - `in-progress`
 
-- [x] Pages 링크와 기존 공개 상태값 동기화
+- [x] Pages 링크와 공개 상태값 동기화
 - [x] responsive/nav/code/table overflow baseline 자동 회귀
 - [x] OpsMate 검증 범위를 최신 public E2E 사실과 동기화
 - [x] Python/FastAPI 독립 구현 및 external project runtime gate
-- [x] CS-AI-01을 portfolio branch에서 `sample-verified`로 정합화
-- [ ] CS-AI-01 포함 portfolio PR regression PASS
-- [ ] merge 후 main Pages verify/build/deploy PASS
-- [ ] Pages evidence를 반영해 CS-AI-01 `published` 승격
+- [x] CS-AI-01 portfolio publication PR regression PASS
+- [x] merge 후 main verify/build/deploy PASS
+- [x] Pages evidence를 반영해 CS-AI-01 `published` 승격
 - [ ] publication-state sync main Pages PASS
 - [ ] 변경 후 Codex/Gemini self-hosted 재검토는 publication 이후 별도 검토 gate
 - [ ] 실제 물리 단말 육안 spot-check는 선택적 유지관리
@@ -215,7 +205,7 @@ portfolio 상태 정합화
 
 현재 즉시 필요한 사용자 작업은 없습니다.
 
-기존 4개 Java/Spring 공개 case-study publication gate는 완료됐고, Python/FastAPI 공개 재현 gap도 독립 구현과 runtime verification까지 완료했습니다. 남은 작업은 이 evidence를 포트폴리오 Pages에 publication하는 것입니다.
+기존 4개 Java/Spring 사례와 Python/FastAPI `CS-AI-01`의 공개 구현·runtime·첫 Pages publication gate는 완료됐습니다. 현재 마지막 status-sync publication만 검증하면 됩니다.
 
 ## 완료 판정
 
@@ -227,5 +217,5 @@ portfolio 상태 정합화
 6. 기간 조회 데이터 정합성 사례: `published`
 7. 배포·복구 이식성 사례: `published`
 8. 업무 규칙 일관성 사례: `published`
-9. Python/FastAPI Text2SQL 독립 프로젝트: `sample-verified`
-10. `CS-AI-01` portfolio publication: `in-progress`, Pages gate pending
+9. Python/FastAPI Text2SQL 독립 프로젝트 및 `CS-AI-01`: `published`
+10. publication-state sync Pages gate: `in-progress`
