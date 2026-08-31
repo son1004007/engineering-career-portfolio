@@ -1,6 +1,6 @@
 # Case Study Index
 
-- 최종 갱신일: `2026-08-30`
+- 최종 갱신일: `2026-08-31`
 - 목적: 기존 개인·회사 작업에서 게시물 후보를 추출하고, 원본 증거 확인과 공개용 재구현 상태를 분리해 관리
 - 전략: [`portfolio-strategy.md`](portfolio-strategy.md)
 - 회사 근거 규칙: [`../evidence/company-github/README.md`](../evidence/company-github/README.md)
@@ -8,9 +8,9 @@
 ## 현재 실행 대상
 
 - `CS-JAVA-01`, `CS-JAVA-02`, `CS-JAVA-03`, `CS-JAVA-06`의 독립 공개 샘플은 모두 publication gate를 충족했습니다.
-- `CS-JAVA-01`은 24개 독립 테스트 성공과 main Pages run `33276912458`의 Spring Security regression, public/Jekyll 검사, Pages build/deploy 성공을 근거로 `published`로 확정했습니다.
+- `CS-AI-01`은 독립 공개 `Text2SQL Workspace`의 Python test와 Docker/PostgreSQL E2E가 main에서 성공해 `sample-verified`이며, 현재 portfolio regression/Pages publication gate를 진행합니다.
 - 회사 코드와 데이터는 복사하지 않고 합성 도메인과 비식별 설계 경계만 공개합니다.
-- 다음 신규 사례는 별도 source review 후 선택하며, 현재 즉시 publication pending인 Java 사례는 없습니다.
+- 현재 즉시 publication pending인 사례는 `CS-AI-01` 한 건이며, 추가 Java/Spring 사례는 필요하지 않습니다.
 
 ## 상태 정의
 
@@ -53,9 +53,11 @@
 
 | ID | 게시물 후보 | 근거 | 현재 상태 | 공개 코드 방식 | 다음 확인 |
 |---|---|---|---|---|---|
-| `CS-AI-01` | [Text2SQL/NL2SQL을 안전한 API 기능으로 만든 과정](case-studies/text2sql-validation.md) | `WORK-AI-01`, `E3`, `tested-component` | `source-reviewed` | SELECT 제한, schema validation과 합성 DB를 사용하는 독립 샘플 | benchmark와 정확도 표현을 분리하고 공개 데이터로 재검증 |
+| `CS-AI-01` | [Text2SQL/NL2SQL을 안전한 API 기능으로 만든 과정](case-studies/text2sql-validation.md) | `WORK-AI-01` 비공개 실무 근거 + 독립 공개 [`Text2SQL Workspace`](https://github.com/son1004007/text2sql-workspace) main CI의 Python test·Docker/PostgreSQL E2E PASS (`2026-08-31`) | `sample-verified` | 합성 commerce data, FastAPI, SQLGlot policy, deterministic model fixture, PostgreSQL dedicated read-only reader와 Docker runtime을 회사 원본과 독립 구현 | portfolio regression + main Pages build/deploy 후 `published` 승격 |
 | `CS-AI-02` | [Agentic Runtime의 작업 격리와 artifact/provenance 추적](case-studies/agent-runtime-artifact-provenance.md) | `WORK-AI-02`, `E3`, `tested-component` | `source-reviewed` | workspace 탈출 차단과 manifest 추적을 일반화한 샘플 | 전체 플랫폼이 아닌 본인 구현 구성요소 경계 명시 |
 | `CS-AI-03` | HWP 문서 구조를 보존하는 검색·적재 파이프라인 | [개인 공개 저장소](https://github.com/son1004007/hwp-ingest-rag-pipeline), 코드 존재 | `candidate` | 기존 공개 코드를 정리하고 테스트 추가 | README-구현 불일치, 고정 경로와 기본 DB 설정 제거 |
+
+`CS-AI-01`의 deterministic fixture 성공은 실제 외부 LLM 정확도 주장이 아닙니다. generation, validation, execution과 result correctness를 분리한 service/evaluation pipeline과 PostgreSQL read-only runtime을 검증한 증거로만 사용합니다.
 
 ## Priority 3. 데이터·운영·보안 보조 사례
 
@@ -80,6 +82,7 @@
 - 실행 명령과 최근 성공 결과
 - 공개 안전성 검토
 - 확인된 결과와 확인하지 못한 한계
+- portfolio regression과 main GitHub Pages build/deploy 성공
 
 ## AI 작업 지침
 
@@ -88,6 +91,6 @@
 1. 후보 ID와 연결된 공개 evidence ID를 확인합니다.
 2. 권한이 있으면 회사 원본에서 본인 귀속과 코드 범위를 다시 확인합니다.
 3. 원본 코드를 복사하지 않고 공개용 요구사항과 테스트부터 새로 작성합니다.
-4. `02_projects/case-study-samples/<slug>/`에 독립 샘플을 구현합니다.
+4. 독립 공개 샘플은 capability에 적합한 public repository 또는 `02_projects/case-study-samples/<slug>/`에 구현합니다.
 5. 검증이 끝난 뒤 `03_portfolio/case-studies/<slug>.md`를 작성합니다.
 6. 이 인덱스와 [`evidence-index.md`](evidence-index.md)의 상태를 함께 갱신합니다.
