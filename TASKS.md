@@ -96,11 +96,11 @@ problem and result
 -> technology
 ```
 
-### 7. Python/FastAPI Data / AI Service Integration evidence - SAMPLE VERIFIED, PUBLICATION PENDING
+### 7. Python/FastAPI Data / AI Service Integration evidence - COMPLETE
 
 The capability gap identified by the independent Codex/Gemini review is now covered by one independently runnable public sample rather than another Java/Spring case.
 
-Implemented public project:
+Published public project evidence:
 
 > `Text2SQL Workspace` — Python/FastAPI multi-user Text2SQL backend with deterministic evaluation and PostgreSQL read-only Docker runtime verification
 
@@ -121,6 +121,9 @@ Verified scope:
 - FastAPI host exposure bounded to loopback; PostgreSQL has no host-published port
 - public disclosure review completed
 - public project main CI PASS for both Python tests and Docker/PostgreSQL E2E (`2026-08-31`)
+- portfolio PR regression: all 8 jobs PASS
+- portfolio main Pages: verify 8 jobs + build + deploy PASS (`2026-08-31`)
+- status: `published`
 
 Still not claimed:
 
@@ -128,19 +131,6 @@ Still not claimed:
 - external/real LLM E2E or statistically meaningful model-quality metrics
 - arbitrary production database connectors
 - production concurrency, load, SLA or large-user operation
-
-Remaining publication gate:
-
-```text
-portfolio evidence/status synchronization
--> portfolio regression PASS
--> merge
--> main Pages build/deploy PASS
--> status promoted from sample-verified to published
--> final status-sync Pages build/deploy PASS
-```
-
-Until the Pages gate completes, `CS-AI-01` remains `sample-verified`, not `published`.
 
 `CS-JAVA-11` statistical analysis UI remains an optional source-reviewed candidate only if a future target role specifically needs stronger analysis-UI evidence. Its legacy ID does not make Java the selection criterion.
 
@@ -164,7 +154,6 @@ Specialist terminology should remain available, but the reader should understand
 - keep Pages deployment and public links healthy after material changes
 - keep status badges, test counts and limitations synchronized
 - maintain viewport, responsive breakpoint and horizontal-overflow regression tests
-- check the capability-first landing page after the current Pages build/deploy completes
 - physical handset visual spot-check is optional maintenance
 - refresh sanitized company evidence at the defined review interval
 
