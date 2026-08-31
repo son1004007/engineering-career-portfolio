@@ -4,7 +4,7 @@
 
 업무 요구사항을 **데이터, 권한, 처리 상태와 실패 조건이 명확한 백엔드 시스템으로 구현**합니다.
 
-AI 기능은 결과를 그대로 신뢰하지 않고 서버의 검증과 사람의 승인 안에서 실제 업무와 연결합니다. Java/Spring과 Python/FastAPI를 업무 특성에 따라 사용해 왔고, 현재 공개 재현 샘플은 Java/Spring 쪽이 더 강합니다. SQL, Docker와 LLM은 필요한 문제를 해결하기 위한 도구로 사용하며, 자동 테스트와 실제 실행 환경 검증으로 동작 범위와 실패 조건을 확인합니다.
+AI 기능은 결과를 그대로 신뢰하지 않고 서버의 검증과 사람의 승인 안에서 실제 업무와 연결합니다. Java/Spring과 Python/FastAPI를 업무 특성에 따라 사용해 왔으며, 두 기술 축 모두 회사 코드와 독립된 공개 재현 프로젝트로 검증합니다. SQL, PostgreSQL, Docker와 LLM은 필요한 문제를 해결하기 위한 도구로 사용하며, 자동 테스트와 실제 실행 환경 검증으로 동작 범위와 실패 조건을 확인합니다.
 
 ## 제가 잘하는 일
 
@@ -21,9 +21,11 @@ AI 기능은 결과를 그대로 신뢰하지 않고 서버의 검증과 사람�
 
 - `OpsMate Local`: 실제 Ollama `gemma3:12b` 모델로 9개 핵심 업무 시나리오 E2E 전건 성공
 - `OpsMate Local`: `2026-08-29` 실제 Internet HTTPS 경로에서 사용자 작업 분리, rate limit, DB/model 비노출, close/reopen 검증
-- 인증과 권한, 데이터 정합성, 배포와 복구, 업무 규칙 일관성 문제를 회사 코드와 독립된 합성 샘플로 재현하고 정상, 실패, 경계 조건을 자동 테스트로 검증
+- `Text2SQL Workspace`: Python/FastAPI 멀티사용자 API에서 사용자별 workspace/query 격리, 생성 SQL의 서버 검증, PostgreSQL read-only 실행과 결과 기반 평가를 독립 공개 샘플로 구현
+- `Text2SQL Workspace`: Docker/PostgreSQL E2E에서 안전한 조회, 다른 사용자 접근 차단, 위험 SQL 차단, 전용 DB reader의 `SELECT` 성공/쓰기 실패, DB host 비노출을 검증
+- 인증과 권한, 데이터 정합성, 배포와 복구, 업무 규칙 일관성 문제를 회사 코드와 독립된 합성 Java/Spring 샘플로 재현하고 정상, 실패, 경계 조건을 자동 테스트로 검증
 
-각 결과는 해당 프로젝트의 공개 evidence와 테스트 결과에서 다시 확인할 수 있습니다. 실제 모델 응답시간과 프로젝트 gate 같은 세부 수치는 evidence 문서에 남기고, 장기 SLA, 대규모 사용자 운영, 실제 회사 운영 성능처럼 검증하지 않은 범위는 주장하지 않습니다.
+각 결과는 해당 프로젝트의 공개 evidence와 테스트 결과에서 다시 확인할 수 있습니다. 작은 합성 평가 결과나 실제 모델 응답시간 같은 수치는 검증 범위 안에서만 사용하고, 장기 SLA, 대규모 사용자 운영, 실제 회사 운영 성능처럼 확인하지 않은 범위는 주장하지 않습니다.
 
 ## 대표 작업
 
@@ -45,18 +47,24 @@ AI 기능은 결과를 그대로 신뢰하지 않고 서버의 검증과 사람�
 
 [프로젝트 설명과 코드](02_projects/opsmate-local/README.md) | [실제 모델 E2E 증거](02_projects/opsmate-local/docs/REAL_MODEL_E2E_EVIDENCE.md) | [공개 배포 E2E 증거](02_projects/opsmate-local/docs/PUBLIC_DEPLOYMENT_E2E_EVIDENCE.md)
 
-### 2. 자연어 질문을 데이터 조회로 연결 - Text2SQL / NL2SQL
+### 2. 여러 사용자의 자연어 데이터 조회를 안전하게 분리 - Text2SQL Workspace
 
-사용자의 자연어 질문을 SQL로 변환하고 데이터베이스 조회 결과로 연결하는 서비스를 구현하고 검증했습니다.
+Python/FastAPI로 여러 사용자가 각자의 workspace에서 자연어로 데이터를 조회하고, 모델이 제안한 SQL을 서버와 데이터베이스가 함께 통제하는 독립 공개 서비스를 구현했습니다.
 
-단순히 LLM을 호출하는 것이 아니라 SQL 문법, 실행 가능성, 업무 정답 여부를 따로 확인하고 여러 모델의 결과를 비교하는 방식으로 접근했습니다.
+핵심은 단순한 LLM 호출이 아니라 **모델 출력은 신뢰하지 않고, 사용자 소유권과 SQL 정책을 확인한 뒤 읽기 전용 DB 권한으로만 실행하는 것**입니다.
 
-- Python / FastAPI 기반 API
-- Text2SQL/NL2SQL, SQL 검증과 실행
-- validation set과 다중 모델 비교
-- 결과 기록과 실패 유형 분류
+- Python / FastAPI 기반 멀티사용자 API
+- 사용자별 workspace, query history와 retry attempt 분리
+- replaceable `Text2SqlModel`과 외부 API가 필요 없는 deterministic fixture
+- SQLGlot 기반 single-statement, SELECT-only, table allowlist 검증
+- PostgreSQL 전용 analytics reader와 application metadata 권한 분리
+- generation / validation / execution / correctness 단계별 결과 분리
+- SQL 문자열이 아니라 실제 columns/rows를 비교하는 result-based evaluation
+- Docker Compose에서 API loopback 노출, PostgreSQL host 비노출, DB reader write 거부를 E2E로 검증
 
-이 항목은 비식별 실무 evidence가 중심이며, Java/Spring 사례와 같은 수준의 독립 공개 Python 재현 샘플은 다음 보강 대상으로 남겨 두고 있습니다.
+현재 합성 evaluation fixture는 2건이며 deterministic model과 PostgreSQL runtime에서 generation/validation/execution/correctness 전 단계를 통과했습니다. 이는 **평가 파이프라인 검증**이지 실제 LLM 정확도 100%를 의미하지 않습니다.
+
+[공개 저장소](https://github.com/son1004007/text2sql-workspace) | [PostgreSQL/Docker 검증 근거](https://github.com/son1004007/text2sql-workspace/blob/main/docs/POSTGRES_DOCKER_EVIDENCE.md) | [공개 범위 검토](https://github.com/son1004007/text2sql-workspace/blob/main/docs/SECURITY_DISCLOSURE_REVIEW.md)
 
 ### 3. 기존 시스템의 문제를 작게 재현하고 검증 - Engineering Case Studies
 
@@ -112,7 +120,7 @@ AI는 조사, 구현과 리뷰를 빠르게 만드는 도구로 사용합니다.
 
 ## 테스트 실행
 
-대표 공개 구현은 각 프로젝트의 Maven Wrapper로 재현할 수 있습니다.
+대표 공개 Java 구현은 각 프로젝트의 Maven Wrapper로 재현할 수 있습니다.
 
 ```powershell
 cd 02_projects\opsmate-local
@@ -120,6 +128,16 @@ cd 02_projects\opsmate-local
 
 cd ..\case-study-samples\spring-security-auth-bridge
 .\mvnw.cmd -q clean verify
+```
+
+Python/FastAPI Text2SQL 공개 구현은 별도 저장소에서 재현할 수 있습니다.
+
+```bash
+git clone https://github.com/son1004007/text2sql-workspace.git
+cd text2sql-workspace
+python -m pip install -e '.[dev]'
+python -m pytest
+python scripts/docker_e2e.py
 ```
 
 저장소 전체 링크, 공개 문구와 상태 정합성 검사는 다음 명령으로 확인합니다.
@@ -130,4 +148,4 @@ python -B -m unittest discover -s tests -p "test_*.py" -v
 
 ## 공개 범위
 
-이 저장소에는 회사 코드, 고객 데이터, 내부 URL, 접속 정보와 실제 업무 규칙을 포함하지 않습니다. 실무 사례는 본인이 담당한 문제를 일반화해 설명하고, 공개 코드는 합성 데이터로 별도 구현합니다. 검증하지 않은 성능, 장기 운영이나 팀 전체 성과를 개인 성과로 확대해서 표현하지 않습니다.
+이 저장소와 연결된 공개 샘플에는 회사 코드, 고객 데이터, 내부 URL, 접속 정보와 실제 업무 규칙을 포함하지 않습니다. 실무 사례는 본인이 담당한 문제를 일반화해 설명하고, 공개 코드는 합성 데이터로 별도 구현합니다. 검증하지 않은 성능, 장기 운영이나 팀 전체 성과를 개인 성과로 확대해서 표현하지 않습니다.
