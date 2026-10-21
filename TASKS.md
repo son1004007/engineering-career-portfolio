@@ -164,6 +164,21 @@ Specialist terminology should remain available, but the reader should understand
 - do not repair a sample just to add another technology keyword
 - otherwise mark it partial or archive it without presenting it as a flagship
 
+### 11. Planned future evidence: reliable backend performance and AI service verification — NOT STARTED
+
+This is a future public engineering task, not a completed or currently verified implementation. The private career learning plan schedules the work **after the existing PMP goal**; do not consume the current job-application/PMP preparation window with a large new build. The canonical personal sequencing is maintained in the private `career-playbook/CURRENT_PLAN.md` and its 2026-10-21 learning roadmap; do not copy private career information here.
+
+Select one independently reproducible **synthetic backend scenario**; prefer extending a fitting existing public project rather than creating multiple disconnected technology demos. Only promote artifacts when implementation and runtime evidence exist.
+
+- [ ] **Redis**: cache-aside, TTL/invalidation, update consistency, cache-miss concurrency and Redis outage/fallback tests, baseline vs cache-enabled measurement.
+- [ ] **Kafka**: event producer/consumer, retry/dead-letter handling, duplicate delivery/idempotency, consumer restart and broker outage/recovery tests; document ordering and guarantees accurately.
+- [ ] **PostgreSQL performance**: deterministic synthetic dataset, EXPLAIN (ANALYZE, BUFFERS), index/query changes, transactions/locks, reproducible before/after p50/p95/throughput measurements at equal load.
+- [ ] **AI-service evaluation**: output schema and permission guardrails, failure/timeouts/fallback, fixed evaluation set for a selected Text2SQL/RAG/Agent flow, answer correctness and retrieval metrics where applicable, observed latency/cost if measured.
+- [ ] **Evidence gate**: design/ADR and tradeoffs, Docker-based reproducible runtime, unit/integration/fault tests, CI, benchmark scripts and measured results, independent source/privacy/license review, explicit limitations, public publication verification.
+- [ ] Update `WORKS.md`, `03_portfolio/evidence-index.md`, case-study and Pages only **after** tests/runtime checks; don't claim production scale, AWS commercial experience, or test outcomes before verification.
+
+The associated AWS SAA and ISMS-P/technical professional certification roadmap is **private study planning**, not a skill/evidence claim for this public repository.
+
 ---
 
 ## Definition of Done
