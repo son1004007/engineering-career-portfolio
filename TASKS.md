@@ -179,6 +179,30 @@ Select one independently reproducible **synthetic backend scenario**; prefer ext
 
 The associated AWS SAA and ISMS-P/technical professional certification roadmap is **private study planning**, not a skill/evidence claim for this public repository.
 
+
+### 12. Planned: Enterprise AI Backend Lab - RAG, Agent and evaluation portfolio (2026-11-16)
+
+- Status: **PLANNED / NOT STARTED**. This is a future learning/portfolio task, not implemented/verified work.
+- Timing: **after the existing PMP priority**; do not automatically start a new large project or interfere with existing study commitments. Reassess scope when the work is explicitly resumed.
+- Goal: independently implement, compare and explain enterprise AI retrieval/agent backend patterns, emphasizing API/DB integration, security boundaries, measured quality and reproducible evidence, **not model training or a modeler career claim**.
+- Reuse the verified `Text2SQL Workspace` as a reference SQL baseline if it fits, and prefer an extension or one coherent lab over four disconnected demos. Use only public/synthetic data; do not copy employer/customer source, schemas, records, logs or documents.
+
+Learning and implementation backlog (sequence is suggested; each item remains unstarted):
+
+- [ ] **Concept notes:** LLM + Retrieval-Augmented Generation (RAG); SQL-backed retrieval ("SQL RAG" here is a project shorthand, not a formal standardized product); embedding / Vector RAG; Knowledge Graph, Ontology and their difference; GraphRAG; Hybrid RAG; tradeoffs and decision criteria.
+- [ ] **Common reproducible dataset and test cases:** choose one generic business/technology document domain, fixed source snapshots, expected answers and evidence; design about 30-50 labeled questions including direct lookup, semantic matching, multi-hop relations, contradictory/missing facts and authorization boundaries. Record dataset provenance and avoid fabricating expected outputs.
+- [ ] **SQL retrieval baseline:** controlled text-to-SQL / structured query, AST validation, allow-listed read-only PostgreSQL access, row/time bounds, per-user permissions and result-based correctness; reuse the existing sample where supported.
+- [ ] **Vector RAG:** chunking, embedding, pgvector, semantic retrieval, source citation and metadata/ACL filtering; compare keyword/BM25 search and re-ranking as separate improvements.
+- [ ] **GraphRAG:** entity/relation extraction with verification, graph traversal and multi-hop queries, provenance back to source text; start with PostgreSQL relation tables and adopt Neo4j/Cypher only when the measured use case benefits. Explore RDF/OWL/SPARQL/ontology modeling as **optional advanced** work; GraphRAG does not require a formal ontology.
+- [ ] **Hybrid retrieval:** combine SQL, keyword, vector and graph retrieval through explicit routing/fusion/re-ranking; compare identical questions and evaluation conditions against each individual baseline.
+- [ ] **Agent and tool execution:** LLM API/structured outputs; function/tool calling, MCP server/client, LangGraph stateful orchestration; demonstrate bounded retries, timeouts, idempotency, tool authorization and human approval for sensitive operations. Study context/prompt management; multi-agent/A2A is optional, not an initial acceptance gate.
+- [ ] **Evaluation:** separate retrieval Recall@K from answer correctness, citation-grounding, permission violations and refusal quality; measure actual observed p50/p95 latency and token/cost under comparable settings; retain unsuccessful examples and limitations. Inspect RAGAS / LLM-as-a-Judge as helpers, not substitutes for deterministic golden cases.
+- [ ] **Operations and security:** prompt injection and source poisoning tests, server-side allowlists/RBAC and secret isolation; structured logs, tracing and error handling (e.g. OpenTelemetry/Langfuse), bounded rate/cost budgets and model failure fallback. LiteLLM/gateway and dedicated model-serving/fine-tuning are optional later extensions.
+- [ ] **Documentation and publication:** keep architecture/ADR, reproducible setup, tests, evaluation scripts, original measurements and honest limitations in the project; publish an editorial blog series in existing GitHub Pages style (problem -> implementation -> comparison -> validation) with meaningful figures instead of formulaic tables; link a case study from this portfolio only after verifiable CI/runtime and public-data review.
+
+Acceptance: one reproducible demo, four retrieval strategies compared on the same labeled question set, at least one bounded tool/agent workflow, failed/unsafe cases tested, measured quality/cost/latency and source citations, explicit NOT RUN/unknowns, and verified public publication. Do not promote a planned experiment to production experience or claimed skill before the evidence gate.
+
+
 ---
 
 ## Definition of Done
